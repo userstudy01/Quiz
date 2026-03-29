@@ -1477,14 +1477,17 @@ export default function Questions() {
   return (
     <div className="h-screen bg-[#FDFDFD] font-sans text-[#1A2533] overflow-hidden flex flex-col selection:bg-[#00A896]/10">
       {activeView === 'bank' ? (
-        <div className="p-6 md:p-8 h-full overflow-y-auto">
+        // 🔥 FIX: Added pt-24 for mobile to avoid hamburger overlap, lg:pt-8 for desktop
+        <div className="p-6 pt-24 lg:pt-8 md:p-8 h-full overflow-y-auto">
+          
           {/* Header Section */}
-          <div className="flex justify-between items-center mb-8 pb-4 border-b border-[#EAEAEA]">
-            <h1 className="text-3xl font-black flex items-center gap-4 text-[#1A2533]">
+          {/* 🔥 FIX: flex-col on mobile, sm:flex-row on larger screens to prevent squishing */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-4 border-b border-[#EAEAEA]">
+            <h1 className="text-3xl font-black flex flex-wrap items-center gap-3 text-[#1A2533]">
               Question Bank 
               <span className="bg-[#E5F1F0] text-[#00A896] text-xs px-4 py-1.5 rounded-full shadow-sm font-bold mt-1">{questions.length} Items</span>
             </h1>
-            <button onClick={openNewModuleForm} className="bg-[#00A896] hover:bg-[#009686] text-white px-6 py-3 rounded-2xl font-black text-sm shadow-md shadow-[#00A896]/20 transition-all active:scale-95 flex items-center gap-2">
+            <button onClick={openNewModuleForm} className="w-full sm:w-auto bg-[#00A896] hover:bg-[#009686] text-white px-6 py-3 rounded-2xl font-black text-sm shadow-md shadow-[#00A896]/20 transition-all active:scale-95 flex items-center justify-center gap-2">
               <span className="text-lg leading-none">+</span> Deploy Module
             </button>
           </div>
@@ -1497,12 +1500,12 @@ export default function Questions() {
                 {/* Topic Header */}
                 <div className="p-4 md:p-5 flex justify-between items-center cursor-pointer bg-[#F9F9F9] hover:bg-white transition-colors" onClick={() => toggleTopic(topic)}>
                   <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-xl transition-all duration-300 ${expandedTopics[topic] ? 'bg-[#00A896] text-white shadow-md shadow-[#00A896]/20 rotate-180' : 'bg-white text-[#1A2533] border border-[#EAEAEA]'}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-xl transition-all duration-300 shrink-0 ${expandedTopics[topic] ? 'bg-[#00A896] text-white shadow-md shadow-[#00A896]/20 rotate-180' : 'bg-white text-[#1A2533] border border-[#EAEAEA]'}`}>
                       {expandedTopics[topic] ? '−' : '+'}
                     </div>
-                    <h3 className="text-xl font-black text-[#1A2533]">{topic}</h3>
+                    <h3 className="text-xl font-black text-[#1A2533] break-all">{topic}</h3>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 shrink-0">
                     <span className="text-xs font-bold text-[#888888] bg-white px-4 py-2 rounded-full border border-[#EAEAEA] hidden sm:block">{qs.length} Elements</span>
                     <button onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }} className="bg-[#1A2533] hover:bg-[#2A3543] text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 hidden sm:block">
                       + Add Q
@@ -1521,13 +1524,13 @@ export default function Questions() {
                             <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-sm ${q.section === 'Practical' ? 'bg-[#EBF5FF] text-[#0A84FF]' : 'bg-[#E5F1F0] text-[#00A896]'}`}>
                               {q.section}
                             </span>
-                            <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wider">{q.tags.join(', ')}</span>
+                            <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wider break-all">{q.tags.join(', ')}</span>
                           </div>
                           <p className="text-[15px] font-bold text-[#1A2533] leading-snug">{q.questionText}</p>
                         </div>
                         
                         {/* Action Buttons */}
-                        <div className="flex gap-2 w-full md:w-auto justify-end">
+                        <div className="flex gap-2 w-full md:w-auto justify-end mt-2 md:mt-0">
                           <button onClick={() => handleEdit(q)} className="w-10 h-10 rounded-xl bg-white text-[#00A896] flex items-center justify-center shadow-sm border border-[#EAEAEA] hover:bg-[#00A896] hover:text-white transition-colors">
                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                           </button>
@@ -1538,7 +1541,7 @@ export default function Questions() {
                       </div>
                     ))}
                     {/* Add button for Mobile inside expanded view */}
-                    <button onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }} className="w-full sm:hidden bg-[#FDFDFD] border border-dashed border-[#EAEAEA] text-[#1A2533] px-5 py-3 rounded-xl text-xs font-bold hover:border-[#00A896] hover:text-[#00A896] transition-all">
+                    <button onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }} className="w-full sm:hidden bg-[#FDFDFD] border border-dashed border-[#EAEAEA] text-[#1A2533] px-5 py-3 mt-2 rounded-xl text-xs font-bold hover:border-[#00A896] hover:text-[#00A896] transition-all">
                       + Add New Question
                     </button>
                   </div>
@@ -1550,23 +1553,22 @@ export default function Questions() {
       ) : (
         
         /* 🔥 COMPACT FORM VIEW 🔥 */
-        <div className="h-full flex flex-col justify-center items-center p-4 bg-[#E5F1F0]/30 relative">
+        // 🔥 FIX: Added pt-24 here too so the form isn't hidden behind the menu
+        <div className="h-full flex flex-col justify-start md:justify-center items-center p-4 pt-24 md:pt-4 bg-[#E5F1F0]/30 relative overflow-y-auto">
           
-          {/* Subtle background element */}
-          <div className="absolute top-10 right-10 w-96 h-96 bg-[#00A896]/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute top-10 right-10 w-96 h-96 bg-[#00A896]/10 rounded-full blur-3xl pointer-events-none hidden md:block"></div>
 
-          <div className="w-full max-w-5xl bg-white p-8 md:p-10 rounded-[3rem] border border-[#EAEAEA] shadow-2xl shadow-[#1A2533]/5 relative z-10">
-            <div className="flex justify-between items-center mb-8 border-b border-[#EAEAEA] pb-5">
-               <h2 className="text-3xl font-black text-[#1A2533]">
+          <div className="w-full max-w-5xl bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-[#EAEAEA] shadow-2xl shadow-[#1A2533]/5 relative z-10 mb-10 md:mb-0">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-[#EAEAEA] pb-5">
+               <h2 className="text-2xl md:text-3xl font-black text-[#1A2533]">
                  {editId ? 'Edit Element' : 'Deploy New Element'}
                </h2>
-               <button onClick={cancelForm} className="text-[#888888] font-bold text-sm hover:text-[#1A2533] transition-colors bg-[#F9F9F9] px-4 py-2 rounded-xl border border-[#EAEAEA]">
+               <button onClick={cancelForm} className="w-full sm:w-auto text-center text-[#888888] font-bold text-sm hover:text-[#1A2533] transition-colors bg-[#F9F9F9] px-4 py-2.5 rounded-xl border border-[#EAEAEA]">
                  ✕ Cancel
                </button>
             </div>
             
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Row 1: Name, Category, Tags */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Round Name</label>
@@ -1588,14 +1590,12 @@ export default function Questions() {
                 </div>
               </div>
 
-              {/* Row 2: Question Text */}
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Question Details</label>
-                <textarea placeholder="Enter the exact question text..." required rows="2" value={formData.questionText} onChange={e => setFormData({...formData, questionText: e.target.value})} 
+                <textarea placeholder="Enter the exact question text..." required rows="3" value={formData.questionText} onChange={e => setFormData({...formData, questionText: e.target.value})} 
                   className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none resize-none text-base font-medium text-[#1A2533] focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm" />
               </div>
 
-              {/* Row 3: Solution/Logic */}
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-wider text-[#00A896] ml-1 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-[#00A896] rounded-full"></span> Expected Logic / Solution (Markdown supported)
@@ -1604,7 +1604,6 @@ export default function Questions() {
                   className="w-full p-4 bg-[#1A2533] text-[#E5F1F0] rounded-2xl border-none outline-none font-mono text-sm resize-none focus:ring-2 focus:ring-[#00A896] transition-all shadow-inner placeholder-[#888888]" />
               </div>
 
-              {/* Action Button */}
               <button type="submit" className="w-full py-4 mt-4 bg-[#00A896] hover:bg-[#009686] text-white rounded-2xl font-black text-base shadow-lg shadow-[#00A896]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                 {editId ? 'Execute Update' : 'Push to Database'}
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path></svg>
