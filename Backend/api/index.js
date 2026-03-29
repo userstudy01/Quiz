@@ -8,7 +8,10 @@ const connectDB = require('../config/db');
 const app = express();
 
 // DB connect
-connectDB();
+module.exports = serverless(async (req, res) => {
+  await connectDB();
+  return app(req, res);
+});
 
 // middleware
 app.use(cors());
