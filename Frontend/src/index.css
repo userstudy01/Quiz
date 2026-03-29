@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* 🔥 YE LINE ADD KARNI HAI MANUAL DARK MODE BUTTON KE LIYE 🔥 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  /* Scrollbar styling (optional but looks premium) */
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155; /* slate-700 */
+}
