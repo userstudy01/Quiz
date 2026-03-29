@@ -38,44 +38,53 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-8">
+    <div className="flex min-h-screen items-center justify-center bg-[#E5F1F0] px-4 font-sans relative overflow-hidden">
+      
+      {/* Decorative Background Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-[#00A896]/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#30D158]/10 rounded-full blur-3xl"></div>
+
+      <div className="w-full max-w-md bg-white p-8 sm:p-10 rounded-[2rem] shadow-2xl shadow-[#1A2533]/5 relative z-10 border border-[#EAEAEA]/50">
         
-        <div className="text-center">
-          <div className="mx-auto h-10 w-10 bg-zinc-100 rounded-full flex items-center justify-center mb-6">
-            <span className="text-[#09090b] font-black text-xl">JS</span>
+        <div className="text-center mb-8">
+          <div className="mx-auto h-14 w-14 bg-[#E5F1F0] rounded-full flex items-center justify-center mb-4 shadow-inner">
+            <span className="text-[#00A896] font-black text-2xl">KH</span>
           </div>
-          <h2 className="text-2xl font-semibold tracking-tight text-zinc-100">Welcome back</h2>
-          <p className="mt-2 text-sm text-zinc-400">Enter your credentials to access your sandbox</p>
+          <h2 className="text-3xl font-black tracking-tight text-[#1A2533]">
+            Welcome <span className="text-[#00A896]">back</span>
+          </h2>
+          <p className="mt-2 text-sm text-[#888888] font-medium">Enter your credentials to access your sandbox</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-8">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
-            <div className="p-3 text-sm text-red-400 bg-red-950/50 border border-red-900/50 rounded-md">
+            <div className="p-4 text-sm font-bold text-[#FF3B30] bg-[#FFF1F0] border border-[#FFD0D0] rounded-xl flex items-center gap-2">
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               {error}
             </div>
           )}
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-1">Email address</label>
+              <label className="block text-xs font-bold text-[#1A2533] uppercase tracking-wider mb-1.5 ml-1">Email Address</label>
               <input
                 type="email" name="email" required
                 value={formData.email} onChange={handleChange}
-                className="w-full px-3 py-2 bg-[#09090b] border border-zinc-800 rounded-md text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 focus:border-zinc-500 transition-colors"
+                className="w-full px-4 py-3.5 bg-[#F9F9F9] border border-[#EAEAEA] rounded-xl text-base text-[#1A2533] placeholder-[#888888] focus:outline-none focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm"
                 placeholder="name@company.com"
               />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-sm font-medium text-zinc-300">Password</label>
-                <a href="#" className="text-xs text-zinc-400 hover:text-zinc-100 transition-colors">Forgot password?</a>
+              <div className="flex items-center justify-between mb-1.5 ml-1">
+                <label className="block text-xs font-bold text-[#1A2533] uppercase tracking-wider">Password</label>
+                {/* Forgot Password link updated to match theme */}
+                <a href="#" className="text-xs font-bold text-[#00A896] hover:text-[#009686] transition-colors">Forgot password?</a>
               </div>
               <input
                 type="password" name="password" required
                 value={formData.password} onChange={handleChange}
-                className="w-full px-3 py-2 bg-[#09090b] border border-zinc-800 rounded-md text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 focus:border-zinc-500 transition-colors"
+                className="w-full px-4 py-3.5 bg-[#F9F9F9] border border-[#EAEAEA] rounded-xl text-base text-[#1A2533] placeholder-[#888888] focus:outline-none focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm"
                 placeholder="••••••••"
               />
             </div>
@@ -83,16 +92,21 @@ export default function Login() {
 
           <button
             type="submit" disabled={isLoading}
-            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[#09090b] bg-zinc-100 hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-500 disabled:opacity-50 transition-colors mt-6"
+            className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-black tracking-wide text-white bg-[#00A896] hover:bg-[#009686] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00A896] disabled:opacity-50 transition-all active:scale-[0.98] mt-8"
           >
-            {isLoading ? 'Signing in...' : 'Sign in'}
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                Signing in...
+              </span>
+            ) : 'Sign In'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-zinc-400">
+        <p className="text-center text-sm text-[#888888] mt-8 font-medium">
           Don't have an account?{' '}
-          <Link to="/register" className="font-medium text-zinc-100 hover:text-white hover:underline underline-offset-4">
-            Sign up
+          <Link to="/register" className="font-bold text-[#00A896] hover:text-[#009686] hover:underline underline-offset-4 transition-colors">
+            Sign up here
           </Link>
         </p>
       </div>

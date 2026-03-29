@@ -1475,113 +1475,139 @@ export default function Questions() {
   }, {});
 
   return (
-    <div className="h-screen bg-white font-sans text-slate-900 overflow-hidden flex flex-col">
+    <div className="h-screen bg-[#FDFDFD] font-sans text-[#1A2533] overflow-hidden flex flex-col selection:bg-[#00A896]/10">
       {activeView === 'bank' ? (
-        <div className="p-6 h-full overflow-y-auto">
+        <div className="p-6 md:p-8 h-full overflow-y-auto">
           {/* Header Section */}
-          <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
-            <h1 className="text-2xl font-black flex items-center gap-3">
+          <div className="flex justify-between items-center mb-8 pb-4 border-b border-[#EAEAEA]">
+            <h1 className="text-3xl font-black flex items-center gap-4 text-[#1A2533]">
               Question Bank 
-              <span className="bg-emerald-50 text-emerald-600 text-xs px-3 py-1 rounded-full">{questions.length} Qs</span>
+              <span className="bg-[#E5F1F0] text-[#00A896] text-xs px-4 py-1.5 rounded-full shadow-sm font-bold mt-1">{questions.length} Items</span>
             </h1>
-            <button onClick={openNewModuleForm} className="bg-emerald-900 text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-md hover:shadow-emerald-900/20 transition-all">+ Deploy Module</button>
+            <button onClick={openNewModuleForm} className="bg-[#00A896] hover:bg-[#009686] text-white px-6 py-3 rounded-2xl font-black text-sm shadow-md shadow-[#00A896]/20 transition-all active:scale-95 flex items-center gap-2">
+              <span className="text-lg leading-none">+</span> Deploy Module
+            </button>
           </div>
 
           {/* Module List */}
-          <div className="space-y-3">
+          <div className="space-y-4 max-w-6xl">
             {Object.entries(groupedQuestions).map(([topic, qs]) => (
-              <div key={topic} className="bg-white border border-slate-100 rounded-[2rem] shadow-sm overflow-hidden transition-all hover:border-emerald-200">
-                <div className="p-4 flex justify-between items-center cursor-pointer bg-slate-50/50" onClick={() => toggleTopic(topic)}>
+              <div key={topic} className="bg-white border border-[#EAEAEA] rounded-[2rem] shadow-soft overflow-hidden transition-all hover:border-[#00A896]/40 hover:shadow-md">
+                
+                {/* Topic Header */}
+                <div className="p-4 md:p-5 flex justify-between items-center cursor-pointer bg-[#F9F9F9] hover:bg-white transition-colors" onClick={() => toggleTopic(topic)}>
                   <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg transition-colors ${expandedTopics[topic] ? 'bg-emerald-900 text-white' : 'bg-white text-slate-400 border border-slate-200'}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-xl transition-all duration-300 ${expandedTopics[topic] ? 'bg-[#00A896] text-white shadow-md shadow-[#00A896]/20 rotate-180' : 'bg-white text-[#1A2533] border border-[#EAEAEA]'}`}>
                       {expandedTopics[topic] ? '−' : '+'}
                     </div>
-                    <h3 className="text-lg font-bold text-slate-800">{topic}</h3>
+                    <h3 className="text-xl font-black text-[#1A2533]">{topic}</h3>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-100">{qs.length} Elements</span>
-                    <button onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }} className="bg-emerald-900 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-sm hover:bg-emerald-800">+ Add Q</button>
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs font-bold text-[#888888] bg-white px-4 py-2 rounded-full border border-[#EAEAEA] hidden sm:block">{qs.length} Elements</span>
+                    <button onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }} className="bg-[#1A2533] hover:bg-[#2A3543] text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 hidden sm:block">
+                      + Add Q
+                    </button>
                   </div>
                 </div>
 
-                {expandedTopics[topic] && (
-                  <div className="p-4 space-y-2 bg-white border-t border-slate-50">
+                {/* Questions List (Expanded View) */}
+                <div className={`transition-all duration-500 ease-in-out ${expandedTopics[topic] ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
+                  <div className="p-5 space-y-3 bg-white border-t border-[#EAEAEA]">
                     {qs.map((q, i) => (
-                      <div key={q._id} className="p-4 bg-slate-50 rounded-2xl flex justify-between items-center border border-transparent hover:border-emerald-100 hover:bg-white transition-all group">
+                      <div key={q._id} className="p-5 bg-[#F9F9F9] rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center border border-transparent hover:border-[#EAEAEA] hover:bg-white hover:shadow-sm transition-all group gap-4">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[10px] font-black text-slate-400">Q{i+1}</span>
-                            <span className={`text-[10px] font-black px-2 py-0.5 rounded ${q.section === 'Practical' ? 'bg-amber-100 text-amber-700' : 'bg-purple-100 text-purple-700'}`}>{q.section}</span>
-                            <span className="text-[10px] font-bold text-slate-300 uppercase">{q.tags.join(', ')}</span>
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <span className="text-[10px] font-black text-[#888888] bg-white border border-[#EAEAEA] px-2 py-0.5 rounded shadow-sm">Q{i+1}</span>
+                            <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-sm ${q.section === 'Practical' ? 'bg-[#EBF5FF] text-[#0A84FF]' : 'bg-[#E5F1F0] text-[#00A896]'}`}>
+                              {q.section}
+                            </span>
+                            <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wider">{q.tags.join(', ')}</span>
                           </div>
-                          <p className="text-sm font-bold text-slate-700">{q.questionText}</p>
+                          <p className="text-[15px] font-bold text-[#1A2533] leading-snug">{q.questionText}</p>
                         </div>
-                        {/* Attractive Edit/Delete Buttons */}
-                        <div className="flex gap-3 ml-4">
-                          <button onClick={() => handleEdit(q)} className="w-9 h-9 rounded-full bg-white text-emerald-600 flex items-center justify-center shadow-sm border border-emerald-50 hover:bg-emerald-600 hover:text-white transition-all">
+                        
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 w-full md:w-auto justify-end">
+                          <button onClick={() => handleEdit(q)} className="w-10 h-10 rounded-xl bg-white text-[#00A896] flex items-center justify-center shadow-sm border border-[#EAEAEA] hover:bg-[#00A896] hover:text-white transition-colors">
                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                           </button>
-                          <button onClick={() => handleDelete(q._id)} className="w-9 h-9 rounded-full bg-white text-rose-500 flex items-center justify-center shadow-sm border border-rose-50 hover:bg-rose-500 hover:text-white transition-all">
+                          <button onClick={() => handleDelete(q._id)} className="w-10 h-10 rounded-xl bg-white text-[#FF3B30] flex items-center justify-center shadow-sm border border-[#EAEAEA] hover:bg-[#FF3B30] hover:text-white transition-colors">
                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                           </button>
                         </div>
                       </div>
                     ))}
+                    {/* Add button for Mobile inside expanded view */}
+                    <button onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }} className="w-full sm:hidden bg-[#FDFDFD] border border-dashed border-[#EAEAEA] text-[#1A2533] px-5 py-3 rounded-xl text-xs font-bold hover:border-[#00A896] hover:text-[#00A896] transition-all">
+                      + Add New Question
+                    </button>
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
         </div>
       ) : (
-        /* 🔥 COMPACT SINGLE ROW FORM - NO SCROLL 🔥 */
-        <div className="h-full flex flex-col justify-center items-center p-4">
-          <div className="w-full max-w-5xl bg-white p-8 rounded-[3rem] border border-slate-100 shadow-2xl">
-            <div className="flex justify-between items-center mb-6 border-b border-slate-50 pb-4">
-               <h2 className="text-2xl font-black text-slate-900">{editId ? 'Edit Element' : 'Deploy New Element'}</h2>
-               <button onClick={cancelForm} className="text-slate-400 font-bold text-sm hover:text-slate-600 transition-colors">Cancel & Back</button>
+        
+        /* 🔥 COMPACT FORM VIEW 🔥 */
+        <div className="h-full flex flex-col justify-center items-center p-4 bg-[#E5F1F0]/30 relative">
+          
+          {/* Subtle background element */}
+          <div className="absolute top-10 right-10 w-96 h-96 bg-[#00A896]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="w-full max-w-5xl bg-white p-8 md:p-10 rounded-[3rem] border border-[#EAEAEA] shadow-2xl shadow-[#1A2533]/5 relative z-10">
+            <div className="flex justify-between items-center mb-8 border-b border-[#EAEAEA] pb-5">
+               <h2 className="text-3xl font-black text-[#1A2533]">
+                 {editId ? 'Edit Element' : 'Deploy New Element'}
+               </h2>
+               <button onClick={cancelForm} className="text-[#888888] font-bold text-sm hover:text-[#1A2533] transition-colors bg-[#F9F9F9] px-4 py-2 rounded-xl border border-[#EAEAEA]">
+                 ✕ Cancel
+               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Row 1: Everything in One line (Name, Category, Tags) */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Round Name</label>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Row 1: Name, Category, Tags */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Round Name</label>
                   <input type="text" placeholder="Topic Name" required disabled={formMode === 'add_to_module'} value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} 
-                    className="w-full p-3.5 bg-slate-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-emerald-900/10 text-sm font-medium" />
+                    className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white text-sm font-bold text-[#1A2533] disabled:opacity-60 transition-all shadow-sm" />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Category</label>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Category</label>
                   <select value={formData.section} onChange={e => setFormData({...formData, section: e.target.value})} 
-                    className="w-full p-3.5 bg-slate-50 rounded-2xl border-none outline-none text-sm font-medium cursor-pointer">
+                    className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none text-sm font-bold text-[#1A2533] cursor-pointer focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm">
                     <option value="Theory">Theory Section</option>
                     <option value="Practical">Practical Section</option>
                   </select>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Tags</label>
-                  <input type="text" placeholder="e.g. JS, Core" value={formData.tags} onChange={e => setFormData({...formData, tags: e.target.value})} 
-                    className="w-full p-3.5 bg-slate-50 rounded-2xl border-none outline-none text-sm font-medium" />
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Tags (Comma separated)</label>
+                  <input type="text" placeholder="e.g. JS, Core, Advanced" value={formData.tags} onChange={e => setFormData({...formData, tags: e.target.value})} 
+                    className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white text-sm font-bold text-[#1A2533] transition-all shadow-sm" />
                 </div>
               </div>
 
-              {/* Row 2: Question Text (Slightly shorter) */}
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Question Details</label>
-                <textarea placeholder="Enter question..." required rows="2" value={formData.questionText} onChange={e => setFormData({...formData, questionText: e.target.value})} 
-                  className="w-full p-4 bg-slate-50 rounded-2xl border-none outline-none resize-none text-sm font-medium" />
+              {/* Row 2: Question Text */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Question Details</label>
+                <textarea placeholder="Enter the exact question text..." required rows="2" value={formData.questionText} onChange={e => setFormData({...formData, questionText: e.target.value})} 
+                  className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none resize-none text-base font-medium text-[#1A2533] focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm" />
               </div>
 
-              {/* Row 3: Solution/Logic (Optimized height) */}
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Expected Logic / Reference</label>
-                <textarea placeholder="Keywords or code logic..." required rows="4" value={formData.solutionMarkdown} onChange={e => setFormData({...formData, solutionMarkdown: e.target.value})} 
-                  className="w-full p-4 bg-slate-50 rounded-2xl border-none outline-none font-mono text-sm resize-none" />
+              {/* Row 3: Solution/Logic */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-wider text-[#00A896] ml-1 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-[#00A896] rounded-full"></span> Expected Logic / Solution (Markdown supported)
+                </label>
+                <textarea placeholder="Keywords or code logic for the AI engine to evaluate..." required rows="4" value={formData.solutionMarkdown} onChange={e => setFormData({...formData, solutionMarkdown: e.target.value})} 
+                  className="w-full p-4 bg-[#1A2533] text-[#E5F1F0] rounded-2xl border-none outline-none font-mono text-sm resize-none focus:ring-2 focus:ring-[#00A896] transition-all shadow-inner placeholder-[#888888]" />
               </div>
 
               {/* Action Button */}
-              <button type="submit" className="w-full py-5 mt-2 bg-emerald-900 text-white rounded-[2rem] font-black text-base shadow-xl shadow-emerald-900/30 active:scale-[0.98] transition-all">
+              <button type="submit" className="w-full py-4 mt-4 bg-[#00A896] hover:bg-[#009686] text-white rounded-2xl font-black text-base shadow-lg shadow-[#00A896]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                 {editId ? 'Execute Update' : 'Push to Database'}
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path></svg>
               </button>
             </form>
           </div>
