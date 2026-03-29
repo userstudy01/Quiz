@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Backend ka URL (Agar deployment par jaoge toh ye change hoga)
-const API_URL = 'https://quiz-kappa-dusky.vercel.app';
+const API_URL = 'https://quiz-kappa-dusky.vercel.app/api/auth';
 
 // Register user
 const register = async (userData) => {
