@@ -3,13 +3,13 @@
 
 // // export default function Questions() {
 // //   const [questions, setQuestions] = useState([]);
-  
+
 // //   // View State: 'bank' (List of questions) ya 'form' (Add/Edit screen)
 // //   const [activeView, setActiveView] = useState('bank');
-  
+
 // //   // Form Mode: 'new_module', 'add_to_module', 'edit_question'
 // //   const [formMode, setFormMode] = useState('new_module');
-  
+
 // //   const [formData, setFormData] = useState({ title: '', section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
 // //   const [editId, setEditId] = useState(null);
 // //   const [expandedTopics, setExpandedTopics] = useState({});
@@ -65,7 +65,7 @@
 // //     e.preventDefault();
 // //     try {
 // //       const payload = { ...formData, tags: formData.tags.split(',').map(t => t.trim()) };
-      
+
 // //       if (editId) {
 // //         await API.put(`/questions/${editId}`, payload);
 // //       } else {
@@ -73,7 +73,7 @@
 // //         // Ensure that module is expanded so admin can see the newly added question
 // //         setExpandedTopics(prev => ({ ...prev, [formData.title]: true }));
 // //       }
-      
+
 // //       fetchQuestions();
 // //       setActiveView('bank'); // Save hote hi wapas bank main aa jao
 // //       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -106,7 +106,7 @@
 // //       {/* ================= VIEW 1: QUESTION BANK (MAIN SCREEN) ================= */}
 // //       {activeView === 'bank' && (
 // //         <div className="animate-fade-in">
-          
+
 // //           {/* 🔥 Master Header */}
 // //           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 pb-6 border-b border-zinc-800 gap-4">
 // //             <h2 className="text-2xl font-black text-white flex items-center gap-4">
@@ -135,10 +135,10 @@
 
 // //                 return (
 // //                   <div key={topicName} className="bg-[#18181b] rounded-2xl border border-zinc-800 shadow-lg overflow-hidden transition-all duration-300">
-                    
+
 // //                     {/* 🔥 Module Header with "Add Question" Button */}
 // //                     <div className="bg-[#09090b] p-5 flex justify-between items-center transition-colors group">
-                      
+
 // //                       {/* Clickable Area for Accordion Expand/Collapse */}
 // //                       <div className="flex items-center gap-4 cursor-pointer flex-1" onClick={() => toggleTopic(topicName)}>
 // //                         <span className="flex items-center justify-center bg-zinc-800 text-zinc-400 font-mono text-xl w-8 h-8 rounded-lg border border-zinc-700">
@@ -146,7 +146,7 @@
 // //                         </span>
 // //                         <h3 className="text-xl font-bold text-blue-400 select-none group-hover:text-blue-300 transition-colors">{topicName}</h3>
 // //                       </div>
-                      
+
 // //                       {/* Non-clickable Action Area */}
 // //                       <div className="flex items-center gap-3">
 // //                         <span className="text-xs font-bold text-zinc-400 bg-zinc-900 px-4 py-2.5 rounded-lg border border-zinc-800">
@@ -161,7 +161,7 @@
 // //                         </button>
 // //                       </div>
 // //                     </div>
-                    
+
 // //                     {/* Expanded Questions */}
 // //                     {isExpanded && (
 // //                       <div className="p-6 space-y-4 border-t border-zinc-800 bg-[#18181b]">
@@ -177,7 +177,7 @@
 // //                               </div>
 // //                               <h4 className="font-semibold text-zinc-100 text-[15px]">{q.questionText}</h4>
 // //                             </div>
-                            
+
 // //                             <div className="flex gap-2">
 // //                               <button onClick={() => handleEdit(q)} className="text-yellow-500 hover:text-white font-bold text-xs px-5 py-2.5 bg-yellow-950/30 hover:bg-yellow-600 rounded-lg border border-yellow-900/50 transition-colors">
 // //                                 Edit
@@ -201,7 +201,7 @@
 // //       {/* ================= VIEW 2: DYNAMIC FORM AREA ================= */}
 // //       {activeView === 'form' && (
 // //         <div className="bg-[#18181b] p-8 md:p-10 border border-zinc-800 rounded-2xl shadow-2xl animate-fade-in">
-          
+
 // //           <div className="flex justify-between items-center mb-8 pb-6 border-b border-zinc-800">
 // //             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
 // //               {formMode === 'new_module' && '🚀 Deploy Brand New Module'}
@@ -215,7 +215,7 @@
 
 // //           <form onSubmit={handleSubmit}>
 // //             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              
+
 // //               {/* 🔥 MAGIC: Round/Topic Name Input */}
 // //               <div>
 // //                 <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2.5">
@@ -285,13 +285,13 @@
 
 // // export default function Questions() {
 // //   const [questions, setQuestions] = useState([]);
-  
+
 // //   // View State: 'bank' (List of questions) ya 'form' (Add/Edit screen)
 // //   const [activeView, setActiveView] = useState('bank');
-  
+
 // //   // Form Mode: 'new_module', 'add_to_module', 'edit_question'
 // //   const [formMode, setFormMode] = useState('new_module');
-  
+
 // //   const [formData, setFormData] = useState({ title: '', section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
 // //   const [editId, setEditId] = useState(null);
 // //   const [expandedTopics, setExpandedTopics] = useState({});
@@ -363,14 +363,14 @@
 // //     e.preventDefault();
 // //     try {
 // //       const payload = { ...formData, tags: formData.tags.split(',').map(t => t.trim()) };
-      
+
 // //       if (editId) {
 // //         await API.put(`/questions/${editId}`, payload);
 // //       } else {
 // //         await API.post('/questions', payload);
 // //         setExpandedTopics(prev => ({ ...prev, [formData.title]: true }));
 // //       }
-      
+
 // //       fetchQuestions();
 // //       setActiveView('bank'); 
 // //       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -399,7 +399,7 @@
 
 // //   return (
 // //     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 pb-20">
-      
+
 // //       {/* 🔥 GLOBAL ADMIN HEADER */}
 // //       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 shadow-sm">
 // //         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
@@ -421,7 +421,7 @@
 // //         {/* ================= VIEW 1: QUESTION BANK (MAIN SCREEN) ================= */}
 // //         {activeView === 'bank' && (
 // //           <div className="animate-fade-in">
-            
+
 // //             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 pb-6 border-b border-slate-200 dark:border-slate-800 gap-4">
 // //               <h2 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-4">
 // //                 📚 Question Bank
@@ -448,16 +448,16 @@
 
 // //                   return (
 // //                     <div key={topicName} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md overflow-hidden transition-all duration-300">
-                      
+
 // //                       <div className="bg-slate-50 dark:bg-slate-800/40 p-5 flex justify-between items-center transition-colors group border-b border-transparent dark:border-transparent">
-                        
+
 // //                         <div className="flex items-center gap-4 cursor-pointer flex-1" onClick={() => toggleTopic(topicName)}>
 // //                           <span className="flex items-center justify-center bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono text-xl w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
 // //                             {isExpanded ? '−' : '+'}
 // //                           </span>
 // //                           <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 select-none group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{topicName}</h3>
 // //                         </div>
-                        
+
 // //                         <div className="flex items-center gap-3">
 // //                           <span className="text-xs font-bold text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
 // //                             {topicQuestions.length} Qs
@@ -470,7 +470,7 @@
 // //                           </button>
 // //                         </div>
 // //                       </div>
-                      
+
 // //                       {isExpanded && (
 // //                         <div className="p-6 space-y-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
 // //                           {topicQuestions.map((q, index) => (
@@ -485,7 +485,7 @@
 // //                                 </div>
 // //                                 <h4 className="font-semibold text-slate-800 dark:text-slate-200 text-[15px]">{q.questionText}</h4>
 // //                               </div>
-                              
+
 // //                               <div className="flex gap-2 w-full md:w-auto">
 // //                                 <button onClick={() => handleEdit(q)} className="flex-1 md:flex-none text-amber-700 dark:text-amber-400 hover:text-white font-bold text-xs px-5 py-2.5 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-500 dark:hover:bg-amber-600 rounded-lg border border-amber-200 dark:border-amber-900/50 transition-colors shadow-sm">
 // //                                   Edit
@@ -509,7 +509,7 @@
 // //         {/* ================= VIEW 2: DYNAMIC FORM AREA ================= */}
 // //         {activeView === 'form' && (
 // //           <div className="bg-white dark:bg-slate-900 p-8 md:p-10 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl animate-fade-in">
-            
+
 // //             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-6 border-b border-slate-200 dark:border-slate-800 gap-4">
 // //               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
 // //                 {formMode === 'new_module' && '🚀 Deploy Brand New Module'}
@@ -523,7 +523,7 @@
 
 // //             <form onSubmit={handleSubmit}>
 // //               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                
+
 // //                 {/* Round/Topic Name Input */}
 // //                 <div>
 // //                   <label className="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2.5">
@@ -594,13 +594,13 @@
 
 // export default function Questions() {
 //   const [questions, setQuestions] = useState([]);
-  
+
 //   // View State: 'bank' (List of questions) ya 'form' (Add/Edit screen)
 //   const [activeView, setActiveView] = useState('bank');
-  
+
 //   // Form Mode: 'new_module', 'add_to_module', 'edit_question'
 //   const [formMode, setFormMode] = useState('new_module');
-  
+
 //   const [formData, setFormData] = useState({ title: '', section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
 //   const [editId, setEditId] = useState(null);
 //   const [expandedTopics, setExpandedTopics] = useState({});
@@ -672,14 +672,14 @@
 //     e.preventDefault();
 //     try {
 //       const payload = { ...formData, tags: formData.tags.split(',').map(t => t.trim()) };
-      
+
 //       if (editId) {
 //         await API.put(`/questions/${editId}`, payload);
 //       } else {
 //         await API.post('/questions', payload);
 //         setExpandedTopics(prev => ({ ...prev, [formData.title]: true }));
 //       }
-      
+
 //       fetchQuestions();
 //       setActiveView('bank'); 
 //       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -708,7 +708,7 @@
 
 //   return (
 //     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-10 transition-colors duration-300 font-sans">
-      
+
 //       {/* 🔥 TOP HEADER */}
 //       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
 //         <div>
@@ -731,7 +731,7 @@
 //       {/* ================= VIEW 1: QUESTION BANK ================= */}
 //       {activeView === 'bank' && (
 //         <div className="animate-fade-in">
-          
+
 //           {/* Dashboard Stats Cards (Like your image) */}
 //           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
 //             <div className="bg-emerald-800 text-white p-6 rounded-3xl shadow-sm">
@@ -763,7 +763,7 @@
 
 //                 return (
 //                   <div key={topicName} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-300">
-                    
+
 //                     <div className="p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" onClick={() => toggleTopic(topicName)}>
 //                       <div className="flex items-center gap-4">
 //                         <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${isExpanded ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
@@ -774,7 +774,7 @@
 //                           <p className="text-xs text-slate-500 font-medium">{topicQuestions.length} Items Inside</p>
 //                         </div>
 //                       </div>
-                      
+
 //                       <button 
 //                         onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topicName); }}
 //                         className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-400 px-4 py-2 rounded-full text-xs font-bold transition-all shadow-sm flex items-center gap-1"
@@ -782,7 +782,7 @@
 //                         + Add Element
 //                       </button>
 //                     </div>
-                    
+
 //                     {isExpanded && (
 //                       <div className="p-6 bg-slate-50 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800 space-y-3">
 //                         {topicQuestions.map((q, index) => (
@@ -797,7 +797,7 @@
 //                               </div>
 //                               <h4 className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{q.questionText}</h4>
 //                             </div>
-                            
+
 //                             <div className="flex gap-2">
 //                               <button onClick={() => handleEdit(q)} className="text-amber-600 bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40 px-4 py-2 rounded-xl text-xs font-bold transition-colors">
 //                                 Edit
@@ -821,7 +821,7 @@
 //       {/* ================= VIEW 2: DYNAMIC FORM ================= */}
 //       {activeView === 'form' && (
 //         <div className="bg-white dark:bg-slate-900 p-8 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm animate-fade-in max-w-4xl">
-          
+
 //           <div className="flex justify-between items-center mb-8 pb-6 border-b border-slate-100 dark:border-slate-800">
 //             <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
 //               {formMode === 'new_module' && 'Deploy New Module'}
@@ -898,13 +898,13 @@
 
 // export default function Questions() {
 //   const [questions, setQuestions] = useState([]);
-  
+
 //   // View State: 'bank' (List of questions) ya 'form' (Add/Edit screen)
 //   const [activeView, setActiveView] = useState('bank');
-  
+
 //   // Form Mode: 'new_module', 'add_to_module', 'edit_question'
 //   const [formMode, setFormMode] = useState('new_module');
-  
+
 //   const [formData, setFormData] = useState({ title: '', section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
 //   const [editId, setEditId] = useState(null);
 //   const [expandedTopics, setExpandedTopics] = useState({});
@@ -965,7 +965,7 @@
 //     e.preventDefault();
 //     try {
 //       const payload = { ...formData, tags: formData.tags.split(',').map(t => t.trim()) };
-      
+
 //       if (editId) {
 //         await API.put(`/questions/${editId}`, payload);
 //       } else {
@@ -973,7 +973,7 @@
 //         // Ensure that module is expanded so admin can see the newly added question
 //         setExpandedTopics(prev => ({ ...prev, [formData.title]: true }));
 //       }
-      
+
 //       fetchQuestions();
 //       setActiveView('bank'); 
 //       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1006,7 +1006,7 @@
 //       {/* ================= VIEW 1: QUESTION BANK (MAIN SCREEN) ================= */}
 //       {activeView === 'bank' && (
 //         <div className="animate-fade-in space-y-5">
-          
+
 //           {/* 🔥 MASTER HEADER (Compact, with terminologies and counters, no glows) */}
 //           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-gray-100 gap-4">
 //             <div>
@@ -1038,17 +1038,17 @@
 
 //                 return (
 //                   <div key={topicName} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden transition-all duration-300">
-                    
+
 //                     {/* 🔥 Compact Module Header */}
 //                     <div className="bg-gray-50 p-4 flex justify-between items-center transition-colors group">
-                      
+
 //                       <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => toggleTopic(topicName)}>
 //                         <span className="flex items-center justify-center bg-white text-gray-500 font-mono text-xl w-8 h-8 rounded-lg border border-gray-200 shadow-sm">
 //                           {isExpanded ? '−' : '+'}
 //                         </span>
 //                         <h3 className="text-lg font-bold text-gray-950 select-none group-hover:text-emerald-700 transition-colors leading-tight">{topicName}</h3>
 //                       </div>
-                      
+
 //                       <div className="flex items-center gap-3">
 //                         <span className="text-xs font-bold text-gray-600 bg-white px-3 py-1.5 rounded-md border border-gray-100 shadow-sm">
 //                           {topicQuestions.length} Elements
@@ -1061,7 +1061,7 @@
 //                         </button>
 //                       </div>
 //                     </div>
-                    
+
 //                     {/* Expanded Questions */}
 //                     {isExpanded && (
 //                       <div className="p-4 space-y-3 border-t border-gray-100 bg-white ">
@@ -1077,7 +1077,7 @@
 //                               </div>
 //                               <h4 className="font-semibold text-gray-900 text-sm leading-snug">{q.questionText}</h4>
 //                             </div>
-                            
+
 //                             <div className="flex gap-2 group-hover:opacity-100 transition-opacity opacity-0 md:opacity-100">
 //                               <button onClick={() => handleEdit(q)} className="text-yellow-700 hover:text-white font-bold text-xs px-3 py-1.5 bg-yellow-50 hover:bg-yellow-500 rounded-lg border border-yellow-100 transition-colors">
 //                                 Edit
@@ -1101,7 +1101,7 @@
 //       {/* ================= VIEW 2: DYNAMIC FORM AREA (Compact Toolbox feel) ================= */}
 //       {activeView === 'form' && (
 //         <div className="bg-white p-6 md:p-8 border border-gray-100 rounded-3xl shadow-lg animate-fade-in max-w-4xl selection:bg-teal-100">
-          
+
 //           <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-100 selection:">
 //             <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-950">
 //               {formMode === 'new_module' && '🚀 Deploy New Module Element'}
@@ -1115,7 +1115,7 @@
 
 //           <form onSubmit={handleSubmit}>
 //             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8 selection:bg-teal-100 selection:selection:">
-              
+
 //               <div>
 //                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1 select-none">
 //                   Round / Topic Name
@@ -1336,7 +1336,7 @@
 //                <h2 className="text-2xl font-black text-slate-900">{editId ? 'Edit Element' : 'Deploy New Element'}</h2>
 //                <button onClick={cancelForm} className="text-slate-400 font-bold text-sm hover:text-red-500 transition-colors">Cancel & Back</button>
 //             </div>
-            
+
 //             <form onSubmit={handleSubmit} className="space-y-4">
 //               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //                 <div className="space-y-1">
@@ -1387,247 +1387,267 @@ import { useState, useEffect } from 'react';
 import API from '../utils/api';
 
 export default function Questions() {
-  const [questions, setQuestions] = useState([]);
-  const [activeView, setActiveView] = useState('bank'); 
-  const [formMode, setFormMode] = useState('new_module');
-  const [formData, setFormData] = useState({ title: '', section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
-  const [editId, setEditId] = useState(null);
-  const [expandedTopics, setExpandedTopics] = useState({});
+    const [questions, setQuestions] = useState([]);
+    const [activeView, setActiveView] = useState('bank');
+    const [formMode, setFormMode] = useState('new_module');
+    const [formData, setFormData] = useState({ title: '', section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
+    const [editId, setEditId] = useState(null);
+    const [expandedTopics, setExpandedTopics] = useState({});
 
-  useEffect(() => {
-    document.documentElement.classList.remove('dark');
-  }, []);
+    useEffect(() => {
+        document.documentElement.classList.remove('dark');
+    }, []);
 
-  const fetchQuestions = async () => {
-    try {
-      const { data } = await API.get('/questions');
-      setQuestions(data);
-    } catch (error) { console.error(error); }
-  };
-
-  useEffect(() => { fetchQuestions(); }, []);
-
-//   const openNewModuleForm = () => {
-//   setFormData(prev => ({ ...prev, title: '', section: 'Theory', questionText: '', solutionMarkdown: '' }));
-//   setFormMode('new_module');
-//   setEditId(null);
-//   setActiveView('form');
-// };
-
-const openNewModuleForm = () => {
-  // prev use karne se Tags reset nahi honge
-  setFormData(prev => ({ ...prev, title: '', section: 'Theory', questionText: '', solutionMarkdown: '' }));
-  setFormMode('new_module');
-  setEditId(null);
-  setActiveView('form');
-};
-
-  const openAddToModuleForm = (moduleName) => {
-    setFormData({ title: moduleName, section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
-    setFormMode('add_to_module');
-    setEditId(null);
-    setActiveView('form');
-  };
-
-  const handleEdit = (q) => {
-    setFormData({
-      title: q.title,
-      section: q.section || 'Theory',
-      tags: q.tags.join(', '), 
-      questionText: q.questionText,
-      solutionMarkdown: q.solutionMarkdown
-    });
-    setFormMode('edit_question');
-    setEditId(q._id);
-    setActiveView('form');
-  };
-
-  const cancelForm = () => {
-    setActiveView('bank');
-    setEditId(null);
-    setFormData({ title: '', section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const payload = { ...formData, tags: formData.tags.split(',').map(t => t.trim()) };
-      if (editId) {
-        await API.put(`/questions/${editId}`, payload);
-      } else {
-        await API.post('/questions', payload);
-      }
-      fetchQuestions();
-      setActiveView('bank');
-    } catch (error) { alert('Error saving question'); }
-
-    // Success hone ke baad (setActiveView('bank') ke baad)
-// Success ke baad Title aur Tags ko bacha kar rakho
-setFormData(prev => ({ ...prev, questionText: '', solutionMarkdown: '' }));
-  };
-
-  const handleDelete = async (id) => {
-    if(window.confirm('Are you sure you want to delete this?')) {
+    const fetchQuestions = async () => {
         try {
-            await API.delete(`/questions/${id}`);
+            const { data } = await API.get('/questions');
+            setQuestions(data);
+        } catch (error) { console.error(error); }
+    };
+
+    useEffect(() => { fetchQuestions(); }, []);
+
+    //   const openNewModuleForm = () => {
+    //   setFormData(prev => ({ ...prev, title: '', section: 'Theory', questionText: '', solutionMarkdown: '' }));
+    //   setFormMode('new_module');
+    //   setEditId(null);
+    //   setActiveView('form');
+    // };
+
+    const openNewModuleForm = () => {
+        // prev use karne se Tags reset nahi honge
+        setFormData(prev => ({ ...prev, title: '', section: 'Theory', questionText: '', solutionMarkdown: '' }));
+        setFormMode('new_module');
+        setEditId(null);
+        setActiveView('form');
+    };
+
+    const openAddToModuleForm = (moduleName) => {
+        setFormData({ title: moduleName, section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
+        setFormMode('add_to_module');
+        setEditId(null);
+        setActiveView('form');
+    };
+
+    const handleEdit = (q) => {
+        setFormData({
+            title: q.title,
+            section: q.section || 'Theory',
+            tags: q.tags.join(', '),
+            questionText: q.questionText,
+            solutionMarkdown: q.solutionMarkdown
+        });
+        setFormMode('edit_question');
+        setEditId(q._id);
+        setActiveView('form');
+    };
+
+    const cancelForm = () => {
+        setActiveView('bank');
+        setEditId(null);
+        setFormData({ title: '', section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const payload = { ...formData, tags: formData.tags.split(',').map(t => t.trim()) };
+            if (editId) {
+                await API.put(`/questions/${editId}`, payload);
+            } else {
+                await API.post('/questions', payload);
+            }
             fetchQuestions();
-        } catch (err) { alert("Delete failed"); }
-    }
-  };
+            setActiveView('bank');
+        } catch (error) { alert('Error saving question'); }
 
-  const toggleTopic = (topicName) => {
-    setExpandedTopics(prev => ({ ...prev, [topicName]: !prev[topicName] }));
-  };
+        // Success hone ke baad (setActiveView('bank') ke baad)
+        // Success ke baad Title aur Tags ko bacha kar rakho
+        setFormData(prev => ({ ...prev, questionText: '', solutionMarkdown: '' }));
+    };
 
-  const groupedQuestions = questions.reduce((acc, q) => {
-    const topic = q.title || 'Uncategorized';
-    if (!acc[topic]) acc[topic] = [];
-    acc[topic].push(q);
-    return acc;
-  }, {});
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this?')) {
+            try {
+                await API.delete(`/questions/${id}`);
+                fetchQuestions();
+            } catch (err) { alert("Delete failed"); }
+        }
+    };
 
-  return (
-    <div className="min-h-screen bg-[#FDFDFD] font-sans text-[#1A2533] flex flex-col pt-24 lg:pt-0">
-      {activeView === 'bank' ? (
-        <div className="p-6 md:p-8 h-full overflow-y-auto">
-          {/* Header Section */}
-          <div className="flex justify-between items-center mb-8 pb-4 border-b border-[#EAEAEA]">
-            <h1 className="text-3xl font-black flex items-center gap-4 text-[#1A2533]">
-              Question Bank 
-              <span className="bg-[#E5F1F0] text-[#00A896] text-xs px-4 py-1.5 rounded-full shadow-sm font-bold mt-1">{questions.length} Items</span>
-            </h1>
-            <button onClick={openNewModuleForm} className="bg-[#00A896] hover:bg-[#009686] text-white px-6 py-3 rounded-2xl font-black text-sm shadow-md shadow-[#00A896]/20 transition-all active:scale-95 flex items-center gap-2">
-              <span className="text-lg leading-none">+</span> Deploy Module
-            </button>
-          </div>
+    const toggleTopic = (topicName) => {
+        setExpandedTopics(prev => ({ ...prev, [topicName]: !prev[topicName] }));
+    };
 
-          {/* Module List */}
-          <div className="space-y-4 max-w-6xl">
-            {Object.entries(groupedQuestions).map(([topic, qs]) => (
-              <div key={topic} className="bg-white border border-[#EAEAEA] rounded-[2rem] shadow-soft overflow-hidden transition-all hover:border-[#00A896]/40 hover:shadow-md">
-                
-                {/* Topic Header */}
-                <div className="p-4 md:p-5 flex justify-between items-center cursor-pointer bg-[#F9F9F9] hover:bg-white transition-colors" onClick={() => toggleTopic(topic)}>
-                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-xl transition-all duration-300 ${expandedTopics[topic] ? 'bg-[#00A896] text-white shadow-md shadow-[#00A896]/20 rotate-180' : 'bg-white text-[#1A2533] border border-[#EAEAEA]'}`}>
-                      {expandedTopics[topic] ? '−' : '+'}
+    const groupedQuestions = questions.reduce((acc, q) => {
+        const topic = q.title || 'Uncategorized';
+        if (!acc[topic]) acc[topic] = [];
+        acc[topic].push(q);
+        return acc;
+    }, {});
+
+    return (
+        <div className="min-h-screen bg-[#FDFDFD] font-sans text-[#1A2533] flex flex-col pt-24 lg:pt-0">
+            {activeView === 'bank' ? (
+                <div className="p-6 md:p-8 h-full overflow-y-auto">
+                    {/* Header Section */}
+                    {/* Header Section */}
+                    <div className="flex flex-col gap-4 mb-8 pb-4 border-b border-[#EAEAEA]">
+                        {/* Line 1: Title Only */}
+                        <h1 className="text-2xl font-black text-[#1A2533]">Question Bank</h1>
+
+                        {/* Line 2: Items and Deploy Button side-by-side */}
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="bg-[#E5F1F0] text-[#00A896] text-[10px] px-3 py-2 rounded-xl shadow-sm font-bold whitespace-nowrap">
+                                {questions.length} Items
+                            </div>
+                            <button onClick={openNewModuleForm} className="flex-1 bg-[#00A896] text-white px-4 py-2.5 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 active:scale-95 transition-all">
+                                <span className="text-base">+</span> Deploy Module
+                            </button>
+                        </div>
+
+                        {/* Line 3: Quick Add Question (Only for Mobile) */}
+                        <button
+                            onClick={openNewModuleForm}
+                            className="sm:hidden w-full border-2 border-dashed border-[#00A896] text-[#00A896] py-2.5 rounded-xl font-black text-xs flex items-center justify-center gap-2 hover:bg-[#00A896]/5 transition-all"
+                        >
+                            + Add New Question
+                        </button>
                     </div>
-                    <h3 className="text-xl font-black text-[#1A2533]">{topic}</h3>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-xs font-bold text-[#888888] bg-white px-4 py-2 rounded-full border border-[#EAEAEA] hidden sm:block">{qs.length} Elements</span>
-                    <button onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }} className="bg-[#1A2533] hover:bg-[#2A3543] text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 hidden sm:block">
-                      + Add Q
-                    </button>
-                  </div>
-                </div>
 
-                {/* Questions List (Expanded View) */}
-                <div className={`transition-all duration-500 ease-in-out ${expandedTopics[topic] ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
-                  <div className="p-5 space-y-3 bg-white border-t border-[#EAEAEA]">
-                    {qs.map((q, i) => (
-                      <div key={q._id} className="p-5 bg-[#F9F9F9] rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center border border-transparent hover:border-[#EAEAEA] hover:bg-white hover:shadow-sm transition-all group gap-4">
-                        <div className="flex-1">
-                          <div className="flex flex-wrap items-center gap-2 mb-2">
-                            <span className="text-[10px] font-black text-[#888888] bg-white border border-[#EAEAEA] px-2 py-0.5 rounded shadow-sm">Q{i+1}</span>
-                            <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-sm ${q.section === 'Practical' ? 'bg-[#EBF5FF] text-[#0A84FF]' : 'bg-[#E5F1F0] text-[#00A896]'}`}>
-                              {q.section}
-                            </span>
-                            <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wider">{q.tags.join(', ')}</span>
-                          </div>
-                          <p className="text-[15px] font-bold text-[#1A2533] leading-snug">{q.questionText}</p>
+                    {/* Module List */}
+                    <div className="space-y-4 max-w-6xl">
+                        {Object.entries(groupedQuestions).map(([topic, qs]) => (
+                            <div key={topic} className="bg-white border border-[#EAEAEA] rounded-[2rem] shadow-soft overflow-hidden transition-all hover:border-[#00A896]/40 hover:shadow-md">
+
+                                {/* Topic Header */}
+                                {/* Topic Header */}
+                                <div className="p-4 flex justify-between items-center cursor-pointer bg-[#F9F9F9]" onClick={() => toggleTopic(topic)}>
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        {/* Smaller Fixed Circle for Mobile */}
+                                        <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center font-black text-sm transition-all duration-300 ${expandedTopics[topic] ? 'bg-[#00A896] text-white rotate-180' : 'bg-white text-[#1A2533] border border-[#EAEAEA]'}`}>
+                                            {expandedTopics[topic] ? '−' : '+'}
+                                        </div>
+                                        <h3 className="text-sm font-black text-[#1A2533] truncate leading-tight">{topic}</h3>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <span className="hidden sm:block text-[10px] font-bold text-[#888888]">{qs.length} Elements</span>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }}
+                                            className="hidden sm:block bg-[#1A2533] text-white px-4 py-1.5 rounded-lg text-[10px] font-bold shadow-sm"
+                                        >
+                                            + Add Q
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Questions List (Expanded View) */}
+                                <div className={`transition-all duration-500 ease-in-out ${expandedTopics[topic] ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
+                                    <div className="p-5 space-y-3 bg-white border-t border-[#EAEAEA]">
+                                        {qs.map((q, i) => (
+                                            <div key={q._id} className="p-5 bg-[#F9F9F9] rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center border border-transparent hover:border-[#EAEAEA] hover:bg-white hover:shadow-sm transition-all group gap-4">
+                                                <div className="flex-1">
+                                                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                                                        <span className="text-[10px] font-black text-[#888888] bg-white border border-[#EAEAEA] px-2 py-0.5 rounded shadow-sm">Q{i + 1}</span>
+                                                        <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-sm ${q.section === 'Practical' ? 'bg-[#EBF5FF] text-[#0A84FF]' : 'bg-[#E5F1F0] text-[#00A896]'}`}>
+                                                            {q.section}
+                                                        </span>
+                                                        <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wider">{q.tags.join(', ')}</span>
+                                                    </div>
+                                                    <p className="text-[15px] font-bold text-[#1A2533] leading-snug">{q.questionText}</p>
+                                                </div>
+
+                                                {/* Action Buttons */}
+                                                <div className="flex gap-2 shrink-0 self-end mt-2 md:mt-0">
+                                                    <button onClick={() => handleEdit(q)} className="w-8 h-8 rounded-lg bg-white text-[#00A896] flex items-center justify-center shadow-sm border border-[#EAEAEA] active:bg-[#00A896] active:text-white">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                                    </button>
+                                                    <button onClick={() => handleDelete(q._id)} className="w-8 h-8 rounded-lg bg-white text-[#FF3B30] flex items-center justify-center shadow-sm border border-[#EAEAEA] active:bg-[#FF3B30] active:text-white">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {/* Add button for Mobile inside expanded view */}
+                                        <button onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }} className="w-full sm:hidden bg-[#FDFDFD] border border-dashed border-[#EAEAEA] text-[#1A2533] px-5 py-3 rounded-xl text-xs font-bold hover:border-[#00A896] hover:text-[#00A896] transition-all">
+                                            + Add New Question
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ) : (
+
+                /* 🔥 COMPACT FORM VIEW 🔥 */
+                <div className="h-full flex flex-col justify-center items-center p-4 bg-[#E5F1F0]/30 relative">
+
+                    {/* Subtle background element */}
+                    <div className="absolute top-10 right-10 w-96 h-96 bg-[#00A896]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div className="w-full max-w-5xl bg-white p-8 md:p-10 rounded-[3rem] border border-[#EAEAEA] shadow-2xl shadow-[#1A2533]/5 relative z-10">
+                        <div className="flex justify-between items-center mb-8 border-b border-[#EAEAEA] pb-5">
+                            <h2 className="text-3xl font-black text-[#1A2533]">
+                                {editId ? 'Edit Element' : 'Deploy New Element'}
+                            </h2>
+                            <button onClick={cancelForm} className="text-[#888888] font-bold text-sm hover:text-[#1A2533] transition-colors bg-[#F9F9F9] px-4 py-2 rounded-xl border border-[#EAEAEA]">
+                                ✕ Cancel
+                            </button>
                         </div>
-                        
-                        {/* Action Buttons */}
-                        <div className="flex gap-2 w-full md:w-auto justify-end">
-                          <button onClick={() => handleEdit(q)} className="w-10 h-10 rounded-xl bg-white text-[#00A896] flex items-center justify-center shadow-sm border border-[#EAEAEA] hover:bg-[#00A896] hover:text-white transition-colors">
-                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                          </button>
-                          <button onClick={() => handleDelete(q._id)} className="w-10 h-10 rounded-xl bg-white text-[#FF3B30] flex items-center justify-center shadow-sm border border-[#EAEAEA] hover:bg-[#FF3B30] hover:text-white transition-colors">
-                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                    {/* Add button for Mobile inside expanded view */}
-                    <button onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }} className="w-full sm:hidden bg-[#FDFDFD] border border-dashed border-[#EAEAEA] text-[#1A2533] px-5 py-3 rounded-xl text-xs font-bold hover:border-[#00A896] hover:text-[#00A896] transition-all">
-                      + Add New Question
-                    </button>
-                  </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            {/* Row 1: Name, Category, Tags */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Round Name</label>
+                                    <input type="text" placeholder="Topic Name" required disabled={formMode === 'add_to_module'} value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                        className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white text-sm font-bold text-[#1A2533] disabled:opacity-60 transition-all shadow-sm" />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Category</label>
+                                    <select
+                                        value={formData.section}
+                                        onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                                        className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none text-sm font-bold text-[#1A2533] cursor-pointer focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm"
+                                    >
+                                        <option value="Theory">Theory Section</option>
+                                        <option value="Practical">Practical Section</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Tags (Comma separated)</label>
+                                    <input type="text" placeholder="e.g. JS, Core, Advanced" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })}
+                                        className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white text-sm font-bold text-[#1A2533] transition-all shadow-sm" />
+                                </div>
+                            </div>
+
+                            {/* Row 2: Question Text */}
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Question Details</label>
+                                <textarea placeholder="Enter the exact question text..." required rows="2" value={formData.questionText} onChange={e => setFormData({ ...formData, questionText: e.target.value })}
+                                    className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none resize-none text-base font-medium text-[#1A2533] focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm" />
+                            </div>
+
+                            {/* Row 3: Solution/Logic */}
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-wider text-[#00A896] ml-1 flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 bg-[#00A896] rounded-full"></span> Expected Logic / Solution (Markdown supported)
+                                </label>
+                                <textarea placeholder="Keywords or code logic for the AI engine to evaluate..." required rows="4" value={formData.solutionMarkdown} onChange={e => setFormData({ ...formData, solutionMarkdown: e.target.value })}
+                                    className="w-full p-4 bg-[#1A2533] text-[#E5F1F0] rounded-2xl border-none outline-none font-mono text-sm resize-none focus:ring-2 focus:ring-[#00A896] transition-all shadow-inner placeholder-[#888888]" />
+                            </div>
+
+                            {/* Action Button */}
+                            <button type="submit" className="w-full py-4 mt-4 bg-[#00A896] hover:bg-[#009686] text-white rounded-2xl font-black text-base shadow-lg shadow-[#00A896]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                                {editId ? 'Execute Update' : 'Push to Database'}
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path></svg>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-              </div>
-            ))}
-          </div>
+            )}
         </div>
-      ) : (
-        
-        /* 🔥 COMPACT FORM VIEW 🔥 */
-        <div className="h-full flex flex-col justify-center items-center p-4 bg-[#E5F1F0]/30 relative">
-          
-          {/* Subtle background element */}
-          <div className="absolute top-10 right-10 w-96 h-96 bg-[#00A896]/10 rounded-full blur-3xl pointer-events-none"></div>
-
-          <div className="w-full max-w-5xl bg-white p-8 md:p-10 rounded-[3rem] border border-[#EAEAEA] shadow-2xl shadow-[#1A2533]/5 relative z-10">
-            <div className="flex justify-between items-center mb-8 border-b border-[#EAEAEA] pb-5">
-               <h2 className="text-3xl font-black text-[#1A2533]">
-                 {editId ? 'Edit Element' : 'Deploy New Element'}
-               </h2>
-               <button onClick={cancelForm} className="text-[#888888] font-bold text-sm hover:text-[#1A2533] transition-colors bg-[#F9F9F9] px-4 py-2 rounded-xl border border-[#EAEAEA]">
-                 ✕ Cancel
-               </button>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Row 1: Name, Category, Tags */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Round Name</label>
-                  <input type="text" placeholder="Topic Name" required disabled={formMode === 'add_to_module'} value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} 
-                    className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white text-sm font-bold text-[#1A2533] disabled:opacity-60 transition-all shadow-sm" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Category</label>
-                  <select 
-  value={formData.section} 
-  onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-  className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none text-sm font-bold text-[#1A2533] cursor-pointer focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm"
->
-                    <option value="Theory">Theory Section</option>
-                    <option value="Practical">Practical Section</option>
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Tags (Comma separated)</label>
-                  <input type="text" placeholder="e.g. JS, Core, Advanced" value={formData.tags} onChange={e => setFormData({...formData, tags: e.target.value})} 
-                    className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white text-sm font-bold text-[#1A2533] transition-all shadow-sm" />
-                </div>
-              </div>
-
-              {/* Row 2: Question Text */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Question Details</label>
-                <textarea placeholder="Enter the exact question text..." required rows="2" value={formData.questionText} onChange={e => setFormData({...formData, questionText: e.target.value})} 
-                  className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none resize-none text-base font-medium text-[#1A2533] focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm" />
-              </div>
-
-              {/* Row 3: Solution/Logic */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-wider text-[#00A896] ml-1 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-[#00A896] rounded-full"></span> Expected Logic / Solution (Markdown supported)
-                </label>
-                <textarea placeholder="Keywords or code logic for the AI engine to evaluate..." required rows="4" value={formData.solutionMarkdown} onChange={e => setFormData({...formData, solutionMarkdown: e.target.value})} 
-                  className="w-full p-4 bg-[#1A2533] text-[#E5F1F0] rounded-2xl border-none outline-none font-mono text-sm resize-none focus:ring-2 focus:ring-[#00A896] transition-all shadow-inner placeholder-[#888888]" />
-              </div>
-
-              {/* Action Button */}
-              <button type="submit" className="w-full py-4 mt-4 bg-[#00A896] hover:bg-[#009686] text-white rounded-2xl font-black text-base shadow-lg shadow-[#00A896]/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                {editId ? 'Execute Update' : 'Push to Database'}
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path></svg>
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+    );
 }
