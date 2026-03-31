@@ -1407,7 +1407,15 @@ export default function Questions() {
 
   useEffect(() => { fetchQuestions(); }, []);
 
-  const openNewModuleForm = () => {
+//   const openNewModuleForm = () => {
+//   setFormData(prev => ({ ...prev, title: '', section: 'Theory', questionText: '', solutionMarkdown: '' }));
+//   setFormMode('new_module');
+//   setEditId(null);
+//   setActiveView('form');
+// };
+
+const openNewModuleForm = () => {
+  // prev use karne se Tags reset nahi honge
   setFormData(prev => ({ ...prev, title: '', section: 'Theory', questionText: '', solutionMarkdown: '' }));
   setFormMode('new_module');
   setEditId(null);
@@ -1454,6 +1462,7 @@ export default function Questions() {
     } catch (error) { alert('Error saving question'); }
 
     // Success hone ke baad (setActiveView('bank') ke baad)
+// Success ke baad Title aur Tags ko bacha kar rakho
 setFormData(prev => ({ ...prev, questionText: '', solutionMarkdown: '' }));
   };
 
@@ -1478,7 +1487,7 @@ setFormData(prev => ({ ...prev, questionText: '', solutionMarkdown: '' }));
   }, {});
 
   return (
-    <div className="h-screen bg-[#FDFDFD] font-sans text-[#1A2533] overflow-hidden flex flex-col pt-20 lg:pt-0">
+    <div className="min-h-screen bg-[#FDFDFD] font-sans text-[#1A2533] flex flex-col pt-24 lg:pt-0">
       {activeView === 'bank' ? (
         <div className="p-6 md:p-8 h-full overflow-y-auto">
           {/* Header Section */}
