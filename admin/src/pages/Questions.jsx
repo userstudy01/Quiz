@@ -1448,24 +1448,58 @@ export default function Questions() {
         setFormData({ title: '', section: 'Theory', tags: '', questionText: '', solutionMarkdown: '' });
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const payload = { ...formData, tags: formData.tags.split(',').map(t => t.trim()) };
+    //         if (editId) {
+    //             await API.put(`/questions/${editId}`, payload);
+    //         } else {
+    //             await API.post('/questions', payload);
+    //         }
+    //         fetchQuestions();
+    //         setActiveView('bank');
+    //     } catch (error) { alert('Error saving question'); }
+
+    //     // Success hone ke baad (setActiveView('bank') ke baad)
+    //     // Success ke baad Title aur Tags ko bacha kar rakho
+    //     setFormData(prev => ({ ...prev, questionText: '', solutionMarkdown: '' }));
+    // };
+
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const payload = { ...formData, tags: formData.tags.split(',').map(t => t.trim()) };
-            if (editId) {
-                await API.put(`/questions/${editId}`, payload);
-            } else {
-                await API.post('/questions', payload);
-            }
-            fetchQuestions();
-            setActiveView('bank');
-        } catch (error) { alert('Error saving question'); }
+    e.preventDefault();
+    try {
+        // 🔥 Ensure section is explicitly taken from state, fallback to 'Theory' if somehow missing
+        const payload = { 
+            ...formData, 
+            section: formData.section || 'Theory', 
+            tags: formData.tags.split(',').map(t => t.trim()) 
+        };
+        
+        console.log("Sending to API:", payload); // Yahan check karein ki 'Practical' ja raha hai ya nahi
 
-        // Success hone ke baad (setActiveView('bank') ke baad)
-        // Success ke baad Title aur Tags ko bacha kar rakho
-        setFormData(prev => ({ ...prev, questionText: '', solutionMarkdown: '' }));
-    };
-
+        if (editId) {
+            await API.put(`/questions/${editId}`, payload);
+        } else {
+            await API.post('/questions', payload);
+        }
+        
+        fetchQuestions();
+        setActiveView('bank');
+        
+        // Success ke baad Title, Tags, aur *Section* ko bacha kar rakho
+        setFormData(prev => ({ 
+            ...prev, 
+            questionText: '', 
+            solutionMarkdown: '' 
+            // Section intentionally not cleared so it stays 'Practical' if they want to add another
+        }));
+        
+    } catch (error) { 
+        alert('Error saving question'); 
+        console.error(error);
+    }
+};
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this?')) {
             try {
@@ -1643,16 +1677,21 @@ export default function Questions() {
                                     </select>
                                 </div> */}
                                 <div className="space-y-1.5">
-    <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Category</label>
-    <select
-        value={formData.section}
-        onChange={(e) => setFormData(prev => ({ ...prev, section: e.target.value }))}
-        className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none text-sm font-bold text-[#1A2533] cursor-pointer focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm"
-    >
-        <option value="Theory">Theory Section</option>
-        <option value="Practical">Practical Section</option>
-    </select>
-</div>
+                                    <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Category</label>
+                                    <select
+                                        name="section" // Name attribute zaroor add karein
+                                        value={formData.section || 'Theory'} // Default fallback
+                                        onChange={(e) => {
+                                            const newValue = e.target.value;
+                                            console.log("Selected Section:", newValue); // Debugging ke liye check karein
+                                            setFormData(prev => ({ ...prev, section: newValue }));
+                                        }}
+                                        className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none text-sm font-bold text-[#1A2533] cursor-pointer focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm"
+                                    >
+                                        <option value="Theory">Theory Section</option>
+                                        <option value="Practical">Practical Section</option>
+                                    </select>
+                                </div>
                                 <div className="space-y-1.5">
                                     <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Tags (Comma separated)</label>
                                     <input type="text" placeholder="e.g. JS, Core, Advanced" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })}
