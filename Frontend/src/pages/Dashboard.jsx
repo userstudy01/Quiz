@@ -72,10 +72,27 @@ export default function Dashboard() {
   }, [selectedRound, user]);
 
   const syncData = async (newAnswers, newScores, newAttempts, newHistory) => {
+    const currentScores = newScores || scores;
+
+    // 🔥 THIS IS THE FIX: Calculate totals so the Admin Panel can see them!
+    let totalTheory = 0;
+    let totalPractical = 0;
+
+    roundQuestions.forEach(q => {
+      const evalData = currentScores[q._id];
+      if (evalData && evalData.isLocked) {
+        if (q.section === 'Theory' || !q.section) {
+          totalTheory += evalData.points;
+        } else if (q.section === 'Practical') {
+          totalPractical += evalData.points;
+        }
+      }
+    });
+
     const localKey = `quiz_draft_${user?.id}_${selectedRound}`;
     localStorage.setItem(localKey, JSON.stringify({
       userAnswers: newAnswers || userAnswers,
-      scores: newScores || scores,
+      scores: currentScores,
       attempts: newAttempts || attempts,
       history: newHistory || history
     }));
@@ -84,7 +101,12 @@ export default function Dashboard() {
       await saveProgress({
         moduleName: selectedRound,
         userAnswers: newAnswers || userAnswers,
-        scores: newScores || scores,
+        // 🔥 Send both the detailed scores AND the calculated totals
+        scores: {
+          ...currentScores,
+          theory: totalTheory,
+          practical: totalPractical
+        },
         attempts: newAttempts || attempts,
         history: newHistory || history
       });
@@ -170,9 +192,30 @@ export default function Dashboard() {
   };
 
   const handleTextChange = (qId, text) => {
-    const newAnswers = { ...userAnswers, [qId]: text };
-    setUserAnswers(newAnswers);
-    syncData(newAnswers, scores, attempts, history);
+    if (viewingHistoryIndex !== null) {
+      // 🟢 CHANGE: Editing Past Sessions
+      const updatedHistory = [...history];
+      const targetSession = { ...updatedHistory[viewingHistoryIndex] };
+
+      // 1. Update the text
+      targetSession.savedAnswers = { ...targetSession.savedAnswers, [qId]: text };
+
+      // 2. IMPORTANT: Remove the "Locked" status and points so the red/green border goes away
+      const updatedScores = { ...targetSession.savedScores };
+      delete updatedScores[qId]; // This removes the "Failed" or "Passed" state while typing
+      targetSession.savedScores = updatedScores;
+
+      updatedHistory[viewingHistoryIndex] = targetSession;
+      setHistory(updatedHistory);
+
+      // Sync to DB
+      syncData(userAnswers, scores, attempts, updatedHistory);
+    } else {
+      // Standard logic for current session
+      const newAnswers = { ...userAnswers, [qId]: text };
+      setUserAnswers(newAnswers);
+      syncData(newAnswers, scores, attempts, history);
+    }
   };
 
   const handleNewAttempt = () => {
@@ -221,6 +264,92 @@ export default function Dashboard() {
 
   const availableRounds = [...new Set([...questions].reverse().map(q => q.title))];
 
+  const evaluateHistoryQuestion = (qId, expectedAns, userAns) => {
+    const expectedWithoutCode = expectedAns.replace(/```[\s\S]*?```/g, '');
+    const expectedWords = [...new Set(expectedWithoutCode.toLowerCase().match(/\b[a-z]{3,}\b/g) || [])];
+    const userWords = [...new Set(userAns.toLowerCase().match(/\b[a-z]{3,}\b/g) || [])];
+
+    let matchCount = 0;
+    expectedWords.forEach(w => { if (userWords.includes(w)) matchCount++; });
+    const matchPercentage = matchCount / (expectedWords.length || 1);
+
+    let resultObj = { points: 0, status: 'Failed', isLocked: true };
+
+    if (matchPercentage >= 0.40) {
+      resultObj = { points: 1, status: 'Passed', isLocked: true };
+      triggerConfetti(); // 🎊 This gives you the celebration effect in history mode!
+    } else if (matchPercentage >= 0.20) {
+      resultObj = { points: 0.5, status: 'Partial', isLocked: true };
+    }
+
+    const updatedHistory = [...history];
+    updatedHistory[viewingHistoryIndex].savedScores[qId] = resultObj;
+
+    // Update total XP for the sidebar
+    const newTotal = Object.values(updatedHistory[viewingHistoryIndex].savedScores)
+      .reduce((acc, curr) => acc + (curr.points || 0), 0);
+    updatedHistory[viewingHistoryIndex].score = newTotal;
+
+    setHistory(updatedHistory);
+    syncData(userAnswers, scores, attempts, updatedHistory);
+  };
+
+  // 🔥 FINAL BULLETPROOF SAVE FUNCTION
+  const handleForceSubmit = async () => {
+    // 1. Calculate totals
+    let totalTheory = 0;
+    let totalPractical = 0;
+
+    roundQuestions.forEach(q => {
+      const evalData = scores[q._id];
+      if (evalData && evalData.isLocked) {
+        if (q.section === 'Theory' || !q.section) {
+          totalTheory += evalData.points;
+        } else if (q.section === 'Practical') {
+          totalPractical += evalData.points;
+        }
+      }
+    });
+
+    const payload = {
+      moduleName: selectedRound,
+      userAnswers: userAnswers,
+      scores: {
+        ...scores,
+        theory: totalTheory,
+        practical: totalPractical
+      },
+      attempts: attempts,
+      history: history
+    };
+
+    try {
+      // 2. Grab the Token
+      const storedUser = JSON.parse(localStorage.getItem('user')) || {};
+      const token = user?.token || storedUser?.token || ""; 
+
+      // 3. Fetch using Vite Proxy (No localhost needed, avoids CORS blocks)
+     const response = await fetch('http://localhost:5000/api/evaluations/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify(payload)
+      });
+
+      // 4. Handle Response
+      if (response.ok) {
+        alert("✅ 100% Saved! Check the Admin Panel now.");
+      } else {
+        const errData = await response.json();
+        alert(`❌ Backend Rejected it: ${errData.message}`);
+      }
+      
+    } catch (err) {
+      alert("❌ Critical Error: Please Refresh your browser page (F5) and try again.");
+    }
+  };
   // ================= VIEW 1: MODULE SELECTION =================
   if (!selectedRound) {
     return (
@@ -345,8 +474,8 @@ export default function Dashboard() {
                   key={i}
                   onClick={() => setViewingHistoryIndex(i)}
                   className={`p-4 rounded-xl shadow-sm cursor-pointer transition-all border ${viewingHistoryIndex === i
-                      ? 'bg-[#2A3543] border-[#00A896] shadow-md ring-1 ring-[#00A896]'
-                      : 'bg-[#2A3543] border-[#2A3543] hover:border-[#00A896]'
+                    ? 'bg-[#2A3543] border-[#00A896] shadow-md ring-1 ring-[#00A896]'
+                    : 'bg-[#2A3543] border-[#2A3543] hover:border-[#00A896]'
                     }`}
                 >
                   <div className="flex justify-between items-center mb-2">
@@ -422,8 +551,8 @@ export default function Dashboard() {
                 key={section}
                 onClick={() => setActiveTab(section)}
                 className={`pb-3 text-sm font-black uppercase tracking-widest transition-colors border-b-[3px] outline-none ${activeTab === section
-                    ? 'border-[#00A896] text-[#1A2533]'
-                    : 'border-transparent text-[#888888] hover:text-[#1A2533]'
+                  ? 'border-[#00A896] text-[#1A2533]'
+                  : 'border-transparent text-[#888888] hover:text-[#1A2533]'
                   }`}
               >
                 {section}
@@ -458,9 +587,9 @@ export default function Dashboard() {
 
                       {evaluation && (
                         <span className={`text-[11px] font-bold px-4 py-1.5 rounded-full shadow-sm ${evaluation.points === 1 ? 'bg-[#30D158] text-white' :
-                            evaluation.points === 0.5 ? 'bg-[#0A84FF] text-white' :
-                              evaluation.isLocked ? 'bg-[#FF3B30] text-white' :
-                                'bg-orange-100 text-orange-800'
+                          evaluation.points === 0.5 ? 'bg-[#0A84FF] text-white' :
+                            evaluation.isLocked ? 'bg-[#FF3B30] text-white' :
+                              'bg-orange-100 text-orange-800'
                           }`}>
                           {evaluation.status}
                         </span>
@@ -475,13 +604,30 @@ export default function Dashboard() {
                       placeholder={isHistoryMode ? "No answer provided in this session." : isLocked ? "Response archived." : "Share your understanding here..."}
                       value={activeAnswers[q._id] || ""}
                       onChange={(e) => handleTextChange(q._id, e.target.value)}
-                      disabled={isLocked}
+                      disabled={!isHistoryMode && isLocked}
                     ></textarea>
 
-                    {!isLocked && !isHistoryMode && (
-                      <button onClick={() => autoEvaluate(q._id, q.solutionMarkdown, activeAnswers[q._id])}
-                        className="w-full py-3.5 rounded-xl text-sm font-black tracking-wide transition-all active:scale-[0.98] bg-[#00A896] hover:bg-[#009686] text-white shadow-md">
-                        {currentAttempts > 0 ? `Try Again (${MAX_ATTEMPTS - currentAttempts} left)` : 'Check Understanding'}
+                    {/* 🟢 NEW BUTTON LOGIC: Shows in live sessions OR when editing history */}
+                    {(!isLocked || (isHistoryMode && !activeScores[q._id])) && (
+                      <button
+                        onClick={() => {
+                          if (isHistoryMode) {
+                            // Run evaluation specifically for the archived session
+                            evaluateHistoryQuestion(q._id, q.solutionMarkdown, activeAnswers[q._id]);
+                          } else {
+                            // Run standard evaluation for live session
+                            autoEvaluate(q._id, q.solutionMarkdown, activeAnswers[q._id]);
+                          }
+                        }}
+                        className="w-full py-3.5 rounded-xl text-sm font-black tracking-wide transition-all active:scale-[0.98] bg-[#00A896] hover:bg-[#009686] text-white shadow-md"
+                      >
+                        {/* Dynamic text: 'Re-verify' for history, 'Check' for live session */}
+                        {isHistoryMode
+                          ? 'Re-verify Answer'
+                          : currentAttempts > 0
+                            ? `Try Again (${MAX_ATTEMPTS - currentAttempts} left)`
+                            : 'Check Understanding'
+                        }
                       </button>
                     )}
 
@@ -559,6 +705,18 @@ export default function Dashboard() {
                 </button>
               );
             })}
+          </div>
+
+          <div className="flex justify-end mt-10 mb-20">
+            <button
+              onClick={handleForceSubmit}
+              className="bg-[#00A896] hover:bg-[#008c7d] text-white font-black py-4 px-10 rounded-2xl shadow-lg transition-all active:scale-95 flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+              </svg>
+              Submit to Database
+            </button>
           </div>
         </div>
       </aside>

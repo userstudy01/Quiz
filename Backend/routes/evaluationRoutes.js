@@ -3,24 +3,73 @@ const router = express.Router();
 const Evaluation = require('../models/Evaluation');
 const { protect } = require('../middleware/authMiddleware');
 
-// Get progress for a specific module
-// 🔥 ADD THIS NEW ROUTE: Get ALL candidates for Admin Dashboard
+// Get ALL candidates for Admin Dashboard
+// router.get('/admin/all', async (req, res) => {
+//   try {
+//     const allEvaluations = await Evaluation.find()
+//       .populate('candidateId', 'name email'); 
+
+//     // 🔥 CHANGE HERE: Changed 'eval' to 'evaluation'
+//     const formattedData = allEvaluations.map(evaluation => {
+//       // Safely extract the scores object
+//       const scores = evaluation.scores || {};
+      
+//       return {
+//         id: evaluation._id,
+//         // 🔥 CHANGE HERE: Update all these to 'evaluation' too
+//         name: evaluation.candidateId ? evaluation.candidateId.name : 'Unknown User',
+//         email: evaluation.candidateId ? evaluation.candidateId.email : 'N/A',
+//         practical: scores.practical || 0,
+//         theory: scores.theory || 0
+//       };
+//     });
+
+//     res.json(formattedData);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Error fetching admin data' });
+//   }
+// });
+
+// Get ALL candidates for Admin Dashboard
+// Get ALL candidates for Admin Dashboard
+// Get ALL candidates for Admin Dashboard
 router.get('/admin/all', async (req, res) => {
   try {
-    // 1. Fetch all evaluations and populate the User's name and email
+    // 🔥 THE FIX: Added .lean() to convert Mongoose data into pure, readable JSON
     const allEvaluations = await Evaluation.find()
-      .populate('candidateId', 'name email'); 
+      .populate('candidateId', 'name email')
+      .lean(); 
 
-    // 2. Format the data perfectly for your React table
-    const formattedData = allEvaluations.map(eval => {
+    const formattedData = allEvaluations.map(evaluation => {
+      let scores = evaluation.scores || {};
+      let answers = evaluation.userAnswers || {};
+
+      // 🔥 THE FIX: If their current test is blank, grab their most recent Past Session!
+      if (Object.keys(answers).length === 0 && evaluation.history && evaluation.history.length > 0) {
+        const latestArchive = evaluation.history[0];
+        scores = latestArchive.savedScores || {};
+        answers = latestArchive.savedAnswers || {};
+      }
+      
+      // Safety calculation for totals
+      let theoryTotal = scores.theory || 0;
+      let practicalTotal = scores.practical || 0;
+
+      if (theoryTotal === 0 && practicalTotal === 0) {
+         Object.values(scores).forEach(item => {
+            if (item && item.points) theoryTotal += item.points; 
+         });
+      }
+
       return {
-        id: eval._id,
-        // Grab name/email from the populated User model (fallback to 'Unknown' if deleted)
-        name: eval.candidateId ? eval.candidateId.name : 'Unknown User',
-        email: eval.candidateId ? eval.candidateId.email : 'N/A',
-        // Extract practical/theory from your scores object (default to 0)
-        practical: eval.scores?.practical || 0,
-        theory: eval.scores?.theory || 0
+        id: evaluation._id,
+        name: evaluation.candidateId ? evaluation.candidateId.name : 'Unknown User',
+        email: evaluation.candidateId ? evaluation.candidateId.email : 'N/A',
+        practical: practicalTotal,
+        theory: theoryTotal,
+        rawScores: scores,
+        userAnswers: answers
       };
     });
 
