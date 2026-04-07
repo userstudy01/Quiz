@@ -1497,22 +1497,32 @@ export default function Questions() {
                         <h1 className="text-2xl font-black text-[#1A2533]">Question Bank</h1>
 
                         {/* Line 2: Items and Deploy Button side-by-side */}
-                        <div className="flex items-center justify-between gap-3">
-                            <div className="bg-[#E5F1F0] text-[#00A896] text-[10px] px-3 py-2 rounded-xl shadow-sm font-bold whitespace-nowrap">
-                                {questions.length} Items
+                        <div className="flex flex-col gap-3">
+                            {/* Row: Items and Deploy Module */}
+                            <div className="flex items-center justify-between gap-3">
+                                <div className="bg-[#E5F1F0] text-[#00A896] text-[10px] px-3 py-2 rounded-xl shadow-sm font-bold whitespace-nowrap">
+                                    {questions.length} Items
+                                </div>
+                                <button onClick={openNewModuleForm} className="flex-1 bg-[#00A896] text-white px-4 py-2.5 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 active:scale-95 transition-all">
+                                    <span className="text-base">+</span> Deploy Module
+                                </button>
                             </div>
-                            <button onClick={openNewModuleForm} className="flex-1 bg-[#00A896] text-white px-4 py-2.5 rounded-xl font-black text-xs shadow-md flex items-center justify-center gap-2 active:scale-95 transition-all">
-                                <span className="text-base">+</span> Deploy Module
+
+                            {/* 🔥 FIXED: Ab ye button hamesha Deploy Module ke niche dikhega (Mobile View) */}
+                            {/* 🔥 sm:hidden ensures it ONLY shows on Mobile, not on Desktop */}
+                            <button
+                                onClick={() => {
+                                    const firstTopic = Object.keys(groupedQuestions)[0];
+                                    if (firstTopic) openAddToModuleForm(firstTopic);
+                                    else openNewModuleForm();
+                                }}
+                                className="sm:hidden w-full bg-white border-2 border-dashed border-[#00A896] text-[#00A896] py-3 rounded-2xl font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all mt-2"
+                            >
+                                <span className="text-lg">+</span> Add New Question
                             </button>
                         </div>
 
-                        {/* Line 3: Quick Add Question (Only for Mobile) */}
-                        <button
-                            onClick={openNewModuleForm}
-                            className="sm:hidden w-full border-2 border-dashed border-[#00A896] text-[#00A896] py-2.5 rounded-xl font-black text-xs flex items-center justify-center gap-2 hover:bg-[#00A896]/5 transition-all"
-                        >
-                            + Add New Question
-                        </button>
+
                     </div>
 
                     {/* Module List */}
@@ -1570,9 +1580,25 @@ export default function Questions() {
                                             </div>
                                         ))}
                                         {/* Add button for Mobile inside expanded view */}
-                                        <button onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }} className="w-full sm:hidden bg-[#FDFDFD] border border-dashed border-[#EAEAEA] text-[#1A2533] px-5 py-3 rounded-xl text-xs font-bold hover:border-[#00A896] hover:text-[#00A896] transition-all">
-                                            + Add New Question
-                                        </button>
+                                        <div className={`transition-all duration-500 ease-in-out ${expandedTopics[topic] ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
+                                            <div className="p-5 space-y-3 bg-white border-t border-[#EAEAEA]">
+
+                                                {/* 🔥 NEW: Button ab List ke sabse UPER aayega */}
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); openAddToModuleForm(topic); }}
+                                                    className="w-full bg-[#E5F1F0] border-2 border-dashed border-[#00A896] text-[#00A896] py-3 rounded-2xl font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all mb-4"
+                                                >
+                                                    <span className="text-lg">+</span> Add New Question to this Round
+                                                </button>
+
+                                                {/* Baaki ki list yahan se shuru hogi */}
+                                                {qs.map((q, i) => (
+                                                    <div key={q._id} className="p-5 bg-[#F9F9F9] rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center border border-transparent hover:border-[#EAEAEA] hover:bg-white hover:shadow-sm transition-all group gap-4">
+                                                        {/* ... (Aapka existing question list code) ... */}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1605,7 +1631,7 @@ export default function Questions() {
                                     <input type="text" placeholder="Topic Name" required disabled={formMode === 'add_to_module'} value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })}
                                         className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white text-sm font-bold text-[#1A2533] disabled:opacity-60 transition-all shadow-sm" />
                                 </div>
-                                <div className="space-y-1.5">
+                                {/* <div className="space-y-1.5">
                                     <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Category</label>
                                     <select
                                         value={formData.section}
@@ -1615,7 +1641,18 @@ export default function Questions() {
                                         <option value="Theory">Theory Section</option>
                                         <option value="Practical">Practical Section</option>
                                     </select>
-                                </div>
+                                </div> */}
+                                <div className="space-y-1.5">
+    <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Category</label>
+    <select
+        value={formData.section}
+        onChange={(e) => setFormData(prev => ({ ...prev, section: e.target.value }))}
+        className="w-full p-4 bg-[#F9F9F9] rounded-2xl border border-[#EAEAEA] outline-none text-sm font-bold text-[#1A2533] cursor-pointer focus:ring-2 focus:ring-[#00A896]/50 focus:bg-white transition-all shadow-sm"
+    >
+        <option value="Theory">Theory Section</option>
+        <option value="Practical">Practical Section</option>
+    </select>
+</div>
                                 <div className="space-y-1.5">
                                     <label className="text-[10px] font-black uppercase tracking-wider text-[#1A2533] ml-1">Tags (Comma separated)</label>
                                     <input type="text" placeholder="e.g. JS, Core, Advanced" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })}
