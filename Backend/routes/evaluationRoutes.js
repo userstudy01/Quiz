@@ -4,17 +4,30 @@ const Evaluation = require('../models/Evaluation');
 const { protect } = require('../middleware/authMiddleware');
 
 // Get progress for a specific module
-router.get('/:moduleName', protect, async (req, res) => {
+// 🔥 ADD THIS NEW ROUTE: Get ALL candidates for Admin Dashboard
+router.get('/admin/all', async (req, res) => {
   try {
-    let evalData = await Evaluation.findOne({ candidateId: req.user.id, moduleName: req.params.moduleName });
-    if (!evalData) {
-      // Naya user hai toh khali object bhej do
-      evalData = new Evaluation({ candidateId: req.user.id, moduleName: req.params.moduleName });
-      await evalData.save();
-    }
-    res.json(evalData);
+    // 1. Fetch all evaluations and populate the User's name and email
+    const allEvaluations = await Evaluation.find()
+      .populate('candidateId', 'name email'); 
+
+    // 2. Format the data perfectly for your React table
+    const formattedData = allEvaluations.map(eval => {
+      return {
+        id: eval._id,
+        // Grab name/email from the populated User model (fallback to 'Unknown' if deleted)
+        name: eval.candidateId ? eval.candidateId.name : 'Unknown User',
+        email: eval.candidateId ? eval.candidateId.email : 'N/A',
+        // Extract practical/theory from your scores object (default to 0)
+        practical: eval.scores?.practical || 0,
+        theory: eval.scores?.theory || 0
+      };
+    });
+
+    res.json(formattedData);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching progress' });
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching admin data' });
   }
 });
 
