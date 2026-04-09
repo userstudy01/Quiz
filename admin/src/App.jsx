@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import Questions from './pages/Questions'; 
 import Candidates from './pages/Candidates';
 import Login from './pages/Login'; // 🔥 Ye naya page import kiya hai
+import CandidateReview from './pages/CandidateReview';
 
 // Layout component banaya taaki Login page par Sidebar na dikhe
 function AppLayout() {
@@ -21,6 +22,7 @@ function AppLayout() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/questions" element={<Questions />} />
           <Route path="/candidates" element={<Candidates />} />
+          <Route path="/candidates/:id" element={<CandidateReview />} />
         </Routes>
       </main>
     </div>

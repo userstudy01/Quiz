@@ -5,7 +5,7 @@ const questionSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
   
   // YE NAYI LINE ADD KARO 👇
-  section: { type: String, enum: ['Theory', 'Practical'], default: 'Theory' },
+  section: { type: String, enum: ['Theory', 'Practical'] },
   
   tags: [{ type: String, required: true }],
   difficulty: { type: String, enum: ['Beginner', 'Intermediate', 'Advanced'], default: 'Intermediate' },

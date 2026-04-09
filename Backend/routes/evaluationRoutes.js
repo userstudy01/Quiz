@@ -95,4 +95,54 @@ router.post('/save', protect, async (req, res) => {
   }
 });
 
+
+// Get SINGLE candidate details for Admin Review Page
+// Get SINGLE candidate details for Admin Review Page
+router.get('/admin/candidate/:id', async (req, res) => {
+  console.log("🔥 HIT THE NEW ROUTE! Looking for ID:", req.params.id); // <--- DEBUG LOG
+  
+  try {
+    const candidateId = req.params.id;
+    
+    const evaluation = await Evaluation.findById(candidateId)
+      .populate('candidateId', 'name email')
+      .lean();
+
+    if (!evaluation) {
+      console.log("❌ Evaluation not found in database!"); // <--- DEBUG LOG
+      return res.status(404).json({ message: "Candidate evaluation not found" });
+    }
+
+    let scores = evaluation.scores || {};
+    let answers = evaluation.userAnswers || {};
+
+    if (Object.keys(answers).length === 0 && evaluation.history && evaluation.history.length > 0) {
+      const latestArchive = evaluation.history[0];
+      scores = latestArchive.savedScores || {};
+      answers = latestArchive.savedAnswers || {};
+    }
+
+    let theoryTotal = scores.theory || 0;
+    let practicalTotal = scores.practical || 0;
+
+    const formattedData = {
+      id: evaluation._id,
+      name: evaluation.candidateId ? evaluation.candidateId.name : 'Unknown User',
+      email: evaluation.candidateId ? evaluation.candidateId.email : 'N/A',
+      practicalCount: practicalTotal, 
+      theoryCount: theoryTotal,       
+      userAnswers: answers,
+      rawScores: scores,
+      overallTheoryReview: evaluation.overallTheoryReview || null,
+      overallPracticalReview: evaluation.overallPracticalReview || null
+    };
+
+    console.log("✅ Successfully found data, sending to frontend!"); // <--- DEBUG LOG
+    res.json(formattedData);
+  } catch (err) {
+    console.error("❌ Error fetching single candidate:", err);
+    res.status(500).json({ message: 'Error fetching candidate details' });
+  }
+});
+
 module.exports = router;

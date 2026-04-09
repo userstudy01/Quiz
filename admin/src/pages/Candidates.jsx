@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import API from '../utils/api'; 
+import { useNavigate } from 'react-router-dom';
+import API from '../utils/api';
 
 export default function Candidates() {
+  const navigate = useNavigate();
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [candidateData, setCandidateData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +28,7 @@ export default function Candidates() {
     }, 5000);
 
     return () => clearInterval(pollingInterval);
-  }, []); 
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-sans text-[#1A2533] p-6 md:p-8 lg:p-10 selection:bg-[#00A896]/10">
@@ -143,9 +145,10 @@ export default function Candidates() {
                       </td>
 
                       {/* 🔥 CHANGE 1: THIS IS NOW A CLICKABLE BUTTON */}
+                      {/* 🔥 CHANGE 1: THIS NAVIGATES TO THE NEW PAGE */}
                       <td className="py-4 px-6">
-                        <button 
-                          onClick={() => setSelectedCandidate(candidate)}
+                        <button
+                          onClick={() => navigate(`/candidates/${candidate.id || candidate._id}`)} // ✅ ADD THIS LINE
                           className={`px-3 py-1 text-[11px] font-black uppercase tracking-wide rounded-full border hover:opacity-80 transition-opacity cursor-pointer ${statusColor}`}
                         >
                           {statusText}
@@ -175,14 +178,14 @@ export default function Candidates() {
       {selectedCandidate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1A2533]/40 backdrop-blur-sm">
           <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-3xl max-h-[80vh] flex flex-col overflow-hidden animate-fade-in border border-[#EAEAEA]">
-            
+
             {/* Modal Header */}
             <div className="p-6 border-b border-[#EAEAEA] flex justify-between items-center bg-[#F9F9F9]">
               <div>
                 <h2 className="text-xl font-black text-[#1A2533]">{selectedCandidate.name}'s Details</h2>
                 <p className="text-xs text-[#888888] font-medium">{selectedCandidate.email}</p>
               </div>
-              <button 
+              <button
                 onClick={() => setSelectedCandidate(null)}
                 className="w-8 h-8 flex items-center justify-center bg-white border border-[#EAEAEA] rounded-full hover:bg-[#FDFDFD] text-[#1A2533] font-bold shadow-sm"
               >
@@ -200,7 +203,7 @@ export default function Candidates() {
                     // Safely grab the score details
                     const scoreDetail = selectedCandidate.rawScores ? selectedCandidate.rawScores[questionId] : null;
                     const points = scoreDetail?.points || 0;
-                    
+
                     return (
                       <div key={questionId} className="border border-[#EAEAEA] rounded-2xl p-5 bg-white shadow-sm hover:border-[#00A896] transition-colors">
                         <div className="flex justify-between items-start mb-4">
@@ -211,7 +214,7 @@ export default function Candidates() {
                             {points} Points
                           </span>
                         </div>
-                        
+
                         <div>
                           <h4 className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mb-2 flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#1A2533]"></span>

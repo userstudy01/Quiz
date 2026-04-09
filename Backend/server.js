@@ -20,6 +20,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/questions', require('./routes/questionRoutes'));
 app.use('/api/evaluations', require('./routes/evaluationRoutes')); 
 
+
 // Basic Health Check Route
 app.get('/', (req, res) => {
   res.send('API is running securely...');
