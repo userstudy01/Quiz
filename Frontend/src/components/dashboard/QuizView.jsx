@@ -194,7 +194,7 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
     setSelectedRound(null);
   };
 
-  const handleForceSubmit = async () => {
+ const handleForceSubmit = async () => {
     let tTheory = 0; let tPractical = 0;
     roundQuestions.forEach(q => {
       const evalData = scores[q._id];
@@ -205,17 +205,21 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
     });
 
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user')) || {};
-      const token = user?.token || storedUser?.token || ""; 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const response = await fetch(`${API_BASE_URL}/api/evaluations/save`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ moduleName: selectedRound, userAnswers, scores: { ...scores, theory: tTheory, practical: tPractical }, attempts, history })
+      // 🔥 FIX: We now use your saveProgress function from api.js!
+      // This automatically uses your Render link and attaches the token.
+      await saveProgress({ 
+        moduleName: selectedRound, 
+        userAnswers, 
+        scores: { ...scores, theory: tTheory, practical: tPractical }, 
+        attempts, 
+        history 
       });
-      if (response.ok) alert("✅ 100% Saved!");
-      else alert("❌ Failed to save.");
-    } catch (err) { alert("❌ Critical Error."); }
+      
+      alert("✅ 100% Saved!");
+    } catch (err) { 
+      console.error(err);
+      alert("❌ Failed to save. Check your backend connection."); 
+    }
   };
 
   const isHistoryMode = viewingHistoryIndex !== null;
