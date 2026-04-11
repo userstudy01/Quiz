@@ -39,7 +39,7 @@
 import axios from 'axios';
 
 // 🔥 LOCALHOST KO HATAKAR VERCEL WALA LINK DAAL DIYA HAI
-const API_URL = 'https://quiz-kappa-dusky.vercel.app/api/';
+export const API_URL = 'https://quiz-kappa-dusky.vercel.app/api/';
 
 // Request main JWT token bhejne ke liye helper
 const getAuthConfig = (thunkAPI) => {
