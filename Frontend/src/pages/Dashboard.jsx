@@ -31,10 +31,10 @@ export default function Dashboard() {
     getQuestions();
   }, []);
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
-    navigate('/login');
-  };
+ const handleLogout = () => {
+  dispatch(logoutUser()); // This clears Redux AND LocalStorage
+  navigate('/login');
+}
 
   if (isLoading) return <div className="min-h-screen flex items-center justify-center font-medium text-[#1A2533] bg-[#E5F1F0]">Preparing Environment...</div>;
 

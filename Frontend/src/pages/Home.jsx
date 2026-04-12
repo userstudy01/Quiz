@@ -18,10 +18,10 @@ export default function Home() {
   };
 
   // Logout Handler
-  const handleLogout = () => {
-    dispatch(logoutUser());
-    navigate('/');
-  };
+ const handleLogout = () => {
+  dispatch(logoutUser()); // This clears Redux AND LocalStorage
+  navigate('/login');
+}
 
   // Smooth scroll function
   const scrollToSection = (id) => {

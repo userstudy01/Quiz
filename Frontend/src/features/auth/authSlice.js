@@ -30,7 +30,12 @@ export const authSlice = createSlice({
     },
     logoutUser: (state) => {
       state.user = null;
+      state.isSuccess = false;
+      state.isError = false;
+      state.message = '';
       localStorage.removeItem('user');
+      // Force a page reload to clear ALL other redux slices memory
+      window.location.href = '/login'; 
     }
   },
 });

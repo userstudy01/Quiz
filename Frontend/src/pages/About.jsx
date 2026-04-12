@@ -7,10 +7,10 @@ export default function About() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
-    navigate('/');
-  };
+ const handleLogout = () => {
+  dispatch(logoutUser()); // This clears Redux AND LocalStorage
+  navigate('/login');
+}
 
   const actualName = user?.name || user?.user?.name;
   const actualEmail = user?.email || user?.user?.email;
