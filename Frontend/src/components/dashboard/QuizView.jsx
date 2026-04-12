@@ -3,6 +3,7 @@ import confetti from 'canvas-confetti';
 import { fetchProgress, saveProgress } from '../../features/api';
 import Sidebar from './Sidebar';
 import StatsPanel from './StatsPanel';
+import { API_URL } from '../../features/api';
 
 export default function QuizView({ user, questions, selectedRound, setSelectedRound }) {
   const [userAnswers, setUserAnswers] = useState({});
@@ -213,9 +214,13 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
     try {
       const storedUser = JSON.parse(localStorage.getItem('user')) || {};
       const token = user?.token || storedUser?.token || ""; 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      // const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+<<<<<<< HEAD
       const response = await fetch(`${API_BASE_URL}/api/save`, {
+=======
+      const response = await fetch(`${API_URL}evaluations/save`, {
+>>>>>>> f1dd8ba19ac8066c1048a1dabdcaa5a85207ec4d
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ moduleName: selectedRound, userAnswers, scores: { ...scores, theory: tTheory, practical: tPractical }, attempts, history })
