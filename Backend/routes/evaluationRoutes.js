@@ -3,6 +3,10 @@ const router = express.Router();
 const Evaluation = require('../models/Evaluation');
 const { protect } = require('../middleware/authMiddleware');
 
+
+// 1. Import the function from your controller
+const { getSingleCandidate } = require('../controllers/evaluationController'); // Make sure this path matches your folder structure!
+
 // Get ALL candidates for Admin Dashboard
 // router.get('/admin/all', async (req, res) => {
 //   try {
@@ -81,16 +85,55 @@ router.get('/admin/all', async (req, res) => {
 });
 
 // Save progress automatically
+// router.post('/save', protect, async (req, res) => {
+//   try {
+//     const { moduleName, userAnswers, scores, attempts, history } = req.body;
+//     let evalData = await Evaluation.findOneAndUpdate(
+//       { candidateId: req.user.id, moduleName },
+//       { userAnswers, scores, attempts, history },
+//       { new: true, upsert: true } // Agar nahi hai toh bana dega, hai toh update karega
+//     );
+//     res.json(evalData);
+//   } catch (err) {
+//     res.status(500).json({ message: 'Error saving progress' });
+//   }
+// });
+
+// Save progress automatically
 router.post('/save', protect, async (req, res) => {
   try {
     const { moduleName, userAnswers, scores, attempts, history } = req.body;
-    let evalData = await Evaluation.findOneAndUpdate(
-      { candidateId: req.user.id, moduleName },
-      { userAnswers, scores, attempts, history },
-      { new: true, upsert: true } // Agar nahi hai toh bana dega, hai toh update karega
-    );
+    
+    let evalData = await Evaluation.findOne({ candidateId: req.user.id, moduleName });
+
+    if (!evalData) {
+      // Create new if it doesn't exist
+      evalData = new Evaluation({
+        candidateId: req.user.id,
+        moduleName,
+        userAnswers,
+        scores,
+        attempts,
+        history
+      });
+    } else {
+      // Update existing
+      evalData.userAnswers = userAnswers;
+      evalData.scores = scores;
+      evalData.attempts = attempts;
+      evalData.history = history;
+
+      // 🔥 THIS IS THE EXACT FIX FOR MONGOOSE OBJECTS 🔥
+      evalData.markModified('userAnswers');
+      evalData.markModified('scores');
+      evalData.markModified('attempts');
+      evalData.markModified('history');
+    }
+
+    await evalData.save();
     res.json(evalData);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Error saving progress' });
   }
 });
