@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+
 const Evaluation = require('../models/Evaluation');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -7,6 +8,7 @@ const { protect } = require('../middleware/authMiddleware');
 // 1. Import the function from your controller
 const { getSingleCandidate } = require('../controllers/evaluationController'); // Make sure this path matches your folder structure!
 
+router.get('/:id', protect, getSingleCandidate);
 // Get ALL candidates for Admin Dashboard
 // router.get('/admin/all', async (req, res) => {
 //   try {

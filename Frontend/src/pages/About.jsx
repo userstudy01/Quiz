@@ -1,16 +1,32 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../features/auth/authSlice';
+import authService from '../features/auth/authService'; // <-- ADD THIS
+import axios from 'axios';
 
 export default function About() {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
- const handleLogout = () => {
-  dispatch(logoutUser()); // This clears Redux AND LocalStorage
-  navigate('/login');
-}
+//  const handleLogout = () => {
+//   dispatch(logoutUser()); // This clears Redux AND LocalStorage
+//   navigate('/login');
+// }
+
+const handleLogout = () => {
+    // 1. Clear LocalStorage
+    authService.logout();
+
+    // 2. Clear Redux
+    dispatch(logoutUser()); 
+
+    // 3. Delete old token from Axios
+    delete axios.defaults.headers.common['Authorization'];
+
+    // 4. Force a hard refresh to physically wipe browser memory
+    window.location.href = '/login';
+  }
 
   const actualName = user?.name || user?.user?.name;
   const actualEmail = user?.email || user?.user?.email;

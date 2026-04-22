@@ -17,7 +17,19 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
 
   useEffect(() => {
     if (!selectedRound || !user) return;
-    const localKey = `quiz_draft_${user.id}_${selectedRound}`;
+
+    // 🔥 FIX 1: Properly extract the nested ID
+    const actualUserId = user?.user?.id || user?.id || 'unknown';
+    const localKey = `quiz_draft_${actualUserId}_${selectedRound}`;
+    
+    // 🔥 FIX 2: DATA RESCUE
+    // Find the old data that was accidentally saved as 'undefined' and assign it to User 1
+    const oldBuggyKey = `quiz_draft_undefined_${selectedRound}`;
+    if (localStorage.getItem(oldBuggyKey) && !localStorage.getItem(localKey)) {
+      localStorage.setItem(localKey, localStorage.getItem(oldBuggyKey));
+      localStorage.removeItem(oldBuggyKey); // Delete it so User 2 never sees it again!
+    }
+
     const localData = localStorage.getItem(localKey);
     if (localData) {
       const parsed = JSON.parse(localData);
@@ -56,7 +68,10 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
       }
     });
 
-    const localKey = `quiz_draft_${user?.id}_${selectedRound}`;
+    // 🔥 FIX 3: Make sure we save using the correct ID
+    const actualUserId = user?.user?.id || user?.id || 'unknown';
+    const localKey = `quiz_draft_${actualUserId}_${selectedRound}`;
+    
     localStorage.setItem(localKey, JSON.stringify({
       userAnswers: newAnswers || userAnswers,
       scores: currentScores,
@@ -92,7 +107,6 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
         const nextId = currentTabQuestions[currentIndex + 1]._id;
         setTimeout(() => { document.getElementById(nextId)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 500);
       } else if (activeTab === 'Theory') {
-        // Switch to practical tab if theory is done
         setTimeout(() => { 
           setActiveTab('Practical'); 
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -200,6 +214,31 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
     }
   };
 
+  // const handleForceSubmit = async () => {
+  //   let tTheory = 0; let tPractical = 0;
+  //   roundQuestions.forEach(q => {
+  //     const evalData = scores[q._id];
+  //     if (evalData?.isLocked) {
+  //       if (q.section === 'Practical') tPractical += evalData.points;
+  //       else tTheory += evalData.points;
+  //     }
+  //   });
+
+  //   try {
+  //     const storedUser = JSON.parse(localStorage.getItem('user')) || {};
+  //     const token = user?.token || storedUser?.token || ""; 
+  //     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  //     const response = await fetch(`${API_BASE_URL}/api/save`, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+  //       body: JSON.stringify({ moduleName: selectedRound, userAnswers, scores: { ...scores, theory: tTheory, practical: tPractical }, attempts, history })
+  //     });
+  //     if (response.ok) alert("✅ 100% Saved!");
+  //     else alert("❌ Failed to save.");
+  //   } catch (err) { alert("❌ Critical Error."); }
+  // };
+
   const handleForceSubmit = async () => {
     let tTheory = 0; let tPractical = 0;
     roundQuestions.forEach(q => {
@@ -211,18 +250,21 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
     });
 
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user')) || {};
-      const token = user?.token || storedUser?.token || ""; 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-      const response = await fetch(`${API_BASE_URL}/api/save`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ moduleName: selectedRound, userAnswers, scores: { ...scores, theory: tTheory, practical: tPractical }, attempts, history })
+      // 🔥 THE FIX: Instead of a manual fetch to a broken URL, 
+      // we use your pre-built saveProgress function from api.js
+      await saveProgress({
+        moduleName: selectedRound,
+        userAnswers,
+        scores: { ...scores, theory: tTheory, practical: tPractical },
+        attempts,
+        history
       });
-      if (response.ok) alert("✅ 100% Saved!");
-      else alert("❌ Failed to save.");
-    } catch (err) { alert("❌ Critical Error."); }
+      
+      alert("Saved to Database succefully....!");
+    } catch (err) { 
+      console.error(err);
+      alert("❌ Failed to save."); 
+    }
   };
 
   const isHistoryMode = viewingHistoryIndex !== null;
@@ -251,8 +293,6 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#E5F1F0] text-[#1A2533] font-sans relative">
-      
-      {/* 1. The Separated Left Sidebar */}
       <Sidebar 
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
@@ -311,7 +351,6 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
         </div>
       </main>
 
-      {/* 2. The Separated Right Stats Panel */}
       <StatsPanel 
         isHistoryMode={isHistoryMode}
         activeTab={activeTab}

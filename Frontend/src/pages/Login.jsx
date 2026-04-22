@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../features/auth/authSlice';
 import authService from '../features/auth/authService';
+import axios from 'axios';
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -27,6 +28,10 @@ export default function Login() {
       
       // Redux aur LocalStorage main save karo
       dispatch(loginSuccess(data));
+
+      if (data && data.token) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+      }
       
       // Successfully logged in, chalo Dashboard par
       navigate('/');
