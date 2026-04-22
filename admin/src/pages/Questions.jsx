@@ -5,17 +5,18 @@ export default function Questions() {
   const [questions, setQuestions] = useState([]);
   const [activeView, setActiveView] = useState("bank");
   const [formMode, setFormMode] = useState("new_module");
+  
+  // 🔥 FIX 1: Set default section to "Theory" so it never saves as blank
   const [formData, setFormData] = useState({
     title: "",
-    section: "",
+    section: "Theory", 
     tags: "",
     questionText: "",
     solutionMarkdown: "",
   });
+  
   const [editId, setEditId] = useState(null);
   const [expandedTopics, setExpandedTopics] = useState({});
-  
-  // 🔥 NEW STATE: Tracks which Category Card is clicked
   const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export default function Questions() {
     setFormData((prev) => ({
       ...prev,
       title: "",
-      section: "",
+      section: "Theory", // 🔥 Reset explicitly to Theory
       questionText: "",
       solutionMarkdown: "",
     }));
@@ -49,14 +50,14 @@ export default function Questions() {
   };
 
   const openAddToModuleForm = (moduleName) => {
-    // 🔥 NEW FIX: Find an existing question in this module and copy its tags!
     const existingQuestion = questions.find((q) => q.title === moduleName);
     const existingTags = existingQuestion && existingQuestion.tags ? existingQuestion.tags.join(", ") : "";
 
     setFormData((prev) => ({
       ...prev,
       title: moduleName,
-      tags: existingTags, // 🔥 Tags are now pre-filled automatically!
+      tags: existingTags,
+      section: "Theory", // 🔥 Reset explicitly to Theory
       questionText: "",
       solutionMarkdown: "",
     }));
@@ -68,7 +69,7 @@ export default function Questions() {
   const handleEdit = (q) => {
     setFormData({
       title: q.title,
-      section: q.section,
+      section: q.section || "Theory", // 🔥 Fallback
       tags: q.tags.join(", "),
       questionText: q.questionText,
       solutionMarkdown: q.solutionMarkdown,
@@ -83,7 +84,7 @@ export default function Questions() {
     setEditId(null);
     setFormData({
       title: "",
-      section: "",
+      section: "Theory",
       tags: "",
       questionText: "",
       solutionMarkdown: "",
@@ -95,7 +96,7 @@ export default function Questions() {
     try {
       const payload = {
         ...formData,
-        section: formData.section,
+        section: formData.section || "Theory", // 🔥 Final safety check before saving
         tags: formData.tags
           ? formData.tags.split(",").map((t) => t.trim())
           : [],
@@ -186,7 +187,7 @@ export default function Questions() {
           </div>
 
           <div className="max-w-6xl">
-            {/* 🔥 VIEW 1: THE CARDS GRID (Shows when NO category is selected) */}
+            {/* VIEW 1: THE CARDS GRID */}
             {!activeCategory ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {Object.entries(groupedByCategory).map(([category, topics]) => {
@@ -210,9 +211,8 @@ export default function Questions() {
                 })}
               </div>
             ) : (
-              /* 🔥 VIEW 2: THE LIST OF MODULES (Shows when a category IS selected) */
+              /* VIEW 2: THE LIST OF MODULES */
               <div className="space-y-4 animate-fade-in">
-                {/* Back Button */}
                 <button 
                   onClick={() => setActiveCategory(null)}
                   className="flex items-center gap-2 text-sm font-bold text-[#888888] hover:text-[#1A2533] mb-6 transition-colors"
@@ -220,7 +220,6 @@ export default function Questions() {
                   <span>←</span> Back to Folders
                 </button>
 
-                {/* Section Header */}
                 <div className="flex items-center gap-4 mb-6">
                   <h2 className="text-xs font-black text-[#00A896] tracking-widest uppercase bg-[#E5F1F0] px-4 py-2 rounded-full border border-[#D9E9E8]">
                     {activeCategory} MODULES
@@ -228,7 +227,6 @@ export default function Questions() {
                   <div className="h-[1px] flex-1 bg-[#EAEAEA]"></div>
                 </div>
 
-                {/* Accordion List for the Selected Category */}
                 {Object.entries(groupedByCategory[activeCategory] || {}).map(([topic, qs]) => (
                   <div
                     key={topic}
@@ -279,7 +277,11 @@ export default function Questions() {
                           <span className="text-lg">+</span> Add New Question to this Round
                         </button>
 
-                        {qs.map((q, i) => (
+                        {qs.map((q, i) => {
+                          // 🔥 FIX 2: Fallback variable ensures it always shows Theory if data is missing
+                          const displaySection = q.section || "Theory"; 
+                          
+                          return (
                           <div
                             key={q._id}
                             className="p-5 bg-[#F9F9F9] rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center border border-transparent hover:border-[#EAEAEA] hover:bg-white hover:shadow-sm transition-all group gap-4"
@@ -289,11 +291,14 @@ export default function Questions() {
                                 <span className="text-[10px] font-black text-[#888888] bg-white border border-[#EAEAEA] px-2 py-0.5 rounded shadow-sm">
                                   Q{i + 1}
                                 </span>
+                                
+                                {/* 🔥 Uses the fallback displaySection variable here */}
                                 <span
-                                  className={`text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-sm ${q.section === "Practical" ? "bg-[#EBF5FF] text-[#0A84FF]" : "bg-[#E5F1F0] text-[#00A896]"}`}
+                                  className={`text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-sm ${displaySection === "Practical" ? "bg-[#EBF5FF] text-[#0A84FF]" : "bg-[#E5F1F0] text-[#00A896]"}`}
                                 >
-                                  {q.section}
+                                  {displaySection}
                                 </span>
+
                                 <span className="text-[10px] font-bold text-[#888888] uppercase tracking-wider">
                                   {q.tags.join(", ")}
                                 </span>
@@ -322,7 +327,7 @@ export default function Questions() {
                               </button>
                             </div>
                           </div>
-                        ))}
+                        )})}
                       </div>
                     </div>
                   </div>
