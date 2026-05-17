@@ -1,374 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// // Assuming you are using react-router-dom for navigation
-// import { useParams, useNavigate } from 'react-router-dom'; 
-// import API from '../utils/api';
-
-// export default function CandidateReview() {
-//   const { id } = useParams(); // Gets the candidate ID from the URL
-//   const navigate = useNavigate();
-  
-//   const [candidate, setCandidate] = useState(null);
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     // Fetch the specific candidate's full data
-//     const fetchCandidateData = async () => {
-//       try {
-//         // Replace this endpoint with your actual single-candidate fetch route
-//         const { data } = await API.get(`/evaluations/admin/candidate/${id}`);
-//         setCandidate(data);
-//       } catch (err) {
-//         setError(err.message || "Failed to fetch candidate details");
-//       } finally {
-//         setIsLoading(false);
-//       }
-//     };
-
-//     if (id) fetchCandidateData();
-//   }, [id]);
-
-//   if (isLoading) {
-//     return (
-//       <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
-//         <div className="w-12 h-12 border-4 border-[#EAEAEA] border-t-[#00A896] rounded-full animate-spin"></div>
-//       </div>
-//     );
-//   }
-
-//   if (error || !candidate) {
-//     return (
-//       <div className="min-h-screen bg-[#FDFDFD] p-10 flex flex-col items-center justify-center text-center">
-//         <div className="text-[#FF3B30] bg-[#FFF0F0] p-6 rounded-2xl border border-[#FFD9D9] mb-4">
-//           <h2 className="font-black text-xl mb-2">Oops! Something went wrong.</h2>
-//           <p>{error || "Candidate not found."}</p>
-//         </div>
-//         <button onClick={() => navigate(-1)} className="text-[#00A896] font-bold underline">Go Back</button>
-//       </div>
-//     );
-//   }
-
-//   // Calculate stats safely
-//   const attemptedCount = candidate.userAnswers ? Object.keys(candidate.userAnswers).length : 0;
-//   const theoryCount = candidate.theoryCount || 0; 
-//   const practicalCount = candidate.practicalCount || 0;
-
-//   return (
-//     <div className="min-h-screen bg-[#FDFDFD] font-sans text-[#1A2533] p-6 md:p-8 lg:p-10">
-      
-//       {/* Top Navigation & Header */}
-//       <div className="max-w-5xl mx-auto mb-10">
-//         <button 
-//           onClick={() => navigate(-1)}
-//           className="flex items-center gap-2 text-[#888888] hover:text-[#1A2533] font-bold text-sm mb-6 transition-colors"
-//         >
-//           <span>←</span> Back to Candidates
-//         </button>
-
-//         <div className="flex items-center gap-5 bg-white p-6 rounded-[2rem] border border-[#EAEAEA] shadow-sm">
-//           <div className="w-16 h-16 rounded-full bg-[#E5F1F0] text-[#00A896] flex items-center justify-center font-black text-2xl border border-[#D9E9E8] uppercase">
-//             {candidate.name ? candidate.name.charAt(0) : '?'}
-//           </div>
-//           <div>
-//             <h1 className="text-3xl font-black tracking-tight text-[#1A2533]">{candidate.name}'s Full Review</h1>
-//             <p className="text-[#888888] font-medium mt-1">{candidate.email}</p>
-//           </div>
-//         </div>
-//       </div>
-
-//       <div className="max-w-5xl mx-auto space-y-8">
-        
-//         {/* --- STATS CARDS --- */}
-//         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-//           <div className="bg-white p-6 rounded-3xl border border-[#EAEAEA] shadow-soft flex flex-col justify-center items-center text-center hover:border-[#1A2533] transition-colors">
-//             <span className="text-xs font-bold text-[#888888] uppercase tracking-widest mb-2">Total Attempted</span>
-//             <span className="text-5xl font-black text-[#1A2533]">{attemptedCount}</span>
-//           </div>
-          
-//           <div className="bg-[#F4FBFB] p-6 rounded-3xl border border-[#D9E9E8] shadow-soft flex flex-col justify-center items-center text-center hover:border-[#00A896] transition-colors">
-//             <span className="text-xs font-bold text-[#00A896] uppercase tracking-widest mb-2">Theory Questions</span>
-//             <span className="text-5xl font-black text-[#00A896]">{theoryCount}</span>
-//           </div>
-
-//           <div className="bg-[#F0FAF4] p-6 rounded-3xl border border-[#D0F0E0] shadow-soft flex flex-col justify-center items-center text-center hover:border-[#30D158] transition-colors">
-//             <span className="text-xs font-bold text-[#30D158] uppercase tracking-widest mb-2">Practical Questions</span>
-//             <span className="text-5xl font-black text-[#30D158]">{practicalCount}</span>
-//           </div>
-//         </div>
-
-//         {/* --- OVERALL REVIEWS --- */}
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//           <div className="bg-white rounded-3xl border border-[#EAEAEA] shadow-soft overflow-hidden flex flex-col">
-//             <div className="bg-[#F9F9F9] px-6 py-4 border-b border-[#EAEAEA]">
-//               <h3 className="text-sm font-black text-[#1A2533] uppercase tracking-widest flex items-center gap-2">
-//                 <span className="w-2 h-2 rounded-full bg-[#00A896]"></span> Theory Review
-//               </h3>
-//             </div>
-//             <div className="p-6 text-base text-[#555555] leading-relaxed flex-1">
-//               {candidate.overallTheoryReview || "No overall theory feedback has been written yet."}
-//             </div>
-//           </div>
-
-//           <div className="bg-white rounded-3xl border border-[#EAEAEA] shadow-soft overflow-hidden flex flex-col">
-//             <div className="bg-[#F9F9F9] px-6 py-4 border-b border-[#EAEAEA]">
-//               <h3 className="text-sm font-black text-[#1A2533] uppercase tracking-widest flex items-center gap-2">
-//                 <span className="w-2 h-2 rounded-full bg-[#30D158]"></span> Practical Review
-//               </h3>
-//             </div>
-//             <div className="p-6 text-base text-[#555555] leading-relaxed flex-1">
-//               {candidate.overallPracticalReview || "No overall practical feedback has been written yet."}
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* --- DETAILED ANSWERS --- */}
-//         <div className="bg-white rounded-3xl border border-[#EAEAEA] shadow-soft overflow-hidden">
-//           <div className="bg-[#1A2533] px-6 py-5">
-//              <h3 className="text-sm font-black text-white uppercase tracking-widest">Question Breakdown</h3>
-//           </div>
-          
-//           <div className="p-6 bg-[#FDFDFD]">
-//             {(!candidate.userAnswers || attemptedCount === 0) ? (
-//               <div className="text-center text-[#888888] py-10 font-medium">
-//                 This candidate hasn't submitted any answers yet.
-//               </div>
-//             ) : (
-//               <div className="space-y-6">
-//                 {Object.entries(candidate.userAnswers).map(([questionId, answer], index) => {
-//                   const scoreDetail = candidate.rawScores ? candidate.rawScores[questionId] : null;
-//                   const points = scoreDetail?.points || 0;
-                  
-//                   return (
-//                     <div key={questionId} className="border border-[#EAEAEA] rounded-2xl p-6 bg-white hover:shadow-md transition-shadow">
-//                       <div className="flex justify-between items-center mb-5 border-b border-[#EAEAEA] pb-4">
-//                         <span className="text-xs font-black bg-[#F4FBFB] text-[#00A896] px-4 py-1.5 rounded-full uppercase tracking-widest border border-[#D9E9E8]">
-//                           Question {index + 1}
-//                         </span>
-//                         <span className={`text-xs font-black uppercase px-3 py-1.5 rounded-full border ${points > 0 ? 'bg-[#F0FAF4] text-[#30D158] border-[#D0F0E0]' : 'bg-[#FFF0F0] text-[#FF3B30] border-[#FFD9D9]'}`}>
-//                           {points} Points
-//                         </span>
-//                       </div>
-                      
-//                       <div>
-//                         <h4 className="text-[11px] font-bold text-[#888888] uppercase tracking-widest mb-3">
-//                           Candidate's Answer:
-//                         </h4>
-//                         <div className="text-sm text-[#1A2533] bg-[#F9F9F9] p-5 rounded-xl border border-[#EAEAEA] whitespace-pre-wrap leading-relaxed font-mono">
-//                           {answer || <span className="text-[#888888] italic font-sans">No text provided.</span>}
-//                         </div>
-//                       </div>
-//                     </div>
-//                   );
-//                 })}
-//               </div>
-//             )}
-//           </div>
-//         </div>
-
-//       </div>
-//     </div>
-//   );
-// }
-
-// import React, { useState, useEffect } from 'react';
-// import { useParams, useNavigate } from 'react-router-dom'; 
-// import API from '../utils/api';
-
-// export default function CandidateReview() {
-//   const { id } = useParams(); 
-//   const navigate = useNavigate();
-  
-//   const [candidate, setCandidate] = useState(null);
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     const fetchCandidateData = async () => {
-//       try {
-//         const { data } = await API.get(`/evaluations/admin/candidate/${id}`);
-//         setCandidate(data);
-//       } catch (err) {
-//         setError(err.message || "Failed to fetch candidate details");
-//       } finally {
-//         setIsLoading(false);
-//       }
-//     };
-
-//     if (id) fetchCandidateData();
-//   }, [id]);
-
-//   // Loading State UI
-//   if (isLoading) {
-//     return (
-//       <div className="min-h-screen bg-[#F4F5F9] flex flex-col items-center justify-center">
-//         <div className="w-12 h-12 border-4 border-slate-200 border-t-purple-600 rounded-full animate-spin mb-4"></div>
-//         <p className="text-slate-500 font-semibold animate-pulse">Loading candidate profile...</p>
-//       </div>
-//     );
-//   }
-
-//   // Error State UI
-//   if (error || !candidate) {
-//     return (
-//       <div className="min-h-screen bg-[#F4F5F9] p-10 flex flex-col items-center justify-center text-center">
-//         <div className="text-rose-600 bg-rose-50 p-8 rounded-[24px] border border-rose-100 mb-6 max-w-md shadow-sm">
-//           <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm text-2xl">⚠️</div>
-//           <h2 className="font-extrabold text-xl mb-2 text-slate-800">Oops! Something went wrong.</h2>
-//           <p className="font-medium text-rose-500">{error || "Candidate not found."}</p>
-//         </div>
-//         <button 
-//           onClick={() => navigate(-1)} 
-//           className="bg-white border border-slate-200 text-slate-700 px-6 py-2.5 rounded-xl font-bold shadow-sm hover:text-purple-600 hover:border-purple-200 transition-all flex items-center gap-2"
-//         >
-//           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-//           Go Back
-//         </button>
-//       </div>
-//     );
-//   }
-
-//   // Calculate stats safely
-//   const attemptedCount = candidate.userAnswers ? Object.keys(candidate.userAnswers).length : 0;
-//   const theoryCount = candidate.theoryCount || 0; 
-//   const practicalCount = candidate.practicalCount || 0;
-
-//   return (
-//     <div className="min-h-screen bg-[#F4F5F9] font-sans text-slate-800 p-4 sm:p-6 md:p-8 lg:p-10 pt-24 lg:pt-10">
-      
-//       <div className="max-w-5xl mx-auto space-y-8">
-        
-//         {/* Top Navigation & Header */}
-//         <div>
-//           <button 
-//             onClick={() => navigate(-1)}
-//             className="flex items-center gap-2 text-slate-500 hover:text-purple-600 font-bold text-sm mb-6 transition-colors w-fit px-3 py-1.5 rounded-lg hover:bg-white border border-transparent hover:border-purple-100 shadow-none hover:shadow-sm"
-//           >
-//             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-//             Back to Candidates
-//           </button>
-
-//           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 bg-white p-6 md:p-8 rounded-[32px] border border-slate-200 shadow-sm relative overflow-hidden">
-//             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-50 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
-            
-//             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-100 text-purple-600 flex items-center justify-center font-black text-3xl border border-white shadow-md uppercase relative z-10">
-//               {candidate.name ? candidate.name.charAt(0) : '?'}
-//             </div>
-//             <div className="relative z-10">
-//               <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">{candidate.name}'s Full Review</h1>
-//               <div className="flex items-center gap-2 mt-2">
-//                 <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-//                 <p className="text-slate-500 font-semibold">{candidate.email}</p>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* --- STATS CARDS --- */}
-//         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-//           <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm flex flex-col justify-center items-center text-center hover:-translate-y-1 transition-transform">
-//             <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center mb-3">
-//               <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-//             </div>
-//             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Attempted</span>
-//             <span className="text-4xl font-black text-slate-800">{attemptedCount}</span>
-//           </div>
-          
-//           <div className="bg-indigo-50 p-6 rounded-[24px] border border-indigo-100 shadow-sm flex flex-col justify-center items-center text-center hover:-translate-y-1 transition-transform">
-//             <div className="w-10 h-10 bg-white/60 rounded-full flex items-center justify-center mb-3 text-indigo-500 font-black">T</div>
-//             <span className="text-[11px] font-bold text-indigo-500 uppercase tracking-widest mb-1">Theory Questions</span>
-//             <span className="text-4xl font-black text-indigo-600">{theoryCount}</span>
-//           </div>
-
-//           <div className="bg-emerald-50 p-6 rounded-[24px] border border-emerald-100 shadow-sm flex flex-col justify-center items-center text-center hover:-translate-y-1 transition-transform">
-//             <div className="w-10 h-10 bg-white/60 rounded-full flex items-center justify-center mb-3 text-emerald-500 font-black">P</div>
-//             <span className="text-[11px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Practical Questions</span>
-//             <span className="text-4xl font-black text-emerald-600">{practicalCount}</span>
-//           </div>
-//         </div>
-
-//         {/* --- OVERALL REVIEWS --- */}
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-//           <div className="bg-white rounded-[24px] border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-//             <div className="bg-slate-50 px-6 py-4 border-b border-slate-100">
-//               <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
-//                 <span className="w-2 h-2 rounded-full bg-indigo-500"></span> Theory Feedback
-//               </h3>
-//             </div>
-//             <div className="p-6 text-sm text-slate-600 font-medium leading-relaxed flex-1">
-//               {candidate.overallTheoryReview || <span className="italic text-slate-400">No overall theory feedback has been written yet.</span>}
-//             </div>
-//           </div>
-
-//           <div className="bg-white rounded-[24px] border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-//             <div className="bg-slate-50 px-6 py-4 border-b border-slate-100">
-//               <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
-//                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Practical Feedback
-//               </h3>
-//             </div>
-//             <div className="p-6 text-sm text-slate-600 font-medium leading-relaxed flex-1">
-//               {candidate.overallPracticalReview || <span className="italic text-slate-400">No overall practical feedback has been written yet.</span>}
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* --- DETAILED ANSWERS --- */}
-//         <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden mt-8">
-//           <div className="bg-slate-900 px-8 py-6 flex items-center justify-between">
-//              <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
-//                <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-//                Detailed Question Breakdown
-//              </h3>
-//              <span className="bg-white/10 text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20">
-//                {attemptedCount} Responses
-//              </span>
-//           </div>
-          
-//           <div className="p-4 sm:p-8 bg-slate-50/50">
-//             {(!candidate.userAnswers || attemptedCount === 0) ? (
-//               <div className="text-center text-slate-500 py-12 font-medium bg-white rounded-2xl border border-slate-200 border-dashed">
-//                 <div className="text-4xl mb-3">📝</div>
-//                 This candidate hasn't submitted any detailed answers yet.
-//               </div>
-//             ) : (
-//               <div className="space-y-6">
-//                 {Object.entries(candidate.userAnswers).map(([questionId, answer], index) => {
-//                   const scoreDetail = candidate.rawScores ? candidate.rawScores[questionId] : null;
-//                   const points = scoreDetail?.points || 0;
-                  
-//                   return (
-//                     <div key={questionId} className="border border-slate-200 rounded-[24px] p-6 sm:p-8 bg-white hover:shadow-md hover:border-purple-200 transition-all group">
-//                       <div className="flex flex-wrap justify-between items-center mb-6 border-b border-slate-100 pb-5 gap-4">
-//                         <span className="text-xs font-bold bg-purple-50 text-purple-600 px-4 py-2 rounded-full uppercase tracking-widest border border-purple-100 shadow-sm flex items-center gap-2">
-//                           <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
-//                           Question {index + 1}
-//                         </span>
-//                         <span className={`text-[11px] font-black uppercase px-4 py-2 rounded-full border shadow-sm ${points > 0 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
-//                           {points} Points
-//                         </span>
-//                       </div>
-                      
-//                       <div>
-//                         <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-//                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
-//                           Candidate's Answer:
-//                         </h4>
-//                         <div className="text-sm text-slate-700 bg-slate-50 p-5 rounded-2xl border border-slate-200 whitespace-pre-wrap leading-relaxed font-mono shadow-inner">
-//                           {answer || <span className="text-slate-400 italic font-sans">No text provided.</span>}
-//                         </div>
-//                       </div>
-//                     </div>
-//                   );
-//                 })}
-//               </div>
-//             )}
-//           </div>
-//         </div>
-
-//       </div>
-//     </div>
-//   );
-// }
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; 
 import API from '../utils/api';
@@ -381,7 +10,17 @@ export default function CandidateReview() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // 🔥 STATE DROPDOWN AUR CALENDAR KE LIYE
+  const [expandedSession, setExpandedSession] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(""); 
+  
   useEffect(() => {
+    if (!id || id === 'undefined') {
+      setError("Invalid Candidate ID provided.");
+      setIsLoading(false);
+      return;
+    }
+
     const fetchCandidateData = async () => {
       try {
         const { data } = await API.get(`/evaluations/admin/candidate/${id}`);
@@ -393,9 +32,10 @@ export default function CandidateReview() {
       }
     };
 
-    if (id) fetchCandidateData();
+    fetchCandidateData();
   }, [id]);
 
+  
   // Loading State UI
   if (isLoading) {
     return (
@@ -426,20 +66,106 @@ export default function CandidateReview() {
     );
   }
 
-  // Calculate stats safely
-  const attemptedCount = candidate.userAnswers ? Object.keys(candidate.userAnswers).length : 0;
-  const theoryCount = candidate.theoryCount || 0; 
+  // ==========================================
+  // 🔥 FIX 1: BULLETPROOF DATE FILTER
+  // ==========================================
+  const filteredHistory = selectedDate 
+    ? (candidate.history || []).filter(session => {
+        if (!session.date) return false;
+        
+        // Extract numbers from target date (YYYY-MM-DD)
+        const [sYear, sMonth, sDay] = selectedDate.split('-');
+        const targetY = parseInt(sYear, 10);
+        const targetM = parseInt(sMonth, 10);
+        const targetD = parseInt(sDay, 10);
+
+        // Extract numbers from DB string (like "4/12/2026, 7:47 PM")
+        const nums = session.date.match(/(\d+)/g);
+        if (!nums || nums.length < 3) return false;
+
+        const n1 = parseInt(nums[0], 10);
+        const n2 = parseInt(nums[1], 10);
+        const n3 = parseInt(nums[2], 10);
+
+        let sessionY = n3 > 1000 ? n3 : (n1 > 1000 ? n1 : 0);
+        let sessionM = n1 > 1000 ? n2 : n1;
+        let sessionD = n1 > 1000 ? n3 : n2;
+        
+        // Match numbers ignoring format (MM/DD ya DD/MM dono cover karega)
+        if (sessionY === targetY) {
+           if ((sessionM === targetM && sessionD === targetD) || (sessionM === targetD && sessionD === targetM)) {
+               return true;
+           }
+        }
+        return false;
+      })
+    : (candidate.history || []);
+
+
+  // ==========================================
+  // 🔥 FIX 2: DYNAMIC STATS CALCULATION
+  // ==========================================
+  let uniqueAttempted = new Set();
+  let theoryScore = 0;
+  let practicalScore = 0;
+
+  // Active Session check karein
+  let isActiveSessionMatching = true;
+  if (selectedDate) {
+      const activeDateStr = candidate.updatedAt || candidate.createdAt;
+      if (activeDateStr) {
+          const aD = new Date(activeDateStr);
+          const aY = aD.getFullYear();
+          const aM = String(aD.getMonth() + 1).padStart(2, '0');
+          const aDay = String(aD.getDate()).padStart(2, '0');
+          isActiveSessionMatching = (`${aY}-${aM}-${aDay}` === selectedDate);
+      } else {
+          isActiveSessionMatching = false;
+      }
+  }
+
+  // 1. Agar History me sessions hain toh unko add karo
+  filteredHistory.forEach(session => {
+    theoryScore += (Number(session.score) || Number(session.totalScore) || 0);
+    if (session.savedAnswers) {
+      Object.keys(session.savedAnswers).forEach(qId => uniqueAttempted.add(qId));
+    }
+  });
+
+  // 2. Agar Active Session filter me aata hai (ya filter band hai) toh usko add karo
+  if (isActiveSessionMatching) {
+    if (candidate.userAnswers) {
+      Object.keys(candidate.userAnswers).forEach(qId => uniqueAttempted.add(qId));
+    }
+    if (candidate.attempts) {
+      Object.keys(candidate.attempts).forEach(qId => uniqueAttempted.add(qId));
+    }
+
+    let activeTheory = Number(candidate.scores?.theory) || Number(candidate.theory) || 0;
+    let activePractical = Number(candidate.scores?.practical) || Number(candidate.practical) || 0;
+    
+    if (activeTheory === 0 && activePractical === 0 && (candidate.overallXP || candidate.score || candidate.totalScore)) {
+        activeTheory = Number(candidate.overallXP || candidate.score || candidate.totalScore || 0);
+    }
+    
+    theoryScore += activeTheory;
+    practicalScore += activePractical;
+  }
+
+  // 3. Set the final UI Variables
+  const attemptedCount = uniqueAttempted.size;
+  const theoryCount = candidate.theoryCount || attemptedCount; 
   const practicalCount = candidate.practicalCount || 0;
   
-  const practicalScore = Number(candidate.practical) || 0;
-  const theoryScore = Number(candidate.theory) || 0;
   const totalScore = practicalScore + theoryScore;
-  const percentage = (totalScore / 200) * 100; // Assuming 200 is max total score
+  const percentage = (totalScore / 200) * 100;
+
+  
 
   return (
     <div className="min-h-screen bg-[#F4F6F9] font-sans text-slate-800 p-4 sm:p-6 md:p-10 pt-24 lg:pt-10 flex justify-center">
       
-      {/* Main White Canvas Card (Matching the Reference Image) */}
+      {/* Main White Canvas Card */}
       <div className="w-full max-w-6xl bg-white rounded-[40px] shadow-[0_8px_40px_rgb(0,0,0,0.03)] p-6 md:p-10 lg:p-12 overflow-hidden relative">
         
         {/* Top Header Row */}
@@ -454,7 +180,27 @@ export default function CandidateReview() {
             Candidates
           </button>
 
-          <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            
+            {/* 🔥 CALENDAR DATE PICKER */}
+            <div className="relative">
+              <input 
+                type="date" 
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="pl-4 pr-3 py-3 rounded-full border-2 border-slate-200 text-slate-600 font-bold text-sm outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100 transition-all cursor-pointer bg-slate-50 hover:bg-white"
+              />
+              {selectedDate && (
+                <button 
+                  onClick={() => setSelectedDate("")}
+                  className="absolute right-[-10px] top-[-10px] w-6 h-6 bg-slate-800 text-white rounded-full text-xs font-bold flex items-center justify-center shadow-md hover:bg-rose-500 transition-colors"
+                  title="Clear Filter"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
             <button className="flex-1 md:flex-none px-6 py-3 rounded-full border-2 border-slate-200 text-slate-700 font-bold text-sm hover:border-slate-300 hover:bg-slate-50 transition-all">
               Export Report
             </button>
@@ -488,17 +234,26 @@ export default function CandidateReview() {
           <div className="flex-1 w-full text-center md:text-left mt-2">
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-1">{candidate.name || "Unknown Candidate"}</h1>
             <p className="text-slate-400 font-medium text-sm mb-6">{candidate.email}</p>
+
+            {candidate.moduleName && (
+    <div className="inline-flex items-center gap-2 bg-purple-50 text-purple-700 px-4 py-1.5 rounded-full text-xs font-black tracking-widest uppercase border border-purple-100 shadow-sm">
+      <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+      Module: {candidate.moduleName}
+    </div>
+  )}
             
             {/* Progress Bar Container */}
             <div className="max-w-xl">
               <div className="flex justify-between items-center mb-2">
-                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Overall Score</span>
+                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                   {selectedDate ? `Filtered Score` : `Overall Score`}
+                 </span>
                  <span className="text-[10px] font-bold text-slate-300">{totalScore} / 200 XP</span>
               </div>
               <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
                 <div 
-                  className="h-full rounded-full bg-gradient-to-r from-rose-400 to-orange-400 relative"
-                  style={{ width: `${Math.max(percentage, 5)}%` }}
+                  className="h-full rounded-full bg-gradient-to-r from-rose-400 to-orange-400 relative transition-all duration-500"
+                  style={{ width: `${Math.max(percentage, 0)}%` }}
                 >
                   <div className="absolute right-0 top-0 bottom-0 w-4 bg-white/30 blur-[2px]"></div>
                 </div>
@@ -507,7 +262,7 @@ export default function CandidateReview() {
           </div>
         </div>
 
-        {/* --- THREE MAIN METRICS (Matching the Image Style) --- */}
+        {/* --- THREE MAIN METRICS --- */}
         <div className="flex flex-col md:flex-row justify-around items-center py-10 gap-8 border-b border-slate-100">
           
           <div className="flex items-center gap-5">
@@ -546,7 +301,7 @@ export default function CandidateReview() {
 
         </div>
 
-        {/* --- EVALUATION PANELS (Achievements / Inventory equivalent) --- */}
+        {/* --- EVALUATION PANELS --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-10">
           
           {/* Panel 1: Theory Feedback */}
@@ -582,18 +337,15 @@ export default function CandidateReview() {
           </div>
 
         </div>
-
-        {/* --- DETAILED ANSWERS --- */}
+        
         <div className="pt-4">
           <h3 className="font-extrabold text-xl text-slate-900 mb-6">Detailed Answer Breakdown</h3>
           
-          <div className="bg-slate-50/50 rounded-[32px] p-6 sm:p-8 border border-slate-100">
-            {(!candidate.userAnswers || attemptedCount === 0) ? (
-              <div className="text-center text-slate-400 py-10 font-medium">
-                This candidate hasn't submitted any detailed answers yet.
-              </div>
-            ) : (
-              <div className="space-y-6">
+          {/* 1. ACTIVE / UNARCHIVED ANSWERS */}
+          {isActiveSessionMatching && candidate.userAnswers && Object.keys(candidate.userAnswers).length > 0 && (
+            <div className="mb-8">
+              <h4 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4 ml-2">Current Active Session</h4>
+              <div className="bg-slate-50/50 rounded-[32px] p-6 sm:p-8 border border-slate-100 space-y-6">
                 {Object.entries(candidate.userAnswers).map(([questionId, answer], index) => {
                   const scoreDetail = candidate.rawScores ? candidate.rawScores[questionId] : null;
                   const points = scoreDetail?.points || 0;
@@ -602,17 +354,14 @@ export default function CandidateReview() {
                     <div key={questionId} className="bg-white border border-slate-100 rounded-[24px] p-6 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all">
                       <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-50">
                         <span className="text-xs font-black bg-slate-100 text-slate-600 px-4 py-1.5 rounded-full uppercase tracking-widest">
-                          Question {index + 1}
+                          Active Q {index + 1}
                         </span>
                         <span className={`text-[11px] font-black uppercase px-4 py-1.5 rounded-full ${points > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                           {points} Points
                         </span>
                       </div>
-                      
                       <div>
-                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 pl-1">
-                          Candidate's Answer:
-                        </h4>
+                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 pl-1">Candidate's Answer:</h4>
                         <div className="text-sm text-slate-700 bg-slate-50 p-5 rounded-2xl border border-slate-100 whitespace-pre-wrap leading-relaxed font-mono">
                           {answer || <span className="text-slate-400 italic font-sans">No text provided.</span>}
                         </div>
@@ -621,8 +370,149 @@ export default function CandidateReview() {
                   );
                 })}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* 2. ARCHIVED SESSIONS (PAST SESSIONS - DARK UI WITH DROPDOWN) */}
+          {filteredHistory && filteredHistory.length > 0 && (
+            <div className="mb-10 animate-fade-in">
+              <h4 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4 flex justify-between items-end">
+                <span>{selectedDate ? `Sessions on ${selectedDate}` : 'Past Sessions'}</span>
+                {selectedDate && <span className="text-[10px] bg-slate-100 px-2 py-1 rounded-md text-slate-600 shadow-sm border border-slate-200">Filtered View</span>}
+              </h4>
+              
+              <div className="grid grid-cols-1 gap-5">
+                {filteredHistory.map((session, hIndex) => (
+                  <div key={hIndex} className="flex flex-col">
+                    
+                    {/* YEH MAIN CARD HAI JIS PAR CLICK KARNE SE DROPDOWN KHULEGA */}
+                    <div 
+                      onClick={() => setExpandedSession(expandedSession === hIndex ? null : hIndex)}
+                      className="bg-[#1A2533] p-5 rounded-[20px] flex flex-col md:flex-row justify-between items-start md:items-center border border-[#2A3543] shadow-lg hover:border-[#00A896] cursor-pointer transition-colors z-10"
+                    >
+                      <div className="flex flex-col mb-3 md:mb-0">
+                        <p className="text-white font-black text-sm mb-2">
+                          {session.date ? session.date.split(',')[0] : `Archive #${hIndex + 1}`}
+                        </p>
+                        <div className="flex items-center gap-4 text-xs font-bold tracking-widest uppercase">
+                          <span className="text-[#888888]">P:<span className="text-white ml-1">{session.passed || 0}</span></span>
+                          <span className="text-[#888888]">M:<span className="text-white ml-1">{session.partial || 0}</span></span>
+                          <span className="text-[#888888]">F:<span className="text-[#FF3B30] ml-1">{session.failed || 0}</span></span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-4">
+                        <div className="bg-[#00A896] text-white px-4 py-1.5 rounded-full text-xs font-black shadow-[0_0_10px_rgba(0,168,150,0.3)] tracking-widest uppercase">
+                          XP: {session.score || session.totalScore || 0}
+                        </div>
+                        {/* Dropdown Arrow */}
+                        <div className="text-white text-xs font-bold bg-white/10 px-3 py-1.5 rounded-full">
+                           {expandedSession === hIndex ? 'Hide Answers ▲' : 'View Answers ▼'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 🔥 YEH DROPDOWN CONTENT HAI JO CLICK PAR DIKHEGA */}
+                    {expandedSession === hIndex && (
+                      <div className="bg-slate-50 border border-slate-200 rounded-b-[20px] p-6 pt-8 -mt-4 animate-fade-in shadow-inner">
+                        {!session.savedAnswers || Object.keys(session.savedAnswers).length === 0 ? (
+                           <p className="text-center text-slate-500 text-sm font-medium">No detailed answers in this session.</p>
+                        ) : (
+                           <div className="space-y-4">
+                             {Object.entries(session.savedAnswers).map(([qId, ans], qIndex) => {
+                               const sDetail = session.savedScores ? session.savedScores[qId] : null;
+                               const pts = sDetail?.points || 0;
+                               return (
+                                 <div key={qId} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-slate-300 transition-colors">
+                                   <div className="flex justify-between items-center mb-3 border-b border-slate-50 pb-3">
+                                     <span className="text-xs font-black bg-purple-50 text-purple-600 px-3 py-1 rounded-full uppercase tracking-widest">
+                                       Archived Q {qIndex + 1}
+                                     </span>
+                                     <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-full ${pts > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                                       {pts} Points
+                                     </span>
+                                   </div>
+                                   <div>
+                                     <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Answer:</h4>
+                                     <div className="text-sm text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-100 whitespace-pre-wrap font-mono">
+                                       {ans || <span className="text-slate-400 italic font-sans">No text provided.</span>}
+                                     </div>
+                                   </div>
+                                 </div>
+                               )
+                             })}
+                           </div>
+                        )}
+                      </div>
+                    )}
+
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 3. PAST SESSIONS GRID VIEW */}
+          {filteredHistory && filteredHistory.length > 0 && (
+            <div className="mb-10 animate-fade-in">
+              <h4 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4 flex justify-between items-end">
+                <span>{selectedDate ? `Grid View for ${selectedDate}` : 'Past Sessions (Grid View)'}</span>
+                {selectedDate && <span className="text-[10px] bg-slate-100 px-2 py-1 rounded-md text-slate-600">Filtered View</span>}
+              </h4>
+              
+              {/* CSS Grid for the Dark Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {filteredHistory.map((session, hIndex) => (
+                  <div 
+                    key={hIndex} 
+                    className="bg-[#1A2533] p-5 rounded-[20px] flex flex-col justify-between border border-[#2A3543] shadow-lg hover:border-[#00A896] transition-colors"
+                  >
+                    <div className="flex justify-between items-start mb-6 border-b border-white/10 pb-4">
+                      <div>
+                        <p className="text-white font-black text-sm">
+                          {session.date ? session.date.split(',')[0] : `Archive #${hIndex + 1}`}
+                        </p>
+                      </div>
+                      <div className="bg-[#00A896] text-white px-3 py-1 rounded-full text-[10px] font-black shadow-[0_0_10px_rgba(0,168,150,0.3)] tracking-widest uppercase">
+                        XP: {session.score || session.totalScore || 0}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 text-xs font-bold tracking-widest uppercase">
+                      <span className="text-[#888888]">
+                        P:<span className="text-white ml-1">{session.passed || 0}</span>
+                      </span>
+                      <span className="text-[#888888]">
+                        M:<span className="text-white ml-1">{session.partial || 0}</span>
+                      </span>
+                      <span className="text-[#888888]">
+                        F:<span className="text-[#FF3B30] ml-1">{session.failed || 0}</span>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* EMPTY STATE */}
+          {!isActiveSessionMatching && filteredHistory.length === 0 && (
+            <div className="bg-slate-50/50 rounded-[32px] p-6 sm:p-8 border border-slate-100">
+              <div className="text-center text-slate-400 py-10 font-medium">
+                <div className="text-4xl mb-3 opacity-50">📅</div>
+                No data available for the selected date.
+              </div>
+            </div>
+          )}
+          
+          {!selectedDate && (!candidate.userAnswers || Object.keys(candidate.userAnswers).length === 0) && (!candidate.history || candidate.history.length === 0) && (
+            <div className="bg-slate-50/50 rounded-[32px] p-6 sm:p-8 border border-slate-100">
+              <div className="text-center text-slate-400 py-10 font-medium">
+                <div className="text-4xl mb-3 opacity-50">📝</div>
+                This candidate hasn't submitted any detailed answers yet.
+              </div>
+            </div>
+          )}
         </div>
 
       </div>

@@ -21,11 +21,10 @@ app.use('/api/evaluations', require('../routes/evaluationRoutes'));
 
 // test route
 app.get('/', (req, res) => {
-  res.send('API is running on Vercel 🚀');
+  res.send('API is running on Vercel');
 });
 
-// ❌ REMOVE this:
 // app.listen(PORT)
 
-// ✅ EXPORT THIS:
+// EXPORT THIS:
 module.exports = serverless(app);

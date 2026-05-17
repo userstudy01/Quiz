@@ -6,7 +6,7 @@ const evaluationSchema = new mongoose.Schema({
   userAnswers: { type: Object, default: {} },
   scores: { type: Object, default: {} },
   attempts: { type: Object, default: {} },
-  history: { type: Array, default: [] } // Purani attempts save karne ke liye
+  history: { type: Array, default: [] } 
 }, { timestamps: true });
 
 module.exports = mongoose.model('Evaluation', evaluationSchema);

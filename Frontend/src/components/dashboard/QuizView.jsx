@@ -239,10 +239,56 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
   //   } catch (err) { alert("❌ Critical Error."); }
   // };
 
+  // const handleForceSubmit = async () => {
+  //   let tTheory = 0; let tPractical = 0;
+  //   roundQuestions.forEach(q => {
+  //     const evalData = scores[q._id];
+  //     if (evalData?.isLocked) {
+  //       if (q.section === 'Practical') tPractical += evalData.points;
+  //       else tTheory += evalData.points;
+  //     }
+  //   });
+
+  //   try {
+  //     // 🔥 THE FIX: Instead of a manual fetch to a broken URL, 
+  //     // we use your pre-built saveProgress function from api.js
+  //     await saveProgress({
+  //       moduleName: selectedRound,
+  //       userAnswers,
+  //       scores: { ...scores, theory: tTheory, practical: tPractical },
+  //       attempts,
+  //       history
+  //     });
+      
+  //     alert("Saved to Database succefully....!");
+  //   } catch (err) { 
+  //     console.error(err);
+  //     alert("❌ Failed to save."); 
+  //   }
+  // };
+
   const handleForceSubmit = async () => {
-    let tTheory = 0; let tPractical = 0;
+    // 1. Determine which data to send: Active progress OR Archived session
+    const dataToSave = isHistoryMode 
+      ? {
+          userAnswers: history[viewingHistoryIndex].savedAnswers,
+          scores: history[viewingHistoryIndex].savedScores,
+          attempts: history[viewingHistoryIndex].savedAttempts,
+          history: history // Keep the full history array
+        }
+      : {
+          userAnswers,
+          scores,
+          attempts,
+          history
+        };
+
+    // 2. Calculate totals for the specific data being saved
+    let tTheory = 0; 
+    let tPractical = 0;
+    
     roundQuestions.forEach(q => {
-      const evalData = scores[q._id];
+      const evalData = dataToSave.scores[q._id];
       if (evalData?.isLocked) {
         if (q.section === 'Practical') tPractical += evalData.points;
         else tTheory += evalData.points;
@@ -250,22 +296,22 @@ export default function QuizView({ user, questions, selectedRound, setSelectedRo
     });
 
     try {
-      // 🔥 THE FIX: Instead of a manual fetch to a broken URL, 
-      // we use your pre-built saveProgress function from api.js
+      // 3. Use the centralized API helper
       await saveProgress({
         moduleName: selectedRound,
-        userAnswers,
-        scores: { ...scores, theory: tTheory, practical: tPractical },
-        attempts,
-        history
+        userAnswers: dataToSave.userAnswers,
+        scores: { ...dataToSave.scores, theory: tTheory, practical: tPractical },
+        attempts: dataToSave.attempts,
+        history: dataToSave.history
       });
       
-      alert("Saved to Database succefully....!");
+      alert("✅ Session successfully synced to Database!");
     } catch (err) { 
-      console.error(err);
-      alert("❌ Failed to save."); 
+      console.error("Database Sync Error:", err);
+      alert("❌ Failed to save to database. Check console for details."); 
     }
   };
+
 
   const isHistoryMode = viewingHistoryIndex !== null;
   const activeAnswers = isHistoryMode ? (history[viewingHistoryIndex].savedAnswers || {}) : userAnswers;
