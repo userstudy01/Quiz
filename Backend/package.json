@@ -1,13 +1,19 @@
 {
-  "name": "backend",
+  "name": "portfolio-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "REST API for the personal developer portfolio",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed:admin": "node seed/seedAdmin.js",
+    "seed:portfolio": "node seed/seedPortfolio.js"
   },
-  "keywords": [],
+  "keywords": [
+    "portfolio",
+    "express",
+    "mongodb"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
