@@ -1,30 +1,26 @@
-const express = require('express');
-const cors = require('cors');
-const serverless = require('serverless-http');
+// api/index.js — serverless entry point (Vercel)
 require('dotenv').config();
 
-const connectDB = require('../config/db');
+const serverless = require('serverless-http');
+const mongoose = require('mongoose');
+const app = require('../app');
 
-const app = express();
+const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
 
-// DB connect
-connectDB();
+// Reuse the connection across warm invocations instead of dialling per request.
+let connection = global.__mongooseConnection;
 
-// middleware
-app.use(cors());
-app.use(express.json());
+const connect = async () => {
+  if (!connection) {
+    connection = mongoose.connect(uri, { serverSelectionTimeoutMS: 10000 });
+    global.__mongooseConnection = connection;
+  }
+  return connection;
+};
 
-// routes
-app.use('/api/auth', require('../routes/authRoutes'));
-app.use('/api/questions', require('../routes/questionRoutes'));
-app.use('/api/evaluations', require('../routes/evaluationRoutes'));
+const handler = serverless(app);
 
-// test route
-app.get('/', (req, res) => {
-  res.send('API is running on Vercel');
-});
-
-// app.listen(PORT)
-
-// EXPORT THIS:
-module.exports = serverless(app);
+module.exports = async (req, res) => {
+  await connect();
+  return handler(req, res);
+};

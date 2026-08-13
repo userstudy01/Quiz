@@ -1,40 +1,50 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
-import Dashboard from './pages/Dashboard'; 
-import Questions from './pages/Questions'; 
-import Candidates from './pages/Candidates';
-import Login from './pages/Login'; // 🔥 Ye naya page import kiya hai
-import CandidateReview from './pages/CandidateReview';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Projects from './pages/Projects';
+import ProjectForm from './pages/ProjectForm';
+import Skills from './pages/Skills';
+import Experience from './pages/Experience';
+import Profile from './pages/Profile';
+import Messages from './pages/Messages';
+import { getStoredAuth } from './utils/api';
 
-// Layout component banaya taaki Login page par Sidebar na dikhe
-function AppLayout() {
-  const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
+// Guards every admin route: no token or non-admin role means back to /login.
+function ProtectedLayout() {
+  const auth = getStoredAuth();
+
+  if (!auth?.token || auth?.user?.role !== 'admin') {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
-    <div className="flex bg-white min-h-screen">
-      {/* Agar page /login nahi hai, tabhi Sidebar dikhao */}
-      {!isLoginPage && <Sidebar />}
-      
-      <main className="flex-1 overflow-y-auto">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/questions" element={<Questions />} />
-          <Route path="/candidates" element={<Candidates />} />
-          <Route path="/candidates/:id" element={<CandidateReview />} />
-        </Routes>
+    <div className="flex min-h-screen bg-canvas">
+      <Sidebar />
+      <main className="min-w-0 flex-1 px-5 pb-16 pt-20 sm:px-8 lg:pt-8">
+        <Outlet />
       </main>
     </div>
   );
 }
 
-function App() {
+export default function App() {
   return (
-    <Router>
-      <AppLayout />
-    </Router>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route element={<ProtectedLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="projects" element={<Projects />} />
+          <Route path="projects/new" element={<ProjectForm />} />
+          <Route path="projects/:id" element={<ProjectForm />} />
+          <Route path="skills" element={<Skills />} />
+          <Route path="experience" element={<Experience />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="messages" element={<Messages />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

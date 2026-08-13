@@ -1,40 +1,30 @@
 const jwt = require('jsonwebtoken');
 
-// 1. Verify Token Middleware (For all logged-in users)
+// 1. Verify Token Middleware (any authenticated user)
 const protect = (req, res, next) => {
-  let token;
+  const header = req.headers.authorization || '';
 
-  // Check if header contains Authorization Bearer token
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      // Get token from header (Format: "Bearer <token_string>")
-      token = req.headers.authorization.split(' ')[1];
-
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // Add user payload to request object
-      req.user = decoded.user;
-      
-      next(); // Move to the next function/route
-    } catch (error) {
-      console.error(error);
-      res.status(401).json({ message: 'Not authorized, token failed or expired' });
-    }
+  if (!header.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Not authorized, no token provided' });
   }
 
-  if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token provided' });
+  const token = header.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded.user;
+    return next();
+  } catch (error) {
+    return res.status(401).json({ message: 'Not authorized, token failed or expired' });
   }
 };
 
-// 2. Admin Only Middleware (Must be used AFTER 'protect')
+// 2. Admin Only Middleware (must run AFTER `protect`)
 const adminOnly = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
-    next();
-  } else {
-    res.status(403).json({ message: 'Access denied. Admin privileges required.' });
+    return next();
   }
+  return res.status(403).json({ message: 'Access denied. Admin privileges required.' });
 };
 
 module.exports = { protect, adminOnly };
