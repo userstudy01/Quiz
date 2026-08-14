@@ -9,6 +9,7 @@ const links = [
   { to: '/experience', label: 'Experience' },
   { to: '/profile', label: 'Profile' },
   { to: '/messages', label: 'Messages' },
+  { to: '/requests', label: 'Requests', superAdmin: true },
 ];
 
 export default function Sidebar() {
@@ -65,17 +66,19 @@ export default function Sidebar() {
         </Link>
 
         <nav className="flex-1 space-y-1">
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              end={link.end}
-              onClick={() => setOpen(false)}
-              className={linkClass}
-            >
-              {link.label}
-            </NavLink>
-          ))}
+          {links
+            .filter((link) => !link.superAdmin || auth?.user?.role === 'superadmin')
+            .map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                onClick={() => setOpen(false)}
+                className={linkClass}
+              >
+                {link.label}
+              </NavLink>
+            ))}
         </nav>
 
         <div className="mt-6 border-t border-line pt-4">

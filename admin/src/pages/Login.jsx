@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import API, { apiError } from '../utils/api';
 import { Button, Field, inputClass } from '../components/ui';
+
+const ADMIN_ROLES = ['admin', 'superadmin'];
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -17,7 +19,7 @@ export default function Login() {
     try {
       const { data } = await API.post('/auth/login', form);
 
-      if (data.user?.role !== 'admin') {
+      if (!ADMIN_ROLES.includes(data.user?.role)) {
         setError('Access denied. Admin privileges required.');
         return;
       }
@@ -75,6 +77,13 @@ export default function Login() {
             {loading ? 'Signing in…' : 'Sign in'}
           </Button>
         </form>
+
+        <p className="mt-6 text-center text-sm text-ink-muted">
+          Don&apos;t have an account?{' '}
+          <Link to="/signup" className="font-medium text-ink hover:underline">
+            Request access
+          </Link>
+        </p>
       </div>
     </div>
   );

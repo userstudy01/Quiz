@@ -26,13 +26,24 @@ const login = asyncHandler(async (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
+  // Approval gate. Legacy accounts with no status set are treated as approved.
+  if (user.status === 'pending') {
+    return res.status(403).json({ message: 'Your account is awaiting super admin approval.' });
+  }
+  if (user.status === 'rejected') {
+    return res.status(403).json({ message: 'Your account request was rejected.' });
+  }
+
   res.json({
     token: signToken(user),
     user: { id: user._id, name: user.name, email: user.email, role: user.role },
   });
 });
 
-// @route POST /api/auth/register (admin only — no public sign-up on a portfolio)
+// @route POST /api/auth/register (public sign-up)
+// The very first account becomes the approved super admin. Every later sign-up
+// is created 'pending' and must be approved by the super admin before it can
+// log in.
 const register = asyncHandler(async (req, res) => {
   const name = str(req.body.name, 120);
   const email = str(req.body.email, 200).toLowerCase();
@@ -49,15 +60,63 @@ const register = asyncHandler(async (req, res) => {
     return res.status(409).json({ message: 'A user with this email already exists' });
   }
 
+  const isFirstUser = (await User.estimatedDocumentCount()) === 0;
   const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt(10));
   const user = await User.create({
     name,
     email,
     password: hashedPassword,
-    role: req.body.role === 'editor' ? 'editor' : 'admin',
+    role: isFirstUser ? 'superadmin' : 'editor',
+    status: isFirstUser ? 'approved' : 'pending',
   });
 
-  res.status(201).json({ id: user._id, name: user.name, email: user.email, role: user.role });
+  res.status(201).json({
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    status: user.status,
+    isFirstUser,
+  });
+});
+
+// @route GET /api/auth/users (super admin only)
+// Lists every account, newest first, so the super admin can act on requests.
+const listUsers = asyncHandler(async (req, res) => {
+  const users = await User.find().select('-password').sort({ createdAt: -1 }).lean();
+  res.json(users);
+});
+
+// @route PATCH /api/auth/users/:id (super admin only)
+// Approve (optionally assigning a role) or reject a pending account.
+const updateUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const nextStatus = req.body.status;
+
+  if (!['approved', 'rejected'].includes(nextStatus)) {
+    return res.status(400).json({ message: "status must be 'approved' or 'rejected'" });
+  }
+
+  const user = await User.findById(id);
+  if (!user) return res.status(404).json({ message: 'User not found' });
+
+  if (user.role === 'superadmin') {
+    return res.status(400).json({ message: 'The super admin account cannot be changed.' });
+  }
+
+  user.status = nextStatus;
+  if (nextStatus === 'approved') {
+    user.role = req.body.role === 'admin' ? 'admin' : 'editor';
+  }
+  await user.save();
+
+  res.json({
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    status: user.status,
+  });
 });
 
 // @route GET /api/auth/me
@@ -94,4 +153,4 @@ const changePassword = asyncHandler(async (req, res) => {
   res.json({ message: 'Password updated' });
 });
 
-module.exports = { login, register, me, logout, changePassword };
+module.exports = { login, register, me, logout, changePassword, listUsers, updateUser };

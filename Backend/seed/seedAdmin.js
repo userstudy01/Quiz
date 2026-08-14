@@ -31,7 +31,7 @@ const User = require('../models/User');
 
   const user = await User.findOneAndUpdate(
     { email },
-    { $set: { name, email, password: hashedPassword, role: 'admin' } },
+    { $set: { name, email, password: hashedPassword, role: 'superadmin', status: 'approved' } },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   );
 

@@ -1,14 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const { login, register, me, logout, changePassword } = require('../controllers/authController');
-const { protect, adminOnly } = require('../middleware/authMiddleware');
+const {
+  login,
+  register,
+  me,
+  logout,
+  changePassword,
+  listUsers,
+  updateUser,
+} = require('../controllers/authController');
+const { protect, superAdminOnly } = require('../middleware/authMiddleware');
 
 router.post('/login', login);
 router.post('/logout', protect, logout);
 router.get('/me', protect, me);
 router.put('/password', protect, changePassword);
 
-// Creating accounts is an admin action only — there is no public sign-up.
-router.post('/register', protect, adminOnly, register);
+// Public sign-up. First account becomes the super admin; the rest wait for
+// approval (handled in the controller).
+router.post('/register', register);
+
+// Super admin manages accounts and approves/rejects pending sign-ups.
+router.get('/users', protect, superAdminOnly, listUsers);
+router.patch('/users/:id', protect, superAdminOnly, updateUser);
 
 module.exports = router;

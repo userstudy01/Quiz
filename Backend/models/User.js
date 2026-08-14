@@ -22,8 +22,15 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'editor'],
-      default: 'admin',
+      enum: ['superadmin', 'admin', 'editor'],
+      default: 'editor',
+    },
+    // Signup approval workflow. The first-ever user is auto-approved as
+    // superadmin; everyone else starts 'pending' until the superadmin acts.
+    status: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending',
     },
   },
   { timestamps: true }
