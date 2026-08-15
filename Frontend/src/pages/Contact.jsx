@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Section, SectionHeading } from '../components/ui';
+import { buttonClass, inputClass } from '../lib/styles';
 import { errorMessage, sendContactMessage } from '../lib/api';
 import useSeo from '../lib/useSeo';
 
@@ -51,10 +52,7 @@ export default function Contact() {
     }
   };
 
-  const fieldClass = (field) =>
-    `w-full rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted/70 focus:outline-none ${
-      errors[field] ? 'border-red-400' : 'border-line focus:border-ink/30'
-    }`;
+  const fieldClass = (field) => inputClass(Boolean(errors[field]));
 
   return (
     <Section>
@@ -65,10 +63,10 @@ export default function Contact() {
       />
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1.3fr_1fr]">
-        <form onSubmit={onSubmit} noValidate className="rounded-xl border border-line bg-surface p-6">
+        <form onSubmit={onSubmit} noValidate className="surface-card p-6">
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <label htmlFor="name" className="mb-1.5 block text-sm font-medium">
+              <label htmlFor="name" className="mb-1.5 block text-small font-medium text-ink">
                 Name
               </label>
               <input
@@ -79,11 +77,11 @@ export default function Contact() {
                 className={fieldClass('name')}
                 placeholder="Your name"
               />
-              {errors.name ? <p className="mt-1 text-xs text-red-600">{errors.name}</p> : null}
+              {errors.name ? <p className="mt-1.5 text-meta text-danger">{errors.name}</p> : null}
             </div>
 
             <div>
-              <label htmlFor="email" className="mb-1.5 block text-sm font-medium">
+              <label htmlFor="email" className="mb-1.5 block text-small font-medium text-ink">
                 Email
               </label>
               <input
@@ -95,12 +93,12 @@ export default function Contact() {
                 className={fieldClass('email')}
                 placeholder="you@example.com"
               />
-              {errors.email ? <p className="mt-1 text-xs text-red-600">{errors.email}</p> : null}
+              {errors.email ? <p className="mt-1.5 text-meta text-danger">{errors.email}</p> : null}
             </div>
           </div>
 
           <div className="mt-5">
-            <label htmlFor="subject" className="mb-1.5 block text-sm font-medium">
+            <label htmlFor="subject" className="mb-1.5 block text-small font-medium text-ink">
               Subject
             </label>
             <input
@@ -111,11 +109,11 @@ export default function Contact() {
               className={fieldClass('subject')}
               placeholder="What is this about?"
             />
-            {errors.subject ? <p className="mt-1 text-xs text-red-600">{errors.subject}</p> : null}
+            {errors.subject ? <p className="mt-1.5 text-meta text-danger">{errors.subject}</p> : null}
           </div>
 
           <div className="mt-5">
-            <label htmlFor="message" className="mb-1.5 block text-sm font-medium">
+            <label htmlFor="message" className="mb-1.5 block text-small font-medium text-ink">
               Message
             </label>
             <textarea
@@ -127,17 +125,17 @@ export default function Contact() {
               className={fieldClass('message')}
               placeholder="Tell me about the project or role."
             />
-            {errors.message ? <p className="mt-1 text-xs text-red-600">{errors.message}</p> : null}
+            {errors.message ? <p className="mt-1.5 text-meta text-danger">{errors.message}</p> : null}
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+              className={buttonClass('primary')}
             >
               {status === 'loading' ? (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent-contrast/35 border-t-accent-contrast" />
               ) : null}
               {status === 'loading' ? 'Sending…' : 'Send message'}
             </button>
@@ -145,7 +143,7 @@ export default function Contact() {
             {feedback ? (
               <p
                 role="status"
-                className={`text-sm ${status === 'success' ? 'text-emerald-700' : 'text-red-600'}`}
+                className={`text-small ${status === 'success' ? 'text-success' : 'text-danger'}`}
               >
                 {feedback}
               </p>
@@ -155,7 +153,7 @@ export default function Contact() {
 
         <aside className="space-y-4 text-sm">
           {profile?.email ? (
-            <div className="rounded-xl border border-line bg-surface p-5">
+            <div className="surface-card p-5">
               <p className="text-ink-muted">Email</p>
               <a href={`mailto:${profile.email}`} className="mt-1 block font-medium hover:underline">
                 {profile.email}
@@ -164,14 +162,14 @@ export default function Contact() {
           ) : null}
 
           {profile?.location ? (
-            <div className="rounded-xl border border-line bg-surface p-5">
+            <div className="surface-card p-5">
               <p className="text-ink-muted">Location</p>
               <p className="mt-1 font-medium">{profile.location}</p>
             </div>
           ) : null}
 
           {profile?.socialLinks?.length ? (
-            <div className="rounded-xl border border-line bg-surface p-5">
+            <div className="surface-card p-5">
               <p className="text-ink-muted">Elsewhere</p>
               <ul className="mt-2 space-y-1.5">
                 {profile.socialLinks.map((link) => (
