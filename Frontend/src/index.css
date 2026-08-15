@@ -1,63 +1,638 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   Design tokens
+   Dark-first. Every colour, type step, radius, easing and glow used by the
+   public site is defined here once and consumed through Tailwind utilities.
+   Never hard-code a hex value in a component.
+   ========================================================================== */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* --- Type families ---------------------------------------------------- */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, monospace;
 
-  --color-ink: #0b1120;
-  --color-ink-muted: #475569;
-  --color-line: #e2e8f0;
-  --color-surface: #ffffff;
-  --color-canvas: #fbfbfa;
-  --color-accent: #1d4ed8;
+  /* --- Surfaces --------------------------------------------------------- */
+  /* canvas = page background, surface = cards, elevated = hover/menus */
+  --color-canvas: #09090b;
+  --color-surface: #111113;
+  --color-elevated: #18181b;
+
+  /* --- Borders ---------------------------------------------------------- */
+  --color-line: #27272a;
+  --color-line-strong: #3f3f46;
+
+  /* --- Text ------------------------------------------------------------- */
+  --color-ink: #fafafa; /* primary   */
+  --color-ink-muted: #a1a1aa; /* secondary */
+  --color-ink-subtle: #71717a; /* muted     */
+
+  /* --- Accent (single accent for the whole site) ------------------------ */
+  --color-accent: #8b7bff;
+  --color-accent-strong: #6f5bff;
+  --color-accent-soft: #221f3d; /* accent tinted surface */
+  --color-accent-contrast: #0b0a16; /* text on an accent fill */
+
+  /* --- Status ----------------------------------------------------------- */
+  --color-danger: #f87171;
+  --color-success: #4ade80;
+
+  /* --- Type scale ------------------------------------------------------- *
+   * Editorial, not oversized. Hero and page headings scale fluidly; every
+   * other step is fixed so rhythm stays predictable.                       */
+  --text-hero: clamp(2.5rem, 1.85rem + 3vw, 3.75rem);
+  --text-hero--line-height: 1.04;
+  --text-hero--letter-spacing: -0.032em;
+  --text-hero--font-weight: 600;
+
+  --text-h1: clamp(2rem, 1.65rem + 1.6vw, 2.75rem);
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.026em;
+  --text-h1--font-weight: 600;
+
+  --text-h2: clamp(1.5rem, 1.35rem + 0.7vw, 1.875rem);
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h2--font-weight: 600;
+
+  --text-h3: 1.125rem;
+  --text-h3--line-height: 1.4;
+  --text-h3--letter-spacing: -0.012em;
+  --text-h3--font-weight: 600;
+
+  --text-body-lg: 1.0625rem;
+  --text-body-lg--line-height: 1.7;
+
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.7;
+
+  --text-small: 0.8125rem;
+  --text-small--line-height: 1.6;
+
+  --text-nav: 0.875rem;
+  --text-nav--line-height: 1.4;
+  --text-nav--letter-spacing: -0.006em;
+
+  /* Project metadata: category, tech chips, dates */
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.5;
+  --text-meta--letter-spacing: 0.01em;
+
+  /* Eyebrows / overlines — pair with font-mono + uppercase */
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.1;
+  --text-label--letter-spacing: 0.18em;
+  --text-label--font-weight: 500;
+
+  /* --- Content widths --------------------------------------------------- */
+  --container-content: 72rem; /* max-w-content — page shell   */
+  --container-reading: 46rem; /* max-w-reading — prose column */
+
+  /* --- Radii ------------------------------------------------------------ */
+  --radius-control: 0.625rem;
+  --radius-card: 0.875rem;
+  --radius-panel: 1.25rem;
+
+  /* --- Glows and elevation ---------------------------------------------- *
+   * Soft and low-opacity on purpose. This is not a neon system.            */
+  --shadow-glow-sm: 0 0 0 1px --alpha(var(--color-accent) / 18%),
+    0 6px 20px -8px --alpha(var(--color-accent) / 45%);
+  --shadow-glow-md: 0 10px 34px -12px --alpha(var(--color-accent) / 50%);
+  --shadow-glow-lg: 0 24px 70px -28px --alpha(var(--color-accent) / 55%);
+  --shadow-elevated: 0 1px 2px rgb(0 0 0 / 40%), 0 12px 32px -16px rgb(0 0 0 / 70%);
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-smooth: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Tailwind's default for bare `transition` utilities */
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-html {
-  scroll-behavior: smooth;
+/* Duration steps. Components reference these instead of literal ms values so
+   the reduced-motion override below can neutralise all of them at once. */
+:root {
+  --duration-fast: 140ms;
+  --duration-normal: 240ms;
+  --duration-slow: 520ms;
 }
 
-body {
-  margin: 0;
-  background-color: var(--color-canvas);
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.7;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* --- Global background treatment ------------------------------------- *
+   * Two fixed layers behind all content:
+   *   ::before — two soft accent radials plus a fine grid
+   *   ::after  — a faint noise field so the flat dark never looks plastic
+   * Both are deliberately near-invisible; content stays the focus.        */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  body::before {
+    background-image:
+      radial-gradient(
+        60rem 40rem at 12% -10%,
+        --alpha(var(--color-accent) / 10%),
+        transparent 60%
+      ),
+      radial-gradient(
+        44rem 34rem at 100% 0%,
+        --alpha(var(--color-accent) / 6%),
+        transparent 62%
+      ),
+      linear-gradient(to right, --alpha(var(--color-line) / 55%) 1px, transparent 1px),
+      linear-gradient(to bottom, --alpha(var(--color-line) / 55%) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 4rem 4rem, 4rem 4rem;
+    /* Fade the grid out toward the bottom so it reads as texture, not a table */
+    mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 100%);
+  }
+
+  body::after {
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* --- Selection -------------------------------------------------------- */
+  ::selection {
+    background: --alpha(var(--color-accent) / 28%);
+    color: var(--color-ink);
+  }
+
+  /* --- Focus ------------------------------------------------------------ *
+   * The default outline is replaced, never removed. Every interactive
+   * element inherits this unless it opts into a ring of its own.          */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* --- Scrollbar (desktop pointers only) -------------------------------- */
+  @media (pointer: fine) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-line-strong) transparent;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--color-line-strong);
+      border-radius: 999px;
+      border: 3px solid var(--color-canvas);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--color-ink-subtle);
+    }
+  }
+
+  /* Media never overflows its column */
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   Small, composable pieces of the system. Anything reused by more than one
+   component belongs here rather than in JSX class strings.
+   ========================================================================== */
+
+/* --- Layout ------------------------------------------------------------- */
+
+/* Page shell: max content width + responsive gutters. */
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-content);
+  padding-inline: 1.25rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Standard vertical rhythm between major sections. */
+@utility section-y {
+  padding-block: clamp(3.5rem, 2.5rem + 4vw, 6.5rem);
+}
+
+@utility section-y-sm {
+  padding-block: clamp(2.25rem, 1.75rem + 2vw, 3.5rem);
+}
+
+/* --- Surfaces ----------------------------------------------------------- */
+
+@utility surface-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+}
+
+@utility surface-elevated {
+  background-color: var(--color-elevated);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Used sparingly — sticky navigation and overlays only. */
+@utility surface-glass {
+  background-color: --alpha(var(--color-canvas) / 72%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-color: --alpha(var(--color-line) / 90%);
+}
+
+/* --- Borders ------------------------------------------------------------ */
+
+/* A 1px divider that reads as a hairline rather than an outline. */
+@utility hairline {
+  border-color: var(--color-line);
+}
+
+@utility hairline-b {
+  border-bottom: 1px solid var(--color-line);
+}
+
+@utility hairline-t {
+  border-top: 1px solid var(--color-line);
+}
+
+/* --- Glow --------------------------------------------------------------- */
+
+@utility glow-sm {
+  box-shadow: var(--shadow-glow-sm);
+}
+
+@utility glow-md {
+  box-shadow: var(--shadow-glow-md);
+}
+
+@utility glow-lg {
+  box-shadow: var(--shadow-glow-lg);
+}
+
+/* A soft accent bloom placed behind hero / featured content. */
+@utility glow-field {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -20% -10% auto -10%;
+    height: 22rem;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      50% 50% at 50% 40%,
+      --alpha(var(--color-accent) / 16%),
+      transparent 70%
+    );
+    filter: blur(12px);
+  }
+}
+
+/* --- Typography helpers -------------------------------------------------- */
+
+/* Eyebrow / overline. Mono + wide tracking is the system's "technical" voice. */
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  font-weight: var(--text-label--font-weight);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+
+/* --- Link interaction ---------------------------------------------------- */
+
+/* Underline that wipes in from the left on hover/focus. */
+@utility link-underline {
+  position: relative;
   color: var(--color-ink);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  transition: color var(--duration-fast) var(--ease-smooth);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-normal) var(--ease-smooth);
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    transform: scaleX(1);
+  }
 }
 
-::selection {
-  background: #dbeafe;
+/* Muted link that resolves to the accent. */
+@utility link-accent {
+  color: var(--color-ink-muted);
+  transition: color var(--duration-fast) var(--ease-smooth);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-accent);
+  }
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 999px;
-  border: 3px solid var(--color-canvas);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+/* Nudges any `.arrow` child to the right on hover of the parent. */
+@utility link-arrow {
+  & .arrow {
+    transition: transform var(--duration-normal) var(--ease-smooth);
+  }
+
+  &:hover .arrow,
+  &:focus-visible .arrow {
+    transform: translateX(3px);
+  }
 }
 
-:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+/* ==========================================================================
+   Hero motion
+   Entrance choreography, ambient background drift and the scroll cue.
+   All of it is plain CSS so the hero costs no JavaScript to animate, and all
+   of it is neutralised by the reduced-motion block below.
+   ========================================================================== */
+
+/* Entrance: rise + fade + a touch of defocus. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
 }
 
+/* Ambient accent orbs. Long cycles, small distances, no filters. */
+@keyframes hero-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, -3%, 0) scale(1.08);
+  }
+}
+
+@keyframes hero-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-5%, 4%, 0) scale(1);
+  }
+}
+
+/* Node field: dots breathe, links draw themselves in. */
+/* Opacity + scale only — animating the `r` attribute is not universally
+   supported, and transform-box keeps the scale centred on each circle. */
+@keyframes hero-node-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes hero-link-trace {
+  from {
+    stroke-dashoffset: var(--trace-length, 300);
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+/* Scroll cue: a highlight travelling down a hairline. */
+@keyframes hero-scroll-travel {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* Entrance utility. Stagger with an inline `animationDelay`. */
+@utility hero-rise {
+  animation: hero-rise 780ms var(--ease-entrance) both;
+}
+
+/* Ambient hero layers. Defined here rather than as inline styles because the
+   alpha helper only resolves at build time. */
+@utility hero-orb-a {
+  border-radius: 9999px;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    --alpha(var(--color-accent) / 16%),
+    transparent 70%
+  );
+  animation: hero-drift-a 26s var(--ease-smooth) infinite;
+  will-change: transform;
+}
+
+@utility hero-orb-b {
+  border-radius: 9999px;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    --alpha(var(--color-accent) / 11%),
+    transparent 72%
+  );
+  animation: hero-drift-b 34s var(--ease-smooth) infinite;
+  will-change: transform;
+}
+
+/* Static replacement for the orbs on small screens. */
+@utility hero-wash {
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    --alpha(var(--color-accent) / 12%),
+    transparent 70%
+  );
+}
+
+/* Soft bloom behind the node field. */
+@utility hero-bloom {
+  border-radius: 9999px;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    --alpha(var(--color-accent) / 15%),
+    transparent 70%
+  );
+}
+
+@utility hero-scroll-dot {
+  animation: hero-scroll-travel 2600ms var(--ease-smooth) infinite;
+}
+
+/* Pointer parallax. The hero writes --hero-mx / --hero-my (range -1…1) and
+   each layer scales that by its own depth. Defaults keep layers centred when
+   no pointer is present. */
+@utility hero-parallax {
+  --hero-mx: 0;
+  --hero-my: 0;
+  --hero-depth: 4px;
+  transform: translate3d(
+    calc(var(--hero-mx) * var(--hero-depth)),
+    calc(var(--hero-my) * var(--hero-depth)),
+    0
+  );
+  transition: transform 600ms var(--ease-smooth);
+  will-change: transform;
+}
+
+/* ==========================================================================
+   Scroll reveal
+   Elements marked [data-reveal] start hidden and animate in when the page's
+   IntersectionObserver adds .is-revealed. Stagger comes from an inline
+   --reveal-delay. If JS never runs, or reduced motion is on, the override at
+   the bottom of this file makes everything visible.
+   ========================================================================== */
+@layer base {
+  [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    filter: blur(4px);
+    transition:
+      opacity 620ms var(--ease-entrance) var(--reveal-delay, 0ms),
+      transform 620ms var(--ease-entrance) var(--reveal-delay, 0ms),
+      filter 620ms var(--ease-entrance) var(--reveal-delay, 0ms);
+  }
+
+  [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+/* ==========================================================================
+   Project showcase
+   ========================================================================== */
+
+/* Fallback artwork for projects with no screenshot: engineering grid plus a
+   corner accent bloom. Deliberately not a placeholder-image look. */
+@utility project-visual {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-elevated);
+  background-image:
+    radial-gradient(
+      75% 75% at 15% 0%,
+      --alpha(var(--color-accent) / 16%),
+      transparent 62%
+    ),
+    linear-gradient(to right, --alpha(var(--color-line) / 80%) 1px, transparent 1px),
+    linear-gradient(to bottom, --alpha(var(--color-line) / 80%) 1px, transparent 1px);
+  background-size: 100% 100%, 2.5rem 2.5rem, 2.5rem 2.5rem;
+}
+
+/* Swap the whole result set in when filters or search change. */
+@keyframes project-swap-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility project-swap {
+  animation: project-swap-in 420ms var(--ease-entrance) both;
+}
+
+/* ==========================================================================
+   Reduced motion — authoritative
+   Anything added in later animation work must stay subject to this block.
+   ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-normal: 0.01ms;
+    --duration-slow: 0.01ms;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    animation-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Scroll-reveal content is visible immediately, with no offset or stagger. */
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 }

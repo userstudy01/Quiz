@@ -23,15 +23,15 @@ export default function Navbar({ profile }) {
       .join('') || 'PF';
 
   const linkClass = ({ isActive }) =>
-    `text-sm transition-colors ${
-      isActive ? 'text-ink font-semibold' : 'text-ink-muted hover:text-ink'
+    `text-nav transition-colors duration-200 ease-smooth ${
+      isActive ? 'font-medium text-ink' : 'text-ink-muted hover:text-ink'
     }`;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-canvas/85 backdrop-blur">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
+    <header className="surface-glass sticky top-0 z-50 border-b">
+      <nav className="container-page flex items-center justify-between py-4">
         <Link to="/" className="flex items-center gap-3">
-          <span className="grid h-9 w-9 place-items-center rounded-lg bg-ink text-xs font-semibold tracking-wide text-white">
+          <span className="grid h-9 w-9 place-items-center rounded-control bg-accent text-meta font-semibold tracking-wide text-accent-contrast">
             {initials}
           </span>
           <span className="hidden text-sm font-semibold tracking-tight sm:block">{name}</span>
@@ -51,7 +51,7 @@ export default function Navbar({ profile }) {
               href={profile.resumeUrl}
               target="_blank"
               rel="noreferrer noopener"
-              className="hidden rounded-lg border border-line bg-surface px-3.5 py-2 text-sm font-medium text-ink transition-colors hover:border-ink/30 sm:block"
+              className="hidden rounded-control border border-line bg-surface px-3.5 py-2 text-nav font-medium text-ink transition-colors duration-200 ease-smooth hover:border-line-strong hover:bg-elevated sm:block"
             >
               Résumé
             </a>
@@ -62,7 +62,7 @@ export default function Navbar({ profile }) {
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="grid h-10 w-10 place-items-center rounded-lg border border-line bg-surface md:hidden"
+            className="grid h-10 w-10 place-items-center rounded-control border border-line bg-surface transition-colors duration-200 ease-smooth hover:bg-elevated md:hidden"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path
@@ -75,8 +75,8 @@ export default function Navbar({ profile }) {
       </nav>
 
       {open ? (
-        <div className="border-t border-line bg-surface md:hidden">
-          <div className="mx-auto flex max-w-6xl flex-col px-5 py-2 sm:px-8">
+        <div className="hairline-t bg-surface md:hidden">
+          <div className="container-page flex flex-col py-2">
             {links.map((link) => (
               <NavLink
                 key={link.to}

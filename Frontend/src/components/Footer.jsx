@@ -4,26 +4,26 @@ export default function Footer({ profile }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-24 border-t border-line bg-surface">
-      <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 sm:px-8 md:grid-cols-3">
+    <footer className="hairline-t mt-24 bg-surface">
+      <div className="container-page grid gap-8 py-12 md:grid-cols-3">
         <div>
-          <p className="text-sm font-semibold">{profile?.name || 'Portfolio'}</p>
-          {profile?.title ? <p className="mt-1 text-sm text-ink-muted">{profile.title}</p> : null}
+          <p className="text-small font-semibold text-ink">{profile?.name || 'Portfolio'}</p>
+          {profile?.title ? <p className="mt-1 text-small text-ink-muted">{profile.title}</p> : null}
           {profile?.location ? (
-            <p className="mt-1 text-sm text-ink-muted">{profile.location}</p>
+            <p className="mt-1 text-small text-ink-muted">{profile.location}</p>
           ) : null}
         </div>
 
-        <nav className="flex flex-col gap-2 text-sm text-ink-muted">
-          <Link to="/projects" className="hover:text-ink">Projects</Link>
-          <Link to="/about" className="hover:text-ink">About</Link>
-          <Link to="/experience" className="hover:text-ink">Experience</Link>
-          <Link to="/contact" className="hover:text-ink">Contact</Link>
+        <nav className="flex flex-col items-start gap-2 text-small">
+          <Link to="/projects" className="link-accent">Projects</Link>
+          <Link to="/about" className="link-accent">About</Link>
+          <Link to="/experience" className="link-accent">Experience</Link>
+          <Link to="/contact" className="link-accent">Contact</Link>
         </nav>
 
-        <div className="flex flex-col gap-2 text-sm text-ink-muted">
+        <div className="flex flex-col items-start gap-2 text-small">
           {profile?.email ? (
-            <a href={`mailto:${profile.email}`} className="hover:text-ink">
+            <a href={`mailto:${profile.email}`} className="link-accent">
               {profile.email}
             </a>
           ) : null}
@@ -33,7 +33,7 @@ export default function Footer({ profile }) {
               href={link.url}
               target="_blank"
               rel="noreferrer noopener"
-              className="hover:text-ink"
+              className="link-accent"
             >
               {link.label}
             </a>
@@ -41,8 +41,8 @@ export default function Footer({ profile }) {
         </div>
       </div>
 
-      <div className="border-t border-line">
-        <p className="mx-auto max-w-6xl px-5 py-5 text-xs text-ink-muted sm:px-8">
+      <div className="hairline-t">
+        <p className="container-page py-5 text-meta text-ink-subtle">
           © {year} {profile?.name || 'All rights reserved'}.
         </p>
       </div>

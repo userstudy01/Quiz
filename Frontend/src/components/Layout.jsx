@@ -22,7 +22,7 @@ export default function Layout() {
       <ScrollToTop />
       <Navbar profile={profile} />
       <main className="flex-1 pb-16 pt-10 sm:pt-14">
-        <Suspense fallback={<div className="mx-auto max-w-6xl px-5 sm:px-8"><Loader /></div>}>
+        <Suspense fallback={<div className="container-page"><Loader /></div>}>
           <Outlet context={{ profile }} />
         </Suspense>
       </main>

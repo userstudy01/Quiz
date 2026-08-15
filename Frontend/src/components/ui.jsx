@@ -1,29 +1,96 @@
 import { Link } from 'react-router-dom';
+import { buttonClass, inputClass } from '../lib/styles';
+
+/* ==========================================================================
+   Shared public-site primitives.
+   Styling comes from the tokens and utilities in index.css — no hex values
+   and no ad-hoc spacing values live in this file.
+   ========================================================================== */
+
+/* --- Layout --------------------------------------------------------------- */
 
 export function Section({ children, className = '' }) {
-  return (
-    <section className={`mx-auto w-full max-w-6xl px-5 sm:px-8 ${className}`}>{children}</section>
-  );
+  return <section className={`container-page ${className}`}>{children}</section>;
 }
 
 export function SectionHeading({ eyebrow, title, description, action }) {
   return (
-    <div className="flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
+    <div className="hairline-b flex flex-col gap-4 pb-6 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        {eyebrow ? (
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-ink-muted">{eyebrow}</p>
+        {eyebrow ? <p className="label-mono">{eyebrow}</p> : null}
+        <h2 className="mt-2.5 text-h2 text-ink">{title}</h2>
+        {description ? (
+          <p className="mt-2.5 max-w-reading text-body text-ink-muted">{description}</p>
         ) : null}
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
-        {description ? <p className="mt-2 max-w-2xl text-ink-muted">{description}</p> : null}
       </div>
       {action}
     </div>
   );
 }
 
+/* --- Buttons -------------------------------------------------------------- */
+
+export function Button({ children, variant = 'primary', className = '', ...rest }) {
+  return (
+    <button className={buttonClass(variant, className)} {...rest}>
+      {children}
+    </button>
+  );
+}
+
+/* `to` renders a router link, `href` an external anchor. Wrap an icon in
+   <span className="arrow"> to get the hover nudge from `link-arrow`. */
+export function ButtonLink({ to, href, children, variant = 'primary', className = '', ...rest }) {
+  const classes = buttonClass(variant, `link-arrow ${className}`);
+
+  if (to) {
+    return (
+      <Link to={to} className={classes} {...rest}>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <a href={href} className={classes} target="_blank" rel="noreferrer noopener" {...rest}>
+      {children}
+    </a>
+  );
+}
+
+/* --- Inputs --------------------------------------------------------------- */
+
+export function Input({ invalid = false, className = '', ...rest }) {
+  return <input aria-invalid={invalid || undefined} className={inputClass(invalid, className)} {...rest} />;
+}
+
+export function Textarea({ invalid = false, className = '', ...rest }) {
+  return (
+    <textarea
+      aria-invalid={invalid || undefined}
+      className={inputClass(invalid, `resize-y ${className}`)}
+      {...rest}
+    />
+  );
+}
+
+export function FieldLabel({ htmlFor, children }) {
+  return (
+    <label htmlFor={htmlFor} className="mb-1.5 block text-small font-medium text-ink">
+      {children}
+    </label>
+  );
+}
+
+export function FieldError({ children }) {
+  return children ? <p className="mt-1.5 text-meta text-danger">{children}</p> : null;
+}
+
+/* --- Content states ------------------------------------------------------- */
+
 export function Tag({ children }) {
   return (
-    <span className="rounded-md border border-line bg-surface px-2 py-1 text-xs text-ink-muted">
+    <span className="rounded-md border border-line bg-elevated px-2 py-1 text-meta text-ink-muted">
       {children}
     </span>
   );
@@ -31,8 +98,8 @@ export function Tag({ children }) {
 
 export function Loader({ label = 'Loading…' }) {
   return (
-    <div className="flex items-center gap-3 py-16 text-sm text-ink-muted" role="status">
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-line border-t-ink" />
+    <div className="flex items-center gap-3 py-16 text-small text-ink-muted" role="status">
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-line border-t-accent" />
       {label}
     </div>
   );
@@ -40,16 +107,12 @@ export function Loader({ label = 'Loading…' }) {
 
 export function ErrorState({ message, onRetry }) {
   return (
-    <div className="rounded-xl border border-line bg-surface p-6" role="alert">
-      <p className="text-sm text-ink">{message}</p>
+    <div className="surface-card p-6" role="alert">
+      <p className="text-body text-ink">{message}</p>
       {onRetry ? (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-3 rounded-lg border border-line px-3 py-1.5 text-sm hover:border-ink/30"
-        >
+        <Button variant="secondary" className="mt-4" onClick={onRetry} type="button">
           Try again
-        </button>
+        </Button>
       ) : null}
     </div>
   );
@@ -57,30 +120,9 @@ export function ErrorState({ message, onRetry }) {
 
 export function EmptyState({ title, description }) {
   return (
-    <div className="rounded-xl border border-dashed border-line bg-surface p-10 text-center">
-      <p className="font-medium">{title}</p>
-      {description ? <p className="mt-1 text-sm text-ink-muted">{description}</p> : null}
+    <div className="rounded-card border border-dashed border-line bg-surface p-10 text-center">
+      <p className="text-h3 text-ink">{title}</p>
+      {description ? <p className="mt-1.5 text-body text-ink-muted">{description}</p> : null}
     </div>
-  );
-}
-
-export function ButtonLink({ to, href, children, variant = 'primary', ...rest }) {
-  const className =
-    variant === 'primary'
-      ? 'inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90'
-      : 'inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:border-ink/30';
-
-  if (to) {
-    return (
-      <Link to={to} className={className} {...rest}>
-        {children}
-      </Link>
-    );
-  }
-
-  return (
-    <a href={href} className={className} target="_blank" rel="noreferrer noopener" {...rest}>
-      {children}
-    </a>
   );
 }

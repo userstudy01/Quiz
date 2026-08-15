@@ -1,4 +1,5 @@
 import { Link, useOutletContext } from 'react-router-dom';
+import Hero from '../components/Hero';
 import ProjectCard from '../components/ProjectCard';
 import { ButtonLink, EmptyState, Loader, Section, SectionHeading } from '../components/ui';
 import { getExperience, getFeaturedProjects, getSkills } from '../lib/api';
@@ -23,50 +24,7 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero */}
-      <Section className="pt-6 pb-16 sm:pt-10">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr] md:items-center">
-          <div>
-            {profile?.title ? (
-              <p className="text-xs font-medium uppercase tracking-[0.18em] text-ink-muted">
-                {profile.title}
-              </p>
-            ) : null}
-
-            <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-              {profile?.name || 'Developer Portfolio'}
-            </h1>
-
-            {profile?.tagline ? (
-              <p className="mt-4 max-w-xl text-lg text-ink-muted">{profile.tagline}</p>
-            ) : null}
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink to="/projects">View Projects</ButtonLink>
-              <ButtonLink to="/contact" variant="secondary">
-                Get in Touch
-              </ButtonLink>
-              {profile?.resumeUrl ? (
-                <ButtonLink href={profile.resumeUrl} variant="secondary">
-                  Résumé
-                </ButtonLink>
-              ) : null}
-            </div>
-          </div>
-
-          {profile?.profileImage ? (
-            <div className="justify-self-start md:justify-self-end">
-              <img
-                src={profile.profileImage}
-                alt={profile.name ? `Portrait of ${profile.name}` : 'Profile photo'}
-                loading="lazy"
-                decoding="async"
-                className="h-48 w-48 rounded-2xl border border-line object-cover sm:h-60 sm:w-60"
-              />
-            </div>
-          ) : null}
-        </div>
-      </Section>
+      <Hero profile={profile} />
 
       {/* Introduction */}
       {profile?.bio ? (
