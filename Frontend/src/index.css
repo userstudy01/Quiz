@@ -1,15 +1,92 @@
 @import "tailwindcss";
 
+/* ---------- Design tokens (light is the default) ---------- */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, monospace;
 
   --color-ink: #0b1120;
-  --color-ink-muted: #475569;
-  --color-line: #e2e8f0;
+  --color-ink-muted: #51607a;
+  --color-line: #e7ebf1;
   --color-surface: #ffffff;
-  --color-canvas: #fbfbfa;
-  --color-accent: #1d4ed8;
+  --color-canvas: #fafafb;
+  --color-accent: #4f46e5;
+  --color-accent-2: #7c3aed;
+  --color-accent-3: #0ea5e9;
+}
+
+/* Non-color design variables + light defaults for theme-swapped values.
+   Kept out of @theme so we can freely override them per theme. */
+:root {
+  --grid-dot: rgba(79, 70, 229, 0.10);
+  --select-bg: #ddd6fe;
+  --scroll-thumb: #cbd5e1;
+  --scroll-thumb-hover: #94a3b8;
+  --hero-glow-1: #6366f1;
+  --hero-glow-2: #0ea5e9;
+  --hero-glow-3: #a855f7;
+  --hero-glow-opacity: 0.5;
+  --card-border-hover: rgba(79, 70, 229, 0.35);
+  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
+  --shadow-lift: 0 2px 6px rgba(15, 23, 42, 0.06), 0 24px 48px -20px rgba(79, 70, 229, 0.28);
+}
+
+/* ---------- Dark theme ----------
+   Applies when the user explicitly picks dark, OR when the system prefers dark
+   and the user hasn't explicitly picked light. Redefining the @theme color
+   variables re-points every text-ink / bg-surface / border-line utility. */
+:root[data-theme="dark"],
+:root:not([data-theme="light"]) {
+  /* placeholder to keep specificity note; real values below */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-ink: #eef1f8;
+    --color-ink-muted: #9aa5bd;
+    --color-line: #232a3a;
+    --color-surface: #12151f;
+    --color-canvas: #0a0c14;
+    --color-accent: #818cf8;
+    --color-accent-2: #c084fc;
+    --color-accent-3: #38bdf8;
+
+    --grid-dot: rgba(129, 140, 248, 0.14);
+    --select-bg: #4338ca;
+    --scroll-thumb: #2b3346;
+    --scroll-thumb-hover: #3b455c;
+    --hero-glow-1: #4f46e5;
+    --hero-glow-2: #0284c7;
+    --hero-glow-3: #7c3aed;
+    --hero-glow-opacity: 0.38;
+    --card-border-hover: rgba(129, 140, 248, 0.5);
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -14px rgba(0, 0, 0, 0.7);
+    --shadow-lift: 0 2px 8px rgba(0, 0, 0, 0.5), 0 30px 60px -24px rgba(99, 102, 241, 0.4);
+  }
+}
+
+/* Explicit choice always wins over the system media query. */
+:root[data-theme="dark"] {
+  --color-ink: #eef1f8;
+  --color-ink-muted: #9aa5bd;
+  --color-line: #232a3a;
+  --color-surface: #12151f;
+  --color-canvas: #0a0c14;
+  --color-accent: #818cf8;
+  --color-accent-2: #c084fc;
+  --color-accent-3: #38bdf8;
+
+  --grid-dot: rgba(129, 140, 248, 0.14);
+  --select-bg: #4338ca;
+  --scroll-thumb: #2b3346;
+  --scroll-thumb-hover: #3b455c;
+  --hero-glow-1: #4f46e5;
+  --hero-glow-2: #0284c7;
+  --hero-glow-3: #7c3aed;
+  --hero-glow-opacity: 0.38;
+  --card-border-hover: rgba(129, 140, 248, 0.5);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -14px rgba(0, 0, 0, 0.7);
+  --shadow-lift: 0 2px 8px rgba(0, 0, 0, 0.5), 0 30px 60px -24px rgba(99, 102, 241, 0.4);
 }
 
 html {
@@ -23,10 +100,11 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 ::selection {
-  background: #dbeafe;
+  background: var(--select-bg);
 }
 
 ::-webkit-scrollbar {
@@ -37,12 +115,12 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--scroll-thumb);
   border-radius: 999px;
   border: 3px solid var(--color-canvas);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--scroll-thumb-hover);
 }
 
 :focus-visible {
@@ -50,14 +128,78 @@ body {
   outline-offset: 2px;
 }
 
+/* ---------- Premium primitives ---------- */
+
+.text-gradient {
+  background: linear-gradient(100deg, var(--color-accent) 0%, var(--color-accent-2) 45%, var(--color-accent-3) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 0);
+  background-size: 26px 26px;
+}
+
+.aurora {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(60px);
+  opacity: var(--hero-glow-opacity);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.card-hover:hover {
+  border-color: var(--card-border-hover);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.8s ease;
+  pointer-events: none;
+}
+.group:hover .sheen::after {
+  transform: translateX(120%);
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -26px, 0); }
+}
+.animate-float-slow { animation: float-slow 11s ease-in-out infinite; }
+
+@keyframes float-slower {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, 22px, 0); }
+}
+.animate-float-slower { animation: float-slower 14s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+  html { scroll-behavior: auto; }
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  .reveal { opacity: 1; transform: none; }
 }

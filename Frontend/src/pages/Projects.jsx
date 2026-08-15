@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
-import { EmptyState, ErrorState, Loader, Section, SectionHeading } from '../components/ui';
+import FeatureProjectCard from '../components/FeatureProjectCard';
+import { EmptyState, ErrorState, Loader, Section } from '../components/ui';
 import { getProjectFilters, getProjects } from '../lib/api';
 import useRequest from '../lib/useRequest';
+import useReveal from '../lib/useReveal';
 import useSeo from '../lib/useSeo';
 
 const PAGE_SIZE = 24;
@@ -47,6 +49,7 @@ export default function Projects() {
 
   const { data, loading, error, reload } = useRequest(() => getProjects(query), [query]);
   const { data: meta } = useRequest(getProjectFilters, []);
+  const revealRef = useReveal();
 
   useSeo({
     title: 'Projects',
@@ -61,11 +64,17 @@ export default function Projects() {
 
   return (
     <Section>
-      <SectionHeading
-        eyebrow="Work"
-        title="Projects"
-        description="Search and filter by category, technology or featured status."
-      />
+      <div ref={revealRef}>
+      <div className="border-b border-line pb-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Work</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-5xl">
+          Projects that <span className="text-gradient">shipped</span>.
+        </h1>
+        <p className="mt-3 max-w-2xl text-ink-muted">
+          {data?.total ? `${data.total} real, delivered projects. ` : ''}Search and filter by category,
+          technology or featured status.
+        </p>
+      </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
@@ -156,9 +165,19 @@ export default function Projects() {
         ) : error ? (
           <ErrorState message={error} onRetry={reload} />
         ) : items.length ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((project) => (
-              <ProjectCard key={project._id} project={project} />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((project, i) => (
+              <div
+                key={project._id}
+                className={`reveal ${project.featured ? 'sm:col-span-2 lg:col-span-3' : ''}`}
+                style={{ '--reveal-delay': `${(i % 6) * 60}ms` }}
+              >
+                {project.featured ? (
+                  <FeatureProjectCard project={project} index={i} />
+                ) : (
+                  <ProjectCard project={project} index={i} />
+                )}
+              </div>
             ))}
           </div>
         ) : (
@@ -167,6 +186,7 @@ export default function Projects() {
             description="Try a different search term or clear the filters."
           />
         )}
+      </div>
       </div>
     </Section>
   );

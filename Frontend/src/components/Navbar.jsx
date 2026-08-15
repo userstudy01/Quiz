@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 
 const links = [
   { to: '/', label: 'Home', end: true },
@@ -12,6 +13,14 @@ const links = [
 
 export default function Navbar({ profile }) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const name = profile?.name || 'Portfolio';
   const initials =
@@ -23,21 +32,32 @@ export default function Navbar({ profile }) {
       .join('') || 'PF';
 
   const linkClass = ({ isActive }) =>
-    `text-sm transition-colors ${
-      isActive ? 'text-ink font-semibold' : 'text-ink-muted hover:text-ink'
+    `relative text-sm transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:rounded-full after:bg-accent after:transition-all after:duration-300 ${
+      isActive
+        ? 'text-ink font-semibold after:w-full'
+        : 'text-ink-muted hover:text-ink after:w-0 hover:after:w-full'
     }`;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-canvas/85 backdrop-blur">
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'border-b border-line bg-canvas/80 backdrop-blur-xl shadow-[0_1px_0_rgba(15,23,42,0.03)]'
+          : 'border-b border-transparent bg-canvas/40 backdrop-blur'
+      }`}
+    >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
-        <Link to="/" className="flex items-center gap-3">
-          <span className="grid h-9 w-9 place-items-center rounded-lg bg-ink text-xs font-semibold tracking-wide text-white">
+        <Link to="/" className="group flex items-center gap-3">
+          <span
+            className="grid h-9 w-9 place-items-center rounded-xl text-xs font-bold tracking-wide text-white shadow-[var(--shadow-soft)] transition-transform duration-300 group-hover:scale-105"
+            style={{ background: 'linear-gradient(135deg,#4f46e5,#7c3aed)' }}
+          >
             {initials}
           </span>
           <span className="hidden text-sm font-semibold tracking-tight sm:block">{name}</span>
         </Link>
 
-        <div className="hidden items-center gap-7 md:flex">
+        <div className="hidden items-center gap-8 md:flex">
           {links.map((link) => (
             <NavLink key={link.to} to={link.to} end={link.end} className={linkClass}>
               {link.label}
@@ -46,12 +66,15 @@ export default function Navbar({ profile }) {
         </div>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
+
           {profile?.resumeUrl ? (
             <a
               href={profile.resumeUrl}
               target="_blank"
               rel="noreferrer noopener"
-              className="hidden rounded-lg border border-line bg-surface px-3.5 py-2 text-sm font-medium text-ink transition-colors hover:border-ink/30 sm:block"
+              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-white shadow-[var(--shadow-soft)] transition-transform hover:scale-[1.03] sm:block"
+              style={{ background: 'linear-gradient(135deg,#4f46e5,#7c3aed)' }}
             >
               Résumé
             </a>
@@ -65,10 +88,7 @@ export default function Navbar({ profile }) {
             className="grid h-10 w-10 place-items-center rounded-lg border border-line bg-surface md:hidden"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <path
-                strokeLinecap="round"
-                d={open ? 'M6 6l12 12M18 6L6 18' : 'M4 7h16M4 12h16M4 17h16'}
-              />
+              <path strokeLinecap="round" d={open ? 'M6 6l12 12M18 6L6 18' : 'M4 7h16M4 12h16M4 17h16'} />
             </svg>
           </button>
         </div>

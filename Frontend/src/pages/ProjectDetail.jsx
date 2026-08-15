@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { ButtonLink, ErrorState, Loader, Section } from '../components/ui';
 import { getProject } from '../lib/api';
+import { projectVisual } from '../lib/projectVisual';
 import useRequest from '../lib/useRequest';
 import useSeo from '../lib/useSeo';
 
@@ -13,7 +14,7 @@ function ListBlock({ title, items }) {
       <ul className="mt-4 space-y-2.5">
         {items.map((item, index) => (
           <li key={`${title}-${index}`} className="flex gap-3 text-ink-muted">
-            <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink/40" />
+            <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
             <span>{item}</span>
           </li>
         ))}
@@ -63,24 +64,63 @@ export default function ProjectDetail() {
   }
 
   const technologies = project.technologies || [];
+  const cover = project.screenshots?.[0]?.url;
+  const visual = projectVisual(project);
 
   return (
     <Section>
-      <Link to="/projects" className="text-sm text-ink-muted hover:text-ink">
+      <Link to="/projects" className="text-sm text-ink-muted transition-colors hover:text-accent">
         ← All projects
       </Link>
 
-      <header className="mt-6 border-b border-line pb-8">
+      {/* Case-study banner: screenshot if present, otherwise the generated gradient */}
+      <div className="sheen group relative mt-6 flex aspect-[21/9] items-center justify-center overflow-hidden rounded-3xl border border-line shadow-[var(--shadow-soft)]">
+        {cover ? (
+          <img
+            src={cover}
+            alt={project.screenshots[0].caption || `${project.title} cover`}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="relative h-full w-full" style={{ background: visual.gradient }}>
+            <div className="absolute inset-0 bg-grid opacity-30 mix-blend-overlay" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-6xl font-bold tracking-tight text-white/95 sm:text-7xl">
+                {visual.initials}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <header className="mt-8 border-b border-line pb-8">
         {project.category ? (
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-ink-muted">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
             {project.category}
           </p>
         ) : null}
 
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{project.title}</h1>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-5xl">{project.title}</h1>
 
         {project.shortDescription ? (
-          <p className="mt-4 max-w-3xl text-lg text-ink-muted">{project.shortDescription}</p>
+          <p className="mt-4 max-w-3xl text-lg leading-relaxed text-ink-muted">
+            {project.shortDescription}
+          </p>
+        ) : null}
+
+        {project.featured || project.role ? (
+          <div className="mt-5 flex flex-wrap items-center gap-2 text-sm">
+            {project.featured ? (
+              <span className="rounded-full bg-accent/10 px-3 py-1 font-medium text-accent">
+                ★ Featured project
+              </span>
+            ) : null}
+            {project.role ? (
+              <span className="rounded-full border border-line px-3 py-1 text-ink-muted">
+                {project.role}
+              </span>
+            ) : null}
+          </div>
         ) : null}
 
         {project.liveUrl || project.githubUrl ? (
