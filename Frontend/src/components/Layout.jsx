@@ -4,12 +4,16 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import { Loader } from './ui';
 import { getProfile } from '../lib/api';
+import { trackPageView } from '../lib/analytics';
 import useRequest from '../lib/useRequest';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Record an anonymous page view; project detail pages pass their slug.
+    const projectMatch = pathname.match(/^\/projects\/([^/]+)$/);
+    trackPageView(pathname, projectMatch ? projectMatch[1] : '');
   }, [pathname]);
   return null;
 }

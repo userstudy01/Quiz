@@ -1,26 +1,95 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import API, { apiError } from '../utils/api';
 import { Button, Field, inputClass } from '../components/ui';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Small eye / eye-off button used to toggle password visibility.
+function RevealButton({ shown, onToggle, label }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={shown ? `Hide ${label}` : `Show ${label}`}
+      aria-pressed={shown}
+      className="absolute inset-y-0 right-0 grid w-10 place-items-center text-ink-muted hover:text-ink"
+    >
+      {shown ? (
+        <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+          <path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8" />
+          <path d="M9.9 4.2A9.5 9.5 0 0112 4c5 0 9 4.5 10 8a12 12 0 01-2.2 3.3M6.1 6.1C3.8 7.6 2.3 9.9 2 12c1 3.5 5 8 10 8a9.6 9.6 0 004-.9" />
+        </svg>
+      ) : (
+        <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 export default function Signup() {
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [done, setDone] = useState(null); // { isFirstUser }
+  // ADM-003: registration is only available on first run (no account yet).
+  // null = still checking, true = open, false = closed.
+  const [registrationOpen, setRegistrationOpen] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    API.get('/auth/registration-open')
+      .then(({ data }) => {
+        if (active) setRegistrationOpen(Boolean(data.open));
+      })
+      .catch(() => {
+        // If the check fails, fall back to showing the form; the backend still
+        // rejects a second registration, so security does not depend on this.
+        if (active) setRegistrationOpen(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const set = (key) => (e) => {
+    setForm((prev) => ({ ...prev, [key]: e.target.value }));
+    if (fieldErrors[key]) setFieldErrors((prev) => ({ ...prev, [key]: undefined }));
+  };
+
+  const validate = () => {
+    const errors = {};
+    if (!form.name.trim()) errors.name = 'Name is required.';
+    if (!form.email.trim()) errors.email = 'Email is required.';
+    else if (!EMAIL_RE.test(form.email.trim())) errors.email = 'Enter a valid email address.';
+    if (!form.password) errors.password = 'Password is required.';
+    else if (form.password.length < 8) errors.password = 'Password must be at least 8 characters.';
+    if (form.confirmPassword !== form.password) errors.confirmPassword = 'Passwords do not match.';
+    return errors;
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
 
-    if (form.password.length < 8) {
-      setError('Password must be at least 8 characters.');
-      return;
-    }
+    const errors = validate();
+    setFieldErrors(errors);
+    if (Object.keys(errors).length) return;
 
     setLoading(true);
     try {
-      const { data } = await API.post('/auth/register', form);
+      // confirmPassword is a client-side check only; never sent to the server.
+      const { data } = await API.post('/auth/register', {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        password: form.password,
+      });
       setDone({ isFirstUser: Boolean(data.isFirstUser) });
     } catch (err) {
       setError(apiError(err, 'Could not create the account.'));
@@ -30,17 +99,40 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-canvas px-4">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-10">
       <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-8">
         <div className="mb-7">
           <span className="grid h-10 w-10 place-items-center rounded-lg bg-ink text-xs font-semibold text-white">
             PA
           </span>
-          <h1 className="mt-4 text-xl font-semibold tracking-tight">Create account</h1>
-          <p className="mt-1 text-sm text-ink-muted">Request access to the portfolio admin.</p>
+          <h1 className="mt-4 text-xl font-semibold tracking-tight">
+            {registrationOpen === false ? 'Registration disabled' : 'Create admin account'}
+          </h1>
+          <p className="mt-1 text-sm text-ink-muted">
+            {registrationOpen === false
+              ? 'Sign in to manage your portfolio content.'
+              : 'The first account created becomes the super admin.'}
+          </p>
         </div>
 
-        {done ? (
+        {registrationOpen === null ? (
+          <div className="flex items-center gap-3 py-6 text-sm text-ink-muted" role="status">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-line border-t-ink" />
+            Checking…
+          </div>
+        ) : registrationOpen === false ? (
+          <div className="space-y-4">
+            <p
+              role="status"
+              className="rounded-lg border border-line bg-canvas px-3.5 py-3 text-sm text-ink-muted"
+            >
+              Admin registration is disabled. An administrator account already exists.
+            </p>
+            <Link to="/login">
+              <Button className="w-full">Go to sign in</Button>
+            </Link>
+          </div>
+        ) : done ? (
           <div className="space-y-4">
             <p
               role="status"
@@ -65,37 +157,63 @@ export default function Signup() {
               </p>
             ) : null}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Field label="Name">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
+              <Field label="Name" error={fieldErrors.name}>
                 <input
                   type="text"
-                  required
+                  autoComplete="name"
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  onChange={set('name')}
+                  aria-invalid={Boolean(fieldErrors.name)}
                   className={inputClass}
                 />
               </Field>
 
-              <Field label="Email">
+              <Field label="Email" error={fieldErrors.email}>
                 <input
                   type="email"
-                  required
                   autoComplete="username"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  onChange={set('email')}
+                  aria-invalid={Boolean(fieldErrors.email)}
                   className={inputClass}
                 />
               </Field>
 
-              <Field label="Password" hint="At least 8 characters.">
-                <input
-                  type="password"
-                  required
-                  autoComplete="new-password"
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className={inputClass}
-                />
+              <Field label="Password" hint="At least 8 characters." error={fieldErrors.password}>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    value={form.password}
+                    onChange={set('password')}
+                    aria-invalid={Boolean(fieldErrors.password)}
+                    className={`${inputClass} pr-11`}
+                  />
+                  <RevealButton
+                    shown={showPassword}
+                    onToggle={() => setShowPassword((v) => !v)}
+                    label="password"
+                  />
+                </div>
+              </Field>
+
+              <Field label="Confirm password" error={fieldErrors.confirmPassword}>
+                <div className="relative">
+                  <input
+                    type={showConfirm ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    value={form.confirmPassword}
+                    onChange={set('confirmPassword')}
+                    aria-invalid={Boolean(fieldErrors.confirmPassword)}
+                    className={`${inputClass} pr-11`}
+                  />
+                  <RevealButton
+                    shown={showConfirm}
+                    onToggle={() => setShowConfirm((v) => !v)}
+                    label="confirm password"
+                  />
+                </div>
               </Field>
 
               <Button type="submit" disabled={loading} className="w-full">

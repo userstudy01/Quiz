@@ -55,19 +55,28 @@ const register = asyncHandler(async (req, res) => {
       .json({ message: 'Name, a valid email and a password of at least 8 characters are required' });
   }
 
+  // ADM-003: public sign-up exists only for the first-run case. Once any account
+  // exists, registration is closed. The backend is the final authority here, so
+  // even a direct API call cannot create a second account.
+  const isFirstUser = (await User.estimatedDocumentCount()) === 0;
+  if (!isFirstUser) {
+    return res.status(403).json({
+      message: 'Admin registration is disabled. An administrator account already exists.',
+    });
+  }
+
   const exists = await User.findOne({ email }).lean();
   if (exists) {
     return res.status(409).json({ message: 'A user with this email already exists' });
   }
 
-  const isFirstUser = (await User.estimatedDocumentCount()) === 0;
   const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt(10));
   const user = await User.create({
     name,
     email,
     password: hashedPassword,
-    role: isFirstUser ? 'superadmin' : 'editor',
-    status: isFirstUser ? 'approved' : 'pending',
+    role: 'superadmin',
+    status: 'approved',
   });
 
   res.status(201).json({
@@ -78,6 +87,14 @@ const register = asyncHandler(async (req, res) => {
     status: user.status,
     isFirstUser,
   });
+});
+
+// @route GET /api/auth/registration-open (public)
+// ADM-003: tells the admin panel whether first-run sign-up is still available.
+// Exposes only a boolean — never any user detail.
+const registrationOpen = asyncHandler(async (req, res) => {
+  const open = (await User.estimatedDocumentCount()) === 0;
+  res.json({ open });
 });
 
 // @route GET /api/auth/users (super admin only)
@@ -153,4 +170,13 @@ const changePassword = asyncHandler(async (req, res) => {
   res.json({ message: 'Password updated' });
 });
 
-module.exports = { login, register, me, logout, changePassword, listUsers, updateUser };
+module.exports = {
+  login,
+  register,
+  registrationOpen,
+  me,
+  logout,
+  changePassword,
+  listUsers,
+  updateUser,
+};

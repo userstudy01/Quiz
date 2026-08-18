@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   login,
   register,
+  registrationOpen,
   me,
   logout,
   changePassword,
@@ -16,8 +17,9 @@ router.post('/logout', protect, logout);
 router.get('/me', protect, me);
 router.put('/password', protect, changePassword);
 
-// Public sign-up. First account becomes the super admin; the rest wait for
-// approval (handled in the controller).
+// Public sign-up — first-run only. Once an account exists the controller
+// rejects further registrations. `registration-open` lets the UI reflect that.
+router.get('/registration-open', registrationOpen);
 router.post('/register', register);
 
 // Super admin manages accounts and approves/rejects pending sign-ups.

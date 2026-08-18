@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import API, { clearAuth, getStoredAuth } from '../utils/api';
+import NotificationBell from './NotificationBell';
 
 const links = [
   { to: '/', label: 'Dashboard', end: true },
@@ -9,6 +10,7 @@ const links = [
   { to: '/experience', label: 'Experience' },
   { to: '/profile', label: 'Profile' },
   { to: '/messages', label: 'Messages' },
+  { to: '/analytics', label: 'Analytics' },
   { to: '/requests', label: 'Requests', superAdmin: true },
 ];
 
@@ -58,12 +60,15 @@ export default function Sidebar() {
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <Link to="/" className="mb-8 mt-10 flex items-center gap-3 lg:mt-0">
-          <span className="grid h-9 w-9 place-items-center rounded-lg bg-ink text-xs font-semibold text-white">
-            PA
-          </span>
-          <span className="text-sm font-semibold">Portfolio Admin</span>
-        </Link>
+        <div className="mb-8 mt-10 flex items-center justify-between gap-2 lg:mt-0">
+          <Link to="/" className="flex items-center gap-3">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-ink text-xs font-semibold text-white">
+              PA
+            </span>
+            <span className="text-sm font-semibold">Portfolio Admin</span>
+          </Link>
+          <NotificationBell onNavigate={() => setOpen(false)} />
+        </div>
 
         <nav className="flex-1 space-y-1">
           {links

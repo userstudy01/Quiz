@@ -9,6 +9,7 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [toast, setToast] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -29,16 +30,22 @@ export default function Projects() {
     load();
   }, [load]);
 
+  const categories = useMemo(
+    () => [...new Set(projects.map((p) => p.category).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+    [projects]
+  );
+
   const visible = useMemo(() => {
     const term = search.trim().toLowerCase();
     return projects.filter((project) => {
       if (statusFilter !== 'all' && project.status !== statusFilter) return false;
+      if (categoryFilter !== 'all' && project.category !== categoryFilter) return false;
       if (!term) return true;
       return [project.title, project.category, project.role, (project.technologies || []).join(' ')]
         .filter(Boolean)
         .some((value) => value.toLowerCase().includes(term));
     });
-  }, [projects, search, statusFilter]);
+  }, [projects, search, statusFilter, categoryFilter]);
 
   const patch = async (project, body) => {
     try {
@@ -89,6 +96,19 @@ export default function Projects() {
           <option value="published">Published</option>
           <option value="draft">Draft</option>
         </select>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className={`${inputClass} sm:max-w-[14rem]`}
+          aria-label="Filter by category"
+        >
+          <option value="all">All categories</option>
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
       </div>
 
       {loading ? (
@@ -127,6 +147,18 @@ export default function Projects() {
                         {project.title}
                       </Link>
                       <p className="text-xs text-ink-muted">/{project.slug}</p>
+                      {project.technologies?.length ? (
+                        <ul className="mt-1.5 flex flex-wrap gap-1">
+                          {project.technologies.slice(0, 4).map((tech) => (
+                            <li key={tech} className="rounded border border-line bg-canvas px-1.5 py-0.5 text-[11px] text-ink-muted">
+                              {tech}
+                            </li>
+                          ))}
+                          {project.technologies.length > 4 ? (
+                            <li className="px-1 py-0.5 text-[11px] text-ink-muted">+{project.technologies.length - 4}</li>
+                          ) : null}
+                        </ul>
+                      ) : null}
                     </td>
                     <td className="px-4 py-3 text-ink-muted">{project.category || '—'}</td>
                     <td className="px-4 py-3">
