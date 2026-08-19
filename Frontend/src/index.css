@@ -1,113 +1,93 @@
 @import "tailwindcss";
 
-/* ==========================================================================
-   Design tokens
-   Dark-first. Every colour, type step, radius, easing and glow used by the
-   public site is defined here once and consumed through Tailwind utilities.
-   Never hard-code a hex value in a component.
-   ========================================================================== */
+/* ---------- Design tokens (light is the default) ---------- */
 @theme {
   /* --- Type families ---------------------------------------------------- */
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, monospace;
 
-  /* --- Surfaces --------------------------------------------------------- */
-  /* canvas = page background, surface = cards, elevated = hover/menus */
-  --color-canvas: #09090b;
-  --color-surface: #111113;
-  --color-elevated: #18181b;
+  --color-ink: #0b1120;
+  --color-ink-muted: #51607a;
+  --color-line: #e7ebf1;
+  --color-surface: #ffffff;
+  --color-canvas: #fafafb;
+  --color-accent: #4f46e5;
+  --color-accent-2: #7c3aed;
+  --color-accent-3: #0ea5e9;
+}
 
-  /* --- Borders ---------------------------------------------------------- */
-  --color-line: #27272a;
-  --color-line-strong: #3f3f46;
+/* Non-color design variables + light defaults for theme-swapped values.
+   Kept out of @theme so we can freely override them per theme. */
+:root {
+  --grid-dot: rgba(79, 70, 229, 0.10);
+  --select-bg: #ddd6fe;
+  --scroll-thumb: #cbd5e1;
+  --scroll-thumb-hover: #94a3b8;
+  --hero-glow-1: #6366f1;
+  --hero-glow-2: #0ea5e9;
+  --hero-glow-3: #a855f7;
+  --hero-glow-opacity: 0.5;
+  --card-border-hover: rgba(79, 70, 229, 0.35);
+  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
+  --shadow-lift: 0 2px 6px rgba(15, 23, 42, 0.06), 0 24px 48px -20px rgba(79, 70, 229, 0.28);
+}
 
-  /* --- Text ------------------------------------------------------------- */
-  --color-ink: #fafafa; /* primary   */
-  --color-ink-muted: #a1a1aa; /* secondary */
-  --color-ink-subtle: #71717a; /* muted     */
+/* ---------- Dark theme ----------
+   Applies when the user explicitly picks dark, OR when the system prefers dark
+   and the user hasn't explicitly picked light. Redefining the @theme color
+   variables re-points every text-ink / bg-surface / border-line utility. */
+:root[data-theme="dark"],
+:root:not([data-theme="light"]) {
+  /* placeholder to keep specificity note; real values below */
+}
 
-  /* --- Accent (single accent for the whole site) ------------------------ */
-  --color-accent: #8b7bff;
-  --color-accent-strong: #6f5bff;
-  --color-accent-soft: #221f3d; /* accent tinted surface */
-  --color-accent-contrast: #0b0a16; /* text on an accent fill */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-ink: #eef1f8;
+    --color-ink-muted: #9aa5bd;
+    --color-line: #232a3a;
+    --color-surface: #12151f;
+    --color-canvas: #0a0c14;
+    --color-accent: #818cf8;
+    --color-accent-2: #c084fc;
+    --color-accent-3: #38bdf8;
 
-  /* --- Status ----------------------------------------------------------- */
-  --color-danger: #f87171;
-  --color-success: #4ade80;
+    --grid-dot: rgba(129, 140, 248, 0.14);
+    --select-bg: #4338ca;
+    --scroll-thumb: #2b3346;
+    --scroll-thumb-hover: #3b455c;
+    --hero-glow-1: #4f46e5;
+    --hero-glow-2: #0284c7;
+    --hero-glow-3: #7c3aed;
+    --hero-glow-opacity: 0.38;
+    --card-border-hover: rgba(129, 140, 248, 0.5);
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -14px rgba(0, 0, 0, 0.7);
+    --shadow-lift: 0 2px 8px rgba(0, 0, 0, 0.5), 0 30px 60px -24px rgba(99, 102, 241, 0.4);
+  }
+}
 
-  /* --- Type scale ------------------------------------------------------- *
-   * Editorial, not oversized. Hero and page headings scale fluidly; every
-   * other step is fixed so rhythm stays predictable.                       */
-  --text-hero: clamp(2.5rem, 1.85rem + 3vw, 3.75rem);
-  --text-hero--line-height: 1.04;
-  --text-hero--letter-spacing: -0.032em;
-  --text-hero--font-weight: 600;
+/* Explicit choice always wins over the system media query. */
+:root[data-theme="dark"] {
+  --color-ink: #eef1f8;
+  --color-ink-muted: #9aa5bd;
+  --color-line: #232a3a;
+  --color-surface: #12151f;
+  --color-canvas: #0a0c14;
+  --color-accent: #818cf8;
+  --color-accent-2: #c084fc;
+  --color-accent-3: #38bdf8;
 
-  --text-h1: clamp(2rem, 1.65rem + 1.6vw, 2.75rem);
-  --text-h1--line-height: 1.1;
-  --text-h1--letter-spacing: -0.026em;
-  --text-h1--font-weight: 600;
-
-  --text-h2: clamp(1.5rem, 1.35rem + 0.7vw, 1.875rem);
-  --text-h2--line-height: 1.2;
-  --text-h2--letter-spacing: -0.02em;
-  --text-h2--font-weight: 600;
-
-  --text-h3: 1.125rem;
-  --text-h3--line-height: 1.4;
-  --text-h3--letter-spacing: -0.012em;
-  --text-h3--font-weight: 600;
-
-  --text-body-lg: 1.0625rem;
-  --text-body-lg--line-height: 1.7;
-
-  --text-body: 0.9375rem;
-  --text-body--line-height: 1.7;
-
-  --text-small: 0.8125rem;
-  --text-small--line-height: 1.6;
-
-  --text-nav: 0.875rem;
-  --text-nav--line-height: 1.4;
-  --text-nav--letter-spacing: -0.006em;
-
-  /* Project metadata: category, tech chips, dates */
-  --text-meta: 0.75rem;
-  --text-meta--line-height: 1.5;
-  --text-meta--letter-spacing: 0.01em;
-
-  /* Eyebrows / overlines — pair with font-mono + uppercase */
-  --text-label: 0.6875rem;
-  --text-label--line-height: 1.1;
-  --text-label--letter-spacing: 0.18em;
-  --text-label--font-weight: 500;
-
-  /* --- Content widths --------------------------------------------------- */
-  --container-content: 72rem; /* max-w-content — page shell   */
-  --container-reading: 46rem; /* max-w-reading — prose column */
-
-  /* --- Radii ------------------------------------------------------------ */
-  --radius-control: 0.625rem;
-  --radius-card: 0.875rem;
-  --radius-panel: 1.25rem;
-
-  /* --- Glows and elevation ---------------------------------------------- *
-   * Soft and low-opacity on purpose. This is not a neon system.            */
-  --shadow-glow-sm: 0 0 0 1px --alpha(var(--color-accent) / 18%),
-    0 6px 20px -8px --alpha(var(--color-accent) / 45%);
-  --shadow-glow-md: 0 10px 34px -12px --alpha(var(--color-accent) / 50%);
-  --shadow-glow-lg: 0 24px 70px -28px --alpha(var(--color-accent) / 55%);
-  --shadow-elevated: 0 1px 2px rgb(0 0 0 / 40%), 0 12px 32px -16px rgb(0 0 0 / 70%);
-
-  /* --- Motion ----------------------------------------------------------- */
-  --ease-smooth: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
-
-  /* Tailwind's default for bare `transition` utilities */
-  --default-transition-duration: 200ms;
-  --default-transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --grid-dot: rgba(129, 140, 248, 0.14);
+  --select-bg: #4338ca;
+  --scroll-thumb: #2b3346;
+  --scroll-thumb-hover: #3b455c;
+  --hero-glow-1: #4f46e5;
+  --hero-glow-2: #0284c7;
+  --hero-glow-3: #7c3aed;
+  --hero-glow-opacity: 0.38;
+  --card-border-hover: rgba(129, 140, 248, 0.5);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -14px rgba(0, 0, 0, 0.7);
+  --shadow-lift: 0 2px 8px rgba(0, 0, 0, 0.5), 0 30px 60px -24px rgba(99, 102, 241, 0.4);
 }
 
 /* Duration steps. Components reference these instead of literal ms values so
@@ -346,48 +326,30 @@
 @utility link-underline {
   position: relative;
   color: var(--color-ink);
-  transition: color var(--duration-fast) var(--ease-smooth);
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    height: 1px;
-    width: 100%;
-    background-color: currentColor;
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--duration-normal) var(--ease-smooth);
-  }
-
-  &:hover::after,
-  &:focus-visible::after {
-    transform: scaleX(1);
-  }
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Muted link that resolves to the accent. */
-@utility link-accent {
-  color: var(--color-ink-muted);
-  transition: color var(--duration-fast) var(--ease-smooth);
-
-  &:hover,
-  &:focus-visible {
-    color: var(--color-accent);
-  }
+::selection {
+  background: var(--select-bg);
 }
 
-/* Nudges any `.arrow` child to the right on hover of the parent. */
-@utility link-arrow {
-  & .arrow {
-    transition: transform var(--duration-normal) var(--ease-smooth);
-  }
-
-  &:hover .arrow,
-  &:focus-visible .arrow {
-    transform: translateX(3px);
-  }
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 999px;
+  border: 3px solid var(--color-canvas);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-hover);
 }
 
 /* ==========================================================================
@@ -411,213 +373,72 @@
   }
 }
 
-/* Ambient accent orbs. Long cycles, small distances, no filters. */
-@keyframes hero-drift-a {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(4%, -3%, 0) scale(1.08);
-  }
+/* ---------- Premium primitives ---------- */
+
+.text-gradient {
+  background: linear-gradient(100deg, var(--color-accent) 0%, var(--color-accent-2) 45%, var(--color-accent-3) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-@keyframes hero-drift-b {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1.05);
-  }
-  50% {
-    transform: translate3d(-5%, 4%, 0) scale(1);
-  }
+.bg-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 0);
+  background-size: 26px 26px;
 }
 
-/* Node field: dots breathe, links draw themselves in. */
-/* Opacity + scale only — animating the `r` attribute is not universally
-   supported, and transform-box keeps the scale centred on each circle. */
-@keyframes hero-node-pulse {
-  0%,
-  100% {
-    opacity: 0.4;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.35);
-  }
-}
-
-@keyframes hero-link-trace {
-  from {
-    stroke-dashoffset: var(--trace-length, 300);
-    opacity: 0;
-  }
-  to {
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-}
-
-/* Scroll cue: a highlight travelling down a hairline. */
-@keyframes hero-scroll-travel {
-  0% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  40% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-}
-
-/* Entrance utility. Stagger with an inline `animationDelay`. */
-@utility hero-rise {
-  animation: hero-rise 780ms var(--ease-entrance) both;
-}
-
-/* Ambient hero layers. Defined here rather than as inline styles because the
-   alpha helper only resolves at build time. */
-@utility hero-orb-a {
-  border-radius: 9999px;
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    --alpha(var(--color-accent) / 16%),
-    transparent 70%
-  );
-  animation: hero-drift-a 26s var(--ease-smooth) infinite;
+.aurora {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(60px);
+  opacity: var(--hero-glow-opacity);
+  pointer-events: none;
   will-change: transform;
 }
 
-@utility hero-orb-b {
-  border-radius: 9999px;
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    --alpha(var(--color-accent) / 11%),
-    transparent 72%
-  );
-  animation: hero-drift-b 34s var(--ease-smooth) infinite;
-  will-change: transform;
+.card-hover:hover {
+  border-color: var(--card-border-hover);
 }
 
-/* Static replacement for the orbs on small screens. */
-@utility hero-wash {
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    --alpha(var(--color-accent) / 12%),
-    transparent 70%
-  );
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
 }
 
-/* Soft bloom behind the node field. */
-@utility hero-bloom {
-  border-radius: 9999px;
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    --alpha(var(--color-accent) / 15%),
-    transparent 70%
-  );
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.8s ease;
+  pointer-events: none;
+}
+.group:hover .sheen::after {
+  transform: translateX(120%);
 }
 
-@utility hero-scroll-dot {
-  animation: hero-scroll-travel 2600ms var(--ease-smooth) infinite;
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -26px, 0); }
 }
+.animate-float-slow { animation: float-slow 11s ease-in-out infinite; }
 
-/* Pointer parallax. The hero writes --hero-mx / --hero-my (range -1…1) and
-   each layer scales that by its own depth. Defaults keep layers centred when
-   no pointer is present. */
-@utility hero-parallax {
-  --hero-mx: 0;
-  --hero-my: 0;
-  --hero-depth: 4px;
-  transform: translate3d(
-    calc(var(--hero-mx) * var(--hero-depth)),
-    calc(var(--hero-my) * var(--hero-depth)),
-    0
-  );
-  transition: transform 600ms var(--ease-smooth);
-  will-change: transform;
+@keyframes float-slower {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, 22px, 0); }
 }
+.animate-float-slower { animation: float-slower 14s ease-in-out infinite; }
 
-/* ==========================================================================
-   Scroll reveal
-   Elements marked [data-reveal] start hidden and animate in when the page's
-   IntersectionObserver adds .is-revealed. Stagger comes from an inline
-   --reveal-delay. If JS never runs, or reduced motion is on, the override at
-   the bottom of this file makes everything visible.
-   ========================================================================== */
-@layer base {
-  [data-reveal] {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0);
-    filter: blur(4px);
-    transition:
-      opacity 620ms var(--ease-entrance) var(--reveal-delay, 0ms),
-      transform 620ms var(--ease-entrance) var(--reveal-delay, 0ms),
-      filter 620ms var(--ease-entrance) var(--reveal-delay, 0ms);
-  }
-
-  [data-reveal].is-revealed {
-    opacity: 1;
-    transform: none;
-    filter: blur(0);
-  }
-}
-
-/* ==========================================================================
-   Project showcase
-   ========================================================================== */
-
-/* Fallback artwork for projects with no screenshot: engineering grid plus a
-   corner accent bloom. Deliberately not a placeholder-image look. */
-@utility project-visual {
-  position: relative;
-  overflow: hidden;
-  background-color: var(--color-elevated);
-  background-image:
-    radial-gradient(
-      75% 75% at 15% 0%,
-      --alpha(var(--color-accent) / 16%),
-      transparent 62%
-    ),
-    linear-gradient(to right, --alpha(var(--color-line) / 80%) 1px, transparent 1px),
-    linear-gradient(to bottom, --alpha(var(--color-line) / 80%) 1px, transparent 1px);
-  background-size: 100% 100%, 2.5rem 2.5rem, 2.5rem 2.5rem;
-}
-
-/* Swap the whole result set in when filters or search change. */
-@keyframes project-swap-in {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 10px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@utility project-swap {
-  animation: project-swap-in 420ms var(--ease-entrance) both;
-}
-
-/* ==========================================================================
-   Reduced motion — authoritative
-   Anything added in later animation work must stay subject to this block.
-   ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  :root {
-    --duration-fast: 0.01ms;
-    --duration-normal: 0.01ms;
-    --duration-slow: 0.01ms;
-  }
-
+  html { scroll-behavior: auto; }
   *,
   *::before,
   *::after {
@@ -635,4 +456,5 @@
     transform: none !important;
     filter: none !important;
   }
+  .reveal { opacity: 1; transform: none; }
 }

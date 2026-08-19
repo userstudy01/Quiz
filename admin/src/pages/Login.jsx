@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import API, { apiError } from '../utils/api';
 import { Button, Field, inputClass } from '../components/ui';
@@ -9,7 +9,19 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // ADM-003: only surface the first-run sign-up link while registration is open.
+  const [registrationOpen, setRegistrationOpen] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let active = true;
+    API.get('/auth/registration-open')
+      .then(({ data }) => active && setRegistrationOpen(Boolean(data.open)))
+      .catch(() => active && setRegistrationOpen(false));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -78,12 +90,14 @@ export default function Login() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-ink-muted">
-          Don&apos;t have an account?{' '}
-          <Link to="/signup" className="font-medium text-ink hover:underline">
-            Request access
-          </Link>
-        </p>
+        {registrationOpen ? (
+          <p className="mt-6 text-center text-sm text-ink-muted">
+            First time here?{' '}
+            <Link to="/signup" className="font-medium text-ink hover:underline">
+              Create the admin account
+            </Link>
+          </p>
+        ) : null}
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import Skills from './pages/Skills';
 import Experience from './pages/Experience';
 import Profile from './pages/Profile';
 import Messages from './pages/Messages';
+import Analytics from './pages/Analytics';
 import Requests from './pages/Requests';
 import { getStoredAuth } from './utils/api';
 
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="experience" element={<Experience />} />
           <Route path="profile" element={<Profile />} />
           <Route path="messages" element={<Messages />} />
+          <Route path="analytics" element={<Analytics />} />
           <Route
             path="requests"
             element={

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FeaturedProject, ProjectTile } from '../components/ProjectShowcase';
+import ProjectCard from '../components/ProjectCard';
+import FeatureProjectCard from '../components/FeatureProjectCard';
 import { EmptyState, ErrorState, Loader, Section } from '../components/ui';
-import { inputClass } from '../lib/styles';
 import { getProjectFilters, getProjects } from '../lib/api';
 import useRequest from '../lib/useRequest';
-import useScrollReveal from '../lib/useScrollReveal';
+import useReveal from '../lib/useReveal';
 import useSeo from '../lib/useSeo';
 
 const PAGE_SIZE = 24;
@@ -54,9 +54,7 @@ export default function Projects() {
 
   const { data, loading, error, reload } = useRequest(() => getProjects(query), [query]);
   const { data: meta } = useRequest(getProjectFilters, []);
-  // Unfiltered count for the header, so the headline total does not change
-  // while the visitor is filtering. limit=1 keeps the payload tiny.
-  const { data: totals } = useRequest(() => getProjects({ limit: 1 }), []);
+  const revealRef = useReveal();
 
   useSeo({
     title: 'Projects',
@@ -90,17 +88,18 @@ export default function Projects() {
 
   return (
     <Section>
-      {/* --- Header ------------------------------------------------------- */}
-      <header className="hairline-b flex flex-col gap-6 pb-8 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="label-mono text-accent">Selected work</p>
-          <h1 className="mt-3 text-h1 text-ink">My Projects</h1>
-          <p className="mt-4 max-w-reading text-body text-ink-muted">
-            Client and product work across web applications, admin panels and long-running
-            support engagements. Each entry links to its case study.
-          </p>
-        </div>
-
+      <div ref={revealRef}>
+      <div className="border-b border-line pb-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Work</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-5xl">
+          Projects that <span className="text-gradient">shipped</span>.
+        </h1>
+        <p className="mt-3 max-w-2xl text-ink-muted">
+          {data?.total ? `${data.total} real, delivered projects. ` : ''}Search and filter by category,
+          technology or featured status.
+        </p>
+      </div>
+      <header>
         {typeof totalAll === 'number' ? (
           <p className="label-mono shrink-0 sm:text-right">
             {totalAll} Project{totalAll === 1 ? '' : 's'}
@@ -219,37 +218,20 @@ export default function Projects() {
         ) : error ? (
           <ErrorState message={error} onRetry={reload} />
         ) : items.length ? (
-          <div key={resultsKey} ref={resultsRef} className="project-swap">
-            {featuredItems.length ? (
-              <div className="flex flex-col gap-6">
-                {featuredItems.map((project, index) => (
-                  <FeaturedProject
-                    key={project._id}
-                    project={project}
-                    index={index}
-                    revealIndex={index}
-                  />
-                ))}
-              </div>
-            ) : null}
-
-            {restItems.length ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((project, i) => (
               <div
-                className={`grid gap-5 sm:grid-cols-2 lg:grid-cols-6 ${
-                  featuredItems.length ? 'mt-6' : ''
-                }`}
+                key={project._id}
+                className={`reveal ${project.featured ? 'sm:col-span-2 lg:col-span-3' : ''}`}
+                style={{ '--reveal-delay': `${(i % 6) * 60}ms` }}
               >
-                {restItems.map((project, index) => (
-                  <ProjectTile
-                    key={project._id}
-                    project={project}
-                    index={index}
-                    revealIndex={featuredItems.length + index}
-                    wide={isWide(index)}
-                  />
-                ))}
+                {project.featured ? (
+                  <FeatureProjectCard project={project} index={i} />
+                ) : (
+                  <ProjectCard project={project} index={i} />
+                )}
               </div>
-            ) : null}
+            ))}
           </div>
         ) : (
           <EmptyState
@@ -257,6 +239,7 @@ export default function Projects() {
             description="Try another search or filter."
           />
         )}
+      </div>
       </div>
     </Section>
   );

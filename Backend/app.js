@@ -29,6 +29,9 @@ app.use(
 );
 
 app.use(express.json({ limit: '1mb' }));
+// Analytics beacons (navigator.sendBeacon) arrive as text/plain to stay
+// preflight-free; parse them as a raw string for the analytics controller.
+app.use(express.text({ type: 'text/plain', limit: '16kb' }));
 
 app.get('/', (req, res) => res.json({ status: 'ok', service: 'portfolio-api' }));
 app.get('/api/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
@@ -39,6 +42,7 @@ app.use('/api/skills', require('./routes/skillRoutes'));
 app.use('/api/experience', require('./routes/experienceRoutes'));
 app.use('/api/profile', require('./routes/profileRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
+app.use('/api/analytics', require('./routes/analyticsRoutes'));
 
 app.use(notFound);
 app.use(errorHandler);
