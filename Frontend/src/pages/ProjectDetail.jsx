@@ -2,8 +2,13 @@ import { useMemo, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ProjectVisual } from '../components/ProjectShowcase';
 import { ButtonLink, ErrorState, Loader, Section } from '../components/ui';
-import { getProject } from '../lib/api';
-import { projectVisual } from '../lib/projectVisual';
+import { getProject, getProjects } from '../lib/api';
+import {
+  parseDescription,
+  parseProgress,
+  projectNumber,
+  stripRemainingPrefix,
+} from '../lib/projectFields';
 import useRequest from '../lib/useRequest';
 import useScrollReveal from '../lib/useScrollReveal';
 import useSeo from '../lib/useSeo';
@@ -49,17 +54,9 @@ function ListBlock({ title, items, reveal, transform }) {
   if (!items?.length) return null;
   const values = transform ? items.map(transform) : items;
   return (
-    <section className="border-t border-line pt-8">
-      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-      <ul className="mt-4 space-y-2.5">
-        {items.map((item, index) => (
-          <li key={`${title}-${index}`} className="flex gap-3 text-ink-muted">
-            <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <Block title={title} reveal={reveal}>
+      <BulletList items={values} />
+    </Block>
   );
 }
 
@@ -128,63 +125,77 @@ export default function ProjectDetail() {
   }
 
   const technologies = project.technologies || [];
-  const cover = project.screenshots?.[0]?.url;
-  const visual = projectVisual(project);
+  const screenshots = project.screenshots || [];
+  const progress = parseProgress(fields.Progress);
+
+  // The short description leads the hero. The Overview section only appears
+  // when it adds something the hero has not already said — for most of these
+  // projects both come from the same source line.
+  const overviewSource = fields.Overview || prose || '';
+  const showOverview = overviewSource && overviewSource !== project.shortDescription;
+  const overview = showOverview ? overviewSource : '';
+
+  const hasMeta =
+    project.category ||
+    project.role ||
+    fields.Client ||
+    fields.Status ||
+    progress !== null ||
+    fields['Reference URL'] ||
+    technologies.length > 0;
+
+  const hasContribution =
+    project.role || project.responsibilities?.length || project.technicalWork?.length;
 
   return (
     <Section>
-      <Link to="/projects" className="text-sm text-ink-muted transition-colors hover:text-accent">
-        ← All projects
+      {/* --- Back ---------------------------------------------------------- */}
+      <Link
+        to="/projects"
+        className="link-arrow link-accent inline-flex min-h-11 items-center gap-2 text-small sm:min-h-0"
+      >
+        <svg
+          className="arrow h-4 w-4 rotate-180"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0-5-5m5 5-5 5" />
+        </svg>
+        Back to Projects
       </Link>
 
-      {/* Case-study banner: screenshot if present, otherwise the generated gradient */}
-      <div className="sheen group relative mt-6 flex aspect-[21/9] items-center justify-center overflow-hidden rounded-3xl border border-line shadow-[var(--shadow-soft)]">
-        {cover ? (
-          <img
-            src={cover}
-            alt={project.screenshots[0].caption || `${project.title} cover`}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="relative h-full w-full" style={{ background: visual.gradient }}>
-            <div className="absolute inset-0 bg-grid opacity-30 mix-blend-overlay" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-6xl font-bold tracking-tight text-white/95 sm:text-7xl">
-                {visual.initials}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* --- Hero ---------------------------------------------------------- */}
+      <header className="mt-6 pb-10">
+        <div className="hero-rise flex items-center gap-3">
+          <span className="font-mono text-small text-accent">{projectNumber(project)}</span>
+          <span className="h-px w-8 bg-line" aria-hidden="true" />
+          {project.featured ? (
+            <span className="rounded-md border border-accent/40 bg-accent-soft px-2 py-0.5 text-meta text-accent">
+              Featured
+            </span>
+          ) : null}
+        </div>
 
-      <header className="mt-8 border-b border-line pb-8">
         {project.category ? (
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+          <p className="hero-rise label-mono mt-5" style={{ animationDelay: '70ms' }}>
             {project.category}
           </p>
         ) : null}
 
-        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-5xl">{project.title}</h1>
+        <h1 className="hero-rise mt-3 text-h1 text-ink" style={{ animationDelay: '140ms' }}>
+          {project.title}
+        </h1>
 
         {project.shortDescription ? (
-          <p className="mt-4 max-w-3xl text-lg leading-relaxed text-ink-muted">
+          <p
+            className="hero-rise mt-5 max-w-reading text-body-lg text-ink-muted"
+            style={{ animationDelay: '210ms' }}
+          >
             {project.shortDescription}
           </p>
-        ) : null}
-
-        {project.featured || project.role ? (
-          <div className="mt-5 flex flex-wrap items-center gap-2 text-sm">
-            {project.featured ? (
-              <span className="rounded-full bg-accent/10 px-3 py-1 font-medium text-accent">
-                ★ Featured project
-              </span>
-            ) : null}
-            {project.role ? (
-              <span className="rounded-full border border-line px-3 py-1 text-ink-muted">
-                {project.role}
-              </span>
-            ) : null}
-          </div>
         ) : null}
 
         {/* Only real URLs produce buttons. A reference link is not a live site
