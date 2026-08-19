@@ -1,32 +1,33 @@
 /**
- * Shared class-string builders for the design system.
+ * Shared class-string builders.
  *
  * These live outside ui.jsx so that file only exports components (react-refresh
- * requirement). Everything here resolves to tokens declared in index.css.
+ * requirement). Every value resolves to a token declared in index.css.
  */
 
 /* --- Buttons -------------------------------------------------------------- *
- * Three variants only. Movement is a 1px lift plus a colour/glow shift —
- * anything larger belongs to the later animation work.                       */
+ * Editorial controls: square-ish, ruled, no gradient and no glow. Movement on
+ * hover is a colour/border shift plus the arrow nudge that `link-arrow` adds —
+ * the button itself never jumps.                                             */
 
 const BUTTON_BASE =
-  'inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-nav font-medium ' +
-  'transition-[transform,background-color,border-color,color,box-shadow,opacity] duration-200 ease-smooth ' +
-  'hover:-translate-y-px active:translate-y-0 disabled:pointer-events-none disabled:opacity-55';
+  'inline-flex items-center justify-center gap-2 rounded-control px-5 py-2.5 text-nav font-medium ' +
+  'transition-[background-color,border-color,color,opacity] duration-200 ease-smooth ' +
+  'disabled:pointer-events-none disabled:opacity-55';
 
 const BUTTON_VARIANTS = {
-  primary: 'bg-accent text-accent-contrast hover:bg-accent-strong hover:glow-md',
-  secondary: 'border border-line bg-surface text-ink hover:border-line-strong hover:bg-elevated',
-  ghost: 'text-ink-muted hover:bg-elevated hover:text-ink',
+  primary: 'bg-ink text-canvas hover:bg-accent',
+  secondary: 'border border-line-strong bg-transparent text-ink hover:border-ink hover:bg-elevated',
+  ghost: 'text-ink-muted hover:text-accent',
 };
 
 export const buttonClass = (variant = 'primary', className = '') =>
   `${BUTTON_BASE} ${BUTTON_VARIANTS[variant] || BUTTON_VARIANTS.primary} ${className}`;
 
 /* --- Inputs --------------------------------------------------------------- *
- * States: normal / hover / focus / error / disabled. Keyboard focus uses the
- * global :focus-visible outline; the accent border makes pointer focus visible
- * too.                                                                        */
+ * Underlined rather than boxed wherever it reads better, but the boxed variant
+ * stays the default so forms remain obvious. Keyboard focus uses the global
+ * :focus-visible outline; the accent border covers pointer focus too.        */
 
 const INPUT_BASE =
   'w-full rounded-control border bg-surface px-3.5 py-2.5 text-body text-ink ' +

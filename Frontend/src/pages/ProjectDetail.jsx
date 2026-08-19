@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ProjectVisual } from '../components/ProjectShowcase';
-import { ButtonLink, ErrorState, Loader, Section } from '../components/ui';
+import { ProjectPlate } from '../components/ProjectShowcase';
+import { Arrow, ButtonLink, ErrorState, Loader, Section } from '../components/ui';
 import { getProject, getProjects } from '../lib/api';
 import {
   parseDescription,
@@ -16,32 +16,32 @@ import useSeo from '../lib/useSeo';
 /* ==========================================================================
    Project case study.
 
-   Every section is conditional on real data. Nothing is generated to fill a
+   Every section is conditional on real data. Nothing is generated to fill the
    layout: no placeholder screenshots, no invented challenges, no fabricated
-   links. A project with sparse data renders a short, honest page rather than
-   a padded one.
+   links. A project with sparse data renders a short, honest page rather than a
+   padded one.
    ========================================================================== */
-
-/* --- Section shells ------------------------------------------------------- */
 
 function Block({ title, children, reveal }) {
   return (
-    <section data-reveal="" data-reveal-index={reveal} className="hairline-t pt-10">
+    <section data-reveal="" data-reveal-index={reveal} className="hairline-t pt-8">
       <h2 className="label-mono text-accent">{title}</h2>
-      <div className="mt-5">{children}</div>
+      <div className="mt-6">{children}</div>
     </section>
   );
 }
 
 function BulletList({ items }) {
   return (
-    <ul className="max-w-reading space-y-3">
+    <ul className="measure">
       {items.map((item, index) => (
-        <li key={`${item}-${index}`} className="flex gap-3 text-body text-ink-muted">
-          <span
-            aria-hidden="true"
-            className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-accent/70"
-          />
+        <li
+          key={`${item}-${index}`}
+          className="flex gap-4 border-b border-line py-3 text-body text-ink-muted last:border-0"
+        >
+          <span className="index-mono shrink-0 pt-1 text-ink-subtle">
+            {String(index + 1).padStart(2, '0')}
+          </span>
           <span>{item}</span>
         </li>
       ))}
@@ -49,7 +49,6 @@ function BulletList({ items }) {
   );
 }
 
-/* Renders only when the list has entries. */
 function ListBlock({ title, items, reveal, transform }) {
   if (!items?.length) return null;
   const values = transform ? items.map(transform) : items;
@@ -62,16 +61,13 @@ function ListBlock({ title, items, reveal, transform }) {
 
 function MetaRow({ label, children }) {
   return (
-    <div className="hairline-b flex flex-col gap-1 py-3.5 last:border-0 sm:flex-row sm:gap-6">
-      <dt className="label-mono sm:w-40 sm:shrink-0 sm:pt-0.5">{label}</dt>
-      <dd className="text-small text-ink">{children}</dd>
+    <div className="border-b border-line py-3.5 last:border-0">
+      <dt className="label-mono">{label}</dt>
+      <dd className="mt-1.5 text-small text-ink">{children}</dd>
     </div>
   );
 }
 
-/* --------------------------------------------------------------------------
-   Page
-   -------------------------------------------------------------------------- */
 export default function ProjectDetail() {
   const { slug } = useParams();
   const { data: project, loading, error, reload } = useRequest(() => getProject(slug), [slug]);
@@ -117,7 +113,7 @@ export default function ProjectDetail() {
     return (
       <Section>
         <ErrorState message={error || 'Project not found.'} onRetry={reload} />
-        <Link to="/projects" className="link-accent mt-5 inline-block text-small">
+        <Link to="/projects" className="link-accent mt-6 inline-block text-small">
           ← Back to Projects
         </Link>
       </Section>
@@ -128,12 +124,11 @@ export default function ProjectDetail() {
   const screenshots = project.screenshots || [];
   const progress = parseProgress(fields.Progress);
 
-  // The short description leads the hero. The Overview section only appears
-  // when it adds something the hero has not already said — for most of these
-  // projects both come from the same source line.
+  // The short description leads the page. Overview only appears when it adds
+  // something the lede has not already said.
   const overviewSource = fields.Overview || prose || '';
-  const showOverview = overviewSource && overviewSource !== project.shortDescription;
-  const overview = showOverview ? overviewSource : '';
+  const overview =
+    overviewSource && overviewSource !== project.shortDescription ? overviewSource : '';
 
   const hasMeta =
     project.category ||
@@ -149,50 +144,37 @@ export default function ProjectDetail() {
 
   return (
     <Section>
-      {/* --- Back ---------------------------------------------------------- */}
       <Link
         to="/projects"
-        className="link-arrow link-accent inline-flex min-h-11 items-center gap-2 text-small sm:min-h-0"
+        className="link-arrow inline-flex min-h-10 items-center gap-2 text-small text-ink-muted transition-colors duration-200 ease-smooth hover:text-accent"
       >
-        <svg
-          className="arrow h-4 w-4 rotate-180"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0-5-5m5 5-5 5" />
-        </svg>
-        Back to Projects
+        <Arrow className="rotate-180" />
+        <span className="link-underline">Back to Projects</span>
       </Link>
 
-      {/* --- Hero ---------------------------------------------------------- */}
-      <header className="mt-6 pb-10">
-        <div className="hero-rise flex items-center gap-3">
-          <span className="font-mono text-small text-accent">{projectNumber(project)}</span>
-          <span className="h-px w-8 bg-line" aria-hidden="true" />
-          {project.featured ? (
-            <span className="rounded-md border border-accent/40 bg-accent-soft px-2 py-0.5 text-meta text-accent">
-              Featured
+      {/* --- Masthead ------------------------------------------------------ */}
+      <header className="mt-8 hairline-b pb-10">
+        <div className="rise flex flex-wrap items-center gap-x-4 gap-y-2">
+          <span className="index-mono text-accent">{projectNumber(project)}</span>
+          <span aria-hidden="true" className="h-px w-10 bg-line-strong" />
+          {project.category ? <span className="label-mono">{project.category}</span> : null}
+          {project.role ? (
+            <span className="label-mono">
+              <span className="text-ink-subtle">Role — </span>
+              {project.role}
             </span>
           ) : null}
+          {project.featured ? <span className="label-mono text-accent">Featured</span> : null}
         </div>
 
-        {project.category ? (
-          <p className="hero-rise label-mono mt-5" style={{ animationDelay: '70ms' }}>
-            {project.category}
-          </p>
-        ) : null}
-
-        <h1 className="hero-rise mt-3 text-h1 text-ink" style={{ animationDelay: '140ms' }}>
+        <h1 className="rise mt-6 text-h1 text-ink" style={{ animationDelay: '80ms' }}>
           {project.title}
         </h1>
 
         {project.shortDescription ? (
           <p
-            className="hero-rise mt-5 max-w-reading text-body-lg text-ink-muted"
-            style={{ animationDelay: '210ms' }}
+            className="rise mt-6 measure text-body-lg text-ink-muted"
+            style={{ animationDelay: '150ms' }}
           >
             {project.shortDescription}
           </p>
@@ -201,20 +183,11 @@ export default function ProjectDetail() {
         {/* Only real URLs produce buttons. A reference link is not a live site
             and is shown in the meta panel instead. */}
         {project.liveUrl || project.githubUrl ? (
-          <div className="hero-rise mt-8 flex flex-wrap gap-3" style={{ animationDelay: '280ms' }}>
+          <div className="rise mt-8 flex flex-wrap gap-3" style={{ animationDelay: '220ms' }}>
             {project.liveUrl ? (
               <ButtonLink href={project.liveUrl}>
                 Live Project
-                <svg
-                  className="arrow h-4 w-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0-5-5m5 5-5 5" />
-                </svg>
+                <Arrow />
               </ButtonLink>
             ) : null}
             {project.githubUrl ? (
@@ -226,219 +199,208 @@ export default function ProjectDetail() {
         ) : null}
       </header>
 
-      {/* --- Hero visual --------------------------------------------------- */}
-      {screenshots.length ? (
-        <figure className="hero-rise group" style={{ animationDelay: '320ms' }}>
-          <div className="overflow-hidden rounded-panel border border-line bg-elevated transition-colors duration-500 ease-smooth hover:border-accent/35">
-            <img
-              src={screenshots[0].url}
-              alt={screenshots[0].caption || `${project.title} screenshot`}
-              loading="lazy"
-              decoding="async"
-              className="w-full object-cover transition-[transform,filter] duration-500 ease-smooth group-hover:scale-[1.02] group-hover:brightness-110"
-            />
-          </div>
-          {screenshots[0].caption ? (
-            <figcaption className="mt-3 text-small text-ink-subtle">
-              {screenshots[0].caption}
-            </figcaption>
-          ) : null}
-        </figure>
-      ) : (
-        <div className="hero-rise" style={{ animationDelay: '320ms' }}>
-          {/* Fallback artwork. Labelled with the project's real technologies
-              rather than repeating the category shown just above. */}
-          <ProjectVisual
+      {/* --- Lead visual ---------------------------------------------------- */}
+      <div className="group rise mt-10" style={{ animationDelay: '280ms' }}>
+        {screenshots.length ? (
+          <figure>
+            <div className="overflow-hidden rounded-panel border border-line bg-elevated">
+              <img
+                src={screenshots[0].url}
+                alt={screenshots[0].caption || `${project.title} — screenshot`}
+                loading="lazy"
+                decoding="async"
+                className="w-full object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.02]"
+              />
+            </div>
+            {screenshots[0].caption ? (
+              <figcaption className="mt-3 label-mono">{screenshots[0].caption}</figcaption>
+            ) : null}
+          </figure>
+        ) : (
+          <ProjectPlate
             project={project}
-            caption={technologies.join(' · ') || null}
-            className="aspect-[16/10] w-full rounded-panel sm:aspect-[21/8]"
+            size="lg"
+            label={technologies.join(' · ') || project.category || null}
+            className="aspect-[16/9] w-full rounded-panel sm:aspect-[21/8]"
           />
+        )}
+      </div>
+
+      {/* --- Body ----------------------------------------------------------- *
+       * Narrative on the left at desktop width, the fact panel in a rail that
+       * stays with the reader.                                              */}
+      <div
+        ref={bodyRef}
+        className="mt-16 grid gap-12 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-16"
+      >
+        <div className="space-y-10 lg:order-1">
+          {overview ? (
+            <Block title="Overview" reveal={1}>
+              <p className="measure whitespace-pre-line text-body-lg text-ink-muted">{overview}</p>
+            </Block>
+          ) : null}
+
+          {/* Wording is passed through untouched: where the data says the work
+              was support on an existing system, it keeps saying exactly that. */}
+          {hasContribution ? (
+            <Block title="My Contribution" reveal={2}>
+              {project.role ? (
+                <p className="measure text-body text-ink">{project.role}</p>
+              ) : null}
+
+              {project.responsibilities?.length ? (
+                <div className={project.role ? 'mt-6' : ''}>
+                  <h3 className="label-mono">Responsibilities</h3>
+                  <div className="mt-3">
+                    <BulletList items={project.responsibilities} />
+                  </div>
+                </div>
+              ) : null}
+
+              {project.technicalWork?.length ? (
+                <div className="mt-6">
+                  <h3 className="label-mono">Technical work</h3>
+                  <div className="mt-3">
+                    <BulletList items={project.technicalWork} />
+                  </div>
+                </div>
+              ) : null}
+            </Block>
+          ) : null}
+
+          <ListBlock title="Features" items={project.features} reveal={3} />
+
+          {project.challenges?.length || project.solutions?.length ? (
+            <section data-reveal="" data-reveal-index={4} className="hairline-t pt-8">
+              <h2 className="label-mono text-accent">Challenges &amp; Solutions</h2>
+              <div className="mt-6 grid gap-10 lg:grid-cols-2">
+                {project.challenges?.length ? (
+                  <div>
+                    <h3 className="label-mono">Challenges</h3>
+                    <div className="mt-3">
+                      <BulletList items={project.challenges} />
+                    </div>
+                  </div>
+                ) : null}
+                {project.solutions?.length ? (
+                  <div>
+                    <h3 className="label-mono">Solutions</h3>
+                    <div className="mt-3">
+                      <BulletList items={project.solutions} />
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
+
+          {project.result ? (
+            <Block title="Project Status" reveal={5}>
+              <p className="measure whitespace-pre-line text-body text-ink-muted">
+                {project.result}
+              </p>
+            </Block>
+          ) : null}
+
+          <ListBlock
+            title="Remaining Work"
+            items={project.improvements}
+            reveal={6}
+            transform={stripRemainingPrefix}
+          />
+
+          {screenshots.length > 1 ? (
+            <Block title="Screenshots" reveal={7}>
+              <div className="grid gap-6 sm:grid-cols-2">
+                {screenshots.slice(1).map((shot, index) => (
+                  <figure key={`${shot.url}-${index}`} className="group">
+                    <img
+                      src={shot.url}
+                      alt={shot.caption || `${project.title} — screenshot ${index + 2}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full rounded-card border border-line bg-elevated object-cover transition-colors duration-500 ease-smooth group-hover:border-line-strong"
+                    />
+                    {shot.caption ? (
+                      <figcaption className="mt-2 label-mono">{shot.caption}</figcaption>
+                    ) : null}
+                  </figure>
+                ))}
+              </div>
+            </Block>
+          ) : null}
         </div>
-      )}
 
-      <div ref={bodyRef} className="mt-14 space-y-10">
-        {/* --- Meta -------------------------------------------------------- */}
+        {/* --- Fact panel --------------------------------------------------- */}
         {hasMeta ? (
-          <section data-reveal="" data-reveal-index={0} className="hairline-t pt-10">
-            <h2 className="label-mono text-accent">Project details</h2>
-            <dl className="mt-5 grid gap-x-12 lg:grid-cols-2">
-              {project.category ? <MetaRow label="Category">{project.category}</MetaRow> : null}
-              {fields.Client ? <MetaRow label="Client">{fields.Client}</MetaRow> : null}
-              {project.role ? <MetaRow label="Role">{project.role}</MetaRow> : null}
-              {fields.Status ? <MetaRow label="Status">{fields.Status}</MetaRow> : null}
+          <aside data-reveal="" data-reveal-index={0} className="lg:order-2">
+            <div className="hairline-t pt-8 lg:sticky lg:top-24">
+              <h2 className="label-mono text-accent">Project details</h2>
+              <dl className="mt-5">
+                {project.category ? <MetaRow label="Category">{project.category}</MetaRow> : null}
+                {fields.Client ? <MetaRow label="Client">{fields.Client}</MetaRow> : null}
+                {project.role ? <MetaRow label="Role">{project.role}</MetaRow> : null}
+                {fields.Status ? <MetaRow label="Status">{fields.Status}</MetaRow> : null}
 
-              {progress !== null ? (
-                <MetaRow label="Progress">
-                  <span className="flex items-center gap-3">
-                    <span
-                      aria-hidden="true"
-                      className="h-1 w-28 overflow-hidden rounded-full bg-line"
-                    >
-                      <span
-                        className="block h-full rounded-full bg-accent"
-                        style={{ width: `${progress}%` }}
-                      />
+                {progress !== null ? (
+                  <MetaRow label="Progress">
+                    <span className="flex items-center gap-3">
+                      <span aria-hidden="true" className="block h-0.5 w-24 bg-line-strong">
+                        <span
+                          className="block h-0.5 bg-accent"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </span>
+                      <span className="index-mono">{progress}%</span>
                     </span>
-                    <span className="font-mono text-small">{progress}%</span>
-                  </span>
-                </MetaRow>
-              ) : null}
+                  </MetaRow>
+                ) : null}
 
-              {/* Labelled "Reference", never "Live Project" — it is a site the
-                  work referenced, not a deployment of this project. */}
-              {fields['Reference URL'] ? (
-                <MetaRow label="Reference">
-                  <a
-                    href={fields['Reference URL']}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="link-accent break-all underline underline-offset-4"
-                  >
-                    {fields['Reference URL']}
-                  </a>
-                </MetaRow>
-              ) : null}
+                {/* Labelled "Reference", never "Live Project" — it is a site the
+                    work referenced, not a deployment of this project. */}
+                {fields['Reference URL'] ? (
+                  <MetaRow label="Reference">
+                    <a
+                      href={fields['Reference URL']}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="link-accent break-all underline underline-offset-4"
+                    >
+                      {fields['Reference URL']}
+                    </a>
+                  </MetaRow>
+                ) : null}
 
-              {technologies.length ? (
-                <MetaRow label="Technologies">
-                  <ul className="flex flex-wrap gap-1.5">
-                    {technologies.map((tech) => (
-                      <li
-                        key={tech}
-                        className="rounded-md border border-line bg-elevated px-2 py-0.5 text-meta text-ink-muted"
-                      >
-                        {tech}
-                      </li>
-                    ))}
-                  </ul>
-                </MetaRow>
-              ) : null}
-            </dl>
-          </section>
-        ) : null}
-
-        {/* --- Overview ---------------------------------------------------- */}
-        {overview ? (
-          <Block title="Overview" reveal={1}>
-            <p className="max-w-reading whitespace-pre-line text-body-lg text-ink-muted">
-              {overview}
-            </p>
-          </Block>
-        ) : null}
-
-        {/* --- Contribution ------------------------------------------------ *
-         * Wording is passed through untouched. Where the data says the work
-         * was a change to an existing system, it keeps saying exactly that. */}
-        {hasContribution ? (
-          <Block title="My Contribution" reveal={2}>
-            {project.role ? (
-              <p className="max-w-reading text-body text-ink">{project.role}</p>
-            ) : null}
-
-            {project.responsibilities?.length ? (
-              <div className={project.role ? 'mt-5' : ''}>
-                <h3 className="text-small font-medium text-ink-subtle">Responsibilities</h3>
-                <div className="mt-3">
-                  <BulletList items={project.responsibilities} />
-                </div>
-              </div>
-            ) : null}
-
-            {project.technicalWork?.length ? (
-              <div className="mt-5">
-                <h3 className="text-small font-medium text-ink-subtle">Technical work</h3>
-                <div className="mt-3">
-                  <BulletList items={project.technicalWork} />
-                </div>
-              </div>
-            ) : null}
-          </Block>
-        ) : null}
-
-        <ListBlock title="Features" items={project.features} reveal={3} />
-
-        {/* --- Challenges & solutions -------------------------------------- */}
-        {project.challenges?.length || project.solutions?.length ? (
-          <section data-reveal="" data-reveal-index={4} className="hairline-t pt-10">
-            <h2 className="label-mono text-accent">Challenges &amp; Solutions</h2>
-            <div className="mt-5 grid gap-8 lg:grid-cols-2">
-              {project.challenges?.length ? (
-                <div>
-                  <h3 className="text-small font-medium text-ink-subtle">Challenges</h3>
-                  <div className="mt-3">
-                    <BulletList items={project.challenges} />
-                  </div>
-                </div>
-              ) : null}
-              {project.solutions?.length ? (
-                <div>
-                  <h3 className="text-small font-medium text-ink-subtle">Solutions</h3>
-                  <div className="mt-3">
-                    <BulletList items={project.solutions} />
-                  </div>
-                </div>
-              ) : null}
+                {technologies.length ? (
+                  <MetaRow label="Technologies">
+                    <ul className="mt-1 space-y-1.5">
+                      {technologies.map((tech) => (
+                        <li key={tech} className="text-small text-ink-muted">
+                          {tech}
+                        </li>
+                      ))}
+                    </ul>
+                  </MetaRow>
+                ) : null}
+              </dl>
             </div>
-          </section>
-        ) : null}
-
-        {/* --- Result ------------------------------------------------------ */}
-        {project.result ? (
-          <Block title="Project Status" reveal={5}>
-            <p className="max-w-reading whitespace-pre-line text-body text-ink-muted">
-              {project.result}
-            </p>
-          </Block>
-        ) : null}
-
-        {/* --- Remaining work ---------------------------------------------- */}
-        <ListBlock
-          title="Remaining Work"
-          items={project.improvements}
-          reveal={6}
-          transform={stripRemainingPrefix}
-        />
-
-        {/* --- Extra screenshots ------------------------------------------- */}
-        {screenshots.length > 1 ? (
-          <Block title="Screenshots" reveal={7}>
-            <div className="grid gap-5 sm:grid-cols-2">
-              {screenshots.slice(1).map((shot, index) => (
-                <figure key={`${shot.url}-${index}`} className="group">
-                  <img
-                    src={shot.url}
-                    alt={shot.caption || `${project.title} screenshot ${index + 2}`}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full rounded-card border border-line bg-elevated object-cover transition-[transform,filter,border-color] duration-500 ease-smooth group-hover:scale-[1.01] group-hover:border-accent/35 group-hover:brightness-110"
-                  />
-                  {shot.caption ? (
-                    <figcaption className="mt-2 text-small text-ink-subtle">
-                      {shot.caption}
-                    </figcaption>
-                  ) : null}
-                </figure>
-              ))}
-            </div>
-          </Block>
+          </aside>
         ) : null}
       </div>
 
-      {/* --- Previous / next ------------------------------------------------ *
-       * Rendered only when a neighbour exists, so the first and last projects
-       * simply show one side.                                                */}
+      {/* --- Previous / next ------------------------------------------------ */}
       {prev || next ? (
         <nav
           aria-label="Project navigation"
-          className="hairline-t mt-14 grid gap-4 pt-8 sm:grid-cols-2"
+          className="hairline-t mt-20 grid gap-px pt-2 sm:grid-cols-2"
         >
           {prev ? (
-            <Link
-              to={`/projects/${prev.slug}`}
-              className="group surface-card p-5 transition-[border-color,box-shadow] duration-500 ease-smooth hover:border-accent/35 hover:glow-sm"
-            >
-              <span className="label-mono">← Previous project</span>
-              <span className="mt-2 block text-h3 text-ink transition-colors duration-300 ease-smooth group-hover:text-accent">
+            <Link to={`/projects/${prev.slug}`} className="group block py-8 pr-6">
+              <span className="label-mono flex items-center gap-2">
+                <Arrow className="rotate-180" />
+                Previous
+              </span>
+              <span className="mt-3 block text-h3 text-ink transition-colors duration-200 ease-smooth group-hover:text-accent">
                 {prev.title}
               </span>
             </Link>
@@ -449,10 +411,15 @@ export default function ProjectDetail() {
           {next ? (
             <Link
               to={`/projects/${next.slug}`}
-              className="group surface-card p-5 transition-[border-color,box-shadow] duration-500 ease-smooth hover:border-accent/35 hover:glow-sm sm:text-right"
+              className={`group block border-t border-line py-8 sm:border-t-0 sm:pl-8 sm:text-right ${
+                prev ? 'sm:border-l' : ''
+              }`}
             >
-              <span className="label-mono">Next project →</span>
-              <span className="mt-2 block text-h3 text-ink transition-colors duration-300 ease-smooth group-hover:text-accent">
+              <span className="label-mono flex items-center gap-2 sm:justify-end">
+                Next
+                <Arrow />
+              </span>
+              <span className="mt-3 block text-h3 text-ink transition-colors duration-200 ease-smooth group-hover:text-accent">
                 {next.title}
               </span>
             </Link>

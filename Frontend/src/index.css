@@ -1,101 +1,185 @@
 @import "tailwindcss";
 
-/* ---------- Design tokens (light is the default) ---------- */
+/* ==========================================================================
+   PREMIUM EDITORIAL — design tokens
+   --------------------------------------------------------------------------
+   One system, two deliberately-designed themes:
+
+     light — warm paper, charcoal ink, clay accent
+     dark  — warm near-black, bone ink, a lighter clay so contrast holds
+
+   The dark theme is not an inversion: surfaces stay warm, the accent shifts
+   hue and lightness so it reads the same *weight* on both grounds.
+
+   Everything below is referenced through utilities. No component file carries
+   a hex value.
+   ========================================================================== */
+
 @theme {
   /* --- Type families ---------------------------------------------------- */
+  --font-display: "Newsreader", ui-serif, Georgia, "Times New Roman", serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  --color-ink: #0b1120;
-  --color-ink-muted: #51607a;
-  --color-line: #e7ebf1;
-  --color-surface: #ffffff;
-  --color-canvas: #fafafb;
-  --color-accent: #4f46e5;
-  --color-accent-2: #7c3aed;
-  --color-accent-3: #0ea5e9;
+  /* --- Type scale -------------------------------------------------------- *
+   * Display and headings are serif; body, UI and labels are not. Hierarchy
+   * comes from size, family and colour — not from making everything bold.  */
+  --text-display: clamp(2.5rem, 1.65rem + 3.1vw, 4rem);
+  --text-display--line-height: 1.04;
+  --text-display--letter-spacing: -0.022em;
+  --text-display--font-weight: 400;
+
+  --text-h1: clamp(2rem, 1.5rem + 1.9vw, 2.9rem);
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h1--font-weight: 400;
+
+  --text-h2: clamp(1.5rem, 1.28rem + 0.85vw, 2rem);
+  --text-h2--line-height: 1.18;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h2--font-weight: 400;
+
+  --text-h3: 1.1875rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 500;
+
+  --text-body-lg: 1.0625rem;
+  --text-body-lg--line-height: 1.75;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.7;
+
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.6;
+
+  --text-meta: 0.8125rem;
+  --text-meta--line-height: 1.5;
+
+  --text-nav: 0.875rem;
+  --text-nav--line-height: 1.4;
+
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.45;
+  --text-label--letter-spacing: 0.16em;
+  --text-label--font-weight: 500;
+
+  /* --- Colour (light is the base) --------------------------------------- */
+  --color-canvas: #f6f4ef;
+  --color-surface: #fdfcfa;
+  --color-elevated: #efece4;
+  --color-ink: #16150f;
+  --color-ink-muted: #5f5b51;
+  /* Small mono labels use this, so it is kept at ≥4.5:1 on the canvas. */
+  --color-ink-subtle: #6e6959;
+  --color-line: #e0dcd1;
+  --color-line-strong: #c8c2b3;
+
+  --color-accent: #9d4b2c;
+  --color-accent-strong: #7f3a20;
+  --color-accent-soft: #f0e4dc;
+  --color-accent-contrast: #fdfcfa;
+
+  --color-danger: #a3341f;
+  --color-success: #3f6b41;
+
+  /* --- Geometry ---------------------------------------------------------- *
+   * Editorial, not SaaS: corners are barely rounded, so structure reads as
+   * ruled columns rather than a wall of pills.                              */
+  --radius-card: 3px;
+  --radius-panel: 4px;
+  --radius-control: 3px;
+
+  /* --- Measures ---------------------------------------------------------- */
+  --container-content: 76rem;
+  --container-reading: 38rem;
+
+  /* --- Motion ------------------------------------------------------------ */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* --- Elevation --------------------------------------------------------- *
+   * Two steps only, both quiet. Depth in this system comes from rules and
+   * whitespace, not from drop shadows.                                     */
+  --shadow-soft: 0 1px 2px rgba(22, 21, 15, 0.04);
+  --shadow-lift: 0 1px 2px rgba(22, 21, 15, 0.05), 0 18px 40px -28px rgba(22, 21, 15, 0.35);
 }
 
-/* Non-color design variables + light defaults for theme-swapped values.
-   Kept out of @theme so we can freely override them per theme. */
-:root {
-  --grid-dot: rgba(79, 70, 229, 0.10);
-  --select-bg: #ddd6fe;
-  --scroll-thumb: #cbd5e1;
-  --scroll-thumb-hover: #94a3b8;
-  --hero-glow-1: #6366f1;
-  --hero-glow-2: #0ea5e9;
-  --hero-glow-3: #a855f7;
-  --hero-glow-opacity: 0.5;
-  --card-border-hover: rgba(79, 70, 229, 0.35);
-  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
-  --shadow-lift: 0 2px 6px rgba(15, 23, 42, 0.06), 0 24px 48px -20px rgba(79, 70, 229, 0.28);
-}
-
-/* ---------- Dark theme ----------
-   Applies when the user explicitly picks dark, OR when the system prefers dark
-   and the user hasn't explicitly picked light. Redefining the @theme color
-   variables re-points every text-ink / bg-surface / border-line utility. */
-:root[data-theme="dark"],
-:root:not([data-theme="light"]) {
-  /* placeholder to keep specificity note; real values below */
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --color-ink: #eef1f8;
-    --color-ink-muted: #9aa5bd;
-    --color-line: #232a3a;
-    --color-surface: #12151f;
-    --color-canvas: #0a0c14;
-    --color-accent: #818cf8;
-    --color-accent-2: #c084fc;
-    --color-accent-3: #38bdf8;
-
-    --grid-dot: rgba(129, 140, 248, 0.14);
-    --select-bg: #4338ca;
-    --scroll-thumb: #2b3346;
-    --scroll-thumb-hover: #3b455c;
-    --hero-glow-1: #4f46e5;
-    --hero-glow-2: #0284c7;
-    --hero-glow-3: #7c3aed;
-    --hero-glow-opacity: 0.38;
-    --card-border-hover: rgba(129, 140, 248, 0.5);
-    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -14px rgba(0, 0, 0, 0.7);
-    --shadow-lift: 0 2px 8px rgba(0, 0, 0, 0.5), 0 30px 60px -24px rgba(99, 102, 241, 0.4);
-  }
-}
-
-/* Explicit choice always wins over the system media query. */
-:root[data-theme="dark"] {
-  --color-ink: #eef1f8;
-  --color-ink-muted: #9aa5bd;
-  --color-line: #232a3a;
-  --color-surface: #12151f;
-  --color-canvas: #0a0c14;
-  --color-accent: #818cf8;
-  --color-accent-2: #c084fc;
-  --color-accent-3: #38bdf8;
-
-  --grid-dot: rgba(129, 140, 248, 0.14);
-  --select-bg: #4338ca;
-  --scroll-thumb: #2b3346;
-  --scroll-thumb-hover: #3b455c;
-  --hero-glow-1: #4f46e5;
-  --hero-glow-2: #0284c7;
-  --hero-glow-3: #7c3aed;
-  --hero-glow-opacity: 0.38;
-  --card-border-hover: rgba(129, 140, 248, 0.5);
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -14px rgba(0, 0, 0, 0.7);
-  --shadow-lift: 0 2px 8px rgba(0, 0, 0, 0.5), 0 30px 60px -24px rgba(99, 102, 241, 0.4);
-}
-
-/* Duration steps. Components reference these instead of literal ms values so
-   the reduced-motion override below can neutralise all of them at once. */
+/* Non-utility variables: theme-swapped values the components read directly. */
 :root {
   --duration-fast: 140ms;
   --duration-normal: 240ms;
   --duration-slow: 520ms;
+
+  /* Deterministic project artwork (see lib/projectArt.js) */
+  --plate-ground: #efece4;
+  --plate-rule: rgba(22, 21, 15, 0.09);
+  --plate-mark: rgba(22, 21, 15, 0.055);
+
+  color-scheme: light;
+}
+
+/* --- Dark theme ---------------------------------------------------------- *
+ * Applied when the visitor picks dark, or when the OS prefers dark and no
+ * explicit light choice is stored. Redefining the same custom properties
+ * re-points every text-ink / bg-surface / border-line utility at once.     */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-canvas: #0e0d0b;
+    --color-surface: #161512;
+    --color-elevated: #1e1c18;
+    --color-ink: #f0ede6;
+    --color-ink-muted: #a29c90;
+    --color-ink-subtle: #938c7c;
+    --color-line: #2a2823;
+    --color-line-strong: #403c34;
+
+    --color-accent: #d9885f;
+    --color-accent-strong: #eda079;
+    --color-accent-soft: #2a1d15;
+    --color-accent-contrast: #14120f;
+
+    --color-danger: #e0806c;
+    --color-success: #7fae7f;
+
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.5), 0 22px 48px -30px rgba(0, 0, 0, 0.9);
+
+    --plate-ground: #1a1815;
+    --plate-rule: rgba(240, 237, 230, 0.08);
+    --plate-mark: rgba(240, 237, 230, 0.05);
+
+    color-scheme: dark;
+  }
+}
+
+/* An explicit choice always wins over the OS preference. */
+:root[data-theme="dark"] {
+  --color-canvas: #0e0d0b;
+  --color-surface: #161512;
+  --color-elevated: #1e1c18;
+  --color-ink: #f0ede6;
+  --color-ink-muted: #a29c90;
+  --color-ink-subtle: #938c7c;
+  --color-line: #2a2823;
+  --color-line-strong: #403c34;
+
+  --color-accent: #d9885f;
+  --color-accent-strong: #eda079;
+  --color-accent-soft: #2a1d15;
+  --color-accent-contrast: #14120f;
+
+  --color-danger: #e0806c;
+  --color-success: #7fae7f;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.5), 0 22px 48px -30px rgba(0, 0, 0, 0.9);
+
+  --plate-ground: #1a1815;
+  --plate-rule: rgba(240, 237, 230, 0.08);
+  --plate-mark: rgba(240, 237, 230, 0.05);
+
+  color-scheme: dark;
 }
 
 /* ==========================================================================
@@ -110,76 +194,51 @@
   body {
     margin: 0;
     min-height: 100vh;
+    overflow-x: hidden;
     background-color: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: var(--text-body);
-    line-height: 1.7;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+    line-height: var(--text-body--line-height);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
 
-  /* --- Global background treatment ------------------------------------- *
-   * Two fixed layers behind all content:
-   *   ::before — two soft accent radials plus a fine grid
-   *   ::after  — a faint noise field so the flat dark never looks plastic
-   * Both are deliberately near-invisible; content stays the focus.        */
-  body::before,
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
+  /* Headings are the display serif by default; nothing else needs to opt in. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-wrap: balance;
   }
 
-  body::before {
-    background-image:
-      radial-gradient(
-        60rem 40rem at 12% -10%,
-        --alpha(var(--color-accent) / 10%),
-        transparent 60%
-      ),
-      radial-gradient(
-        44rem 34rem at 100% 0%,
-        --alpha(var(--color-accent) / 6%),
-        transparent 62%
-      ),
-      linear-gradient(to right, --alpha(var(--color-line) / 55%) 1px, transparent 1px),
-      linear-gradient(to bottom, --alpha(var(--color-line) / 55%) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 4rem 4rem, 4rem 4rem;
-    /* Fade the grid out toward the bottom so it reads as texture, not a table */
-    mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 100%);
-  }
-
-  body::after {
-    opacity: 0.035;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
-  /* --- Selection -------------------------------------------------------- */
   ::selection {
-    background: --alpha(var(--color-accent) / 28%);
+    background: var(--color-accent-soft);
     color: var(--color-ink);
   }
 
-  /* --- Focus ------------------------------------------------------------ *
-   * The default outline is replaced, never removed. Every interactive
-   * element inherits this unless it opts into a ring of its own.          */
+  /* The default outline is replaced, never removed. */
   :focus-visible {
     outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline-offset: 3px;
+    border-radius: 1px;
   }
 
-  /* --- Scrollbar (desktop pointers only) -------------------------------- */
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
   @media (pointer: fine) {
     * {
       scrollbar-width: thin;
       scrollbar-color: var(--color-line-strong) transparent;
     }
-
     ::-webkit-scrollbar {
       width: 10px;
       height: 10px;
@@ -196,25 +255,12 @@
       background-color: var(--color-ink-subtle);
     }
   }
-
-  /* Media never overflows its column */
-  img,
-  svg,
-  video {
-    max-width: 100%;
-    height: auto;
-  }
 }
 
 /* ==========================================================================
-   Utilities
-   Small, composable pieces of the system. Anything reused by more than one
-   component belongs here rather than in JSX class strings.
+   Layout utilities
    ========================================================================== */
 
-/* --- Layout ------------------------------------------------------------- */
-
-/* Page shell: max content width + responsive gutters. */
 @utility container-page {
   margin-inline: auto;
   width: 100%;
@@ -224,18 +270,23 @@
   @media (width >= 40rem) {
     padding-inline: 2rem;
   }
+
+  @media (width >= 80rem) {
+    padding-inline: 2.5rem;
+  }
 }
 
-/* Standard vertical rhythm between major sections. */
 @utility section-y {
-  padding-block: clamp(3.5rem, 2.5rem + 4vw, 6.5rem);
+  padding-block: clamp(3.5rem, 2.4rem + 4.4vw, 7rem);
 }
 
 @utility section-y-sm {
   padding-block: clamp(2.25rem, 1.75rem + 2vw, 3.5rem);
 }
 
-/* --- Surfaces ----------------------------------------------------------- */
+/* ==========================================================================
+   Surfaces & rules
+   ========================================================================== */
 
 @utility surface-card {
   background-color: var(--color-surface);
@@ -247,22 +298,12 @@
   background-color: var(--color-elevated);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-elevated);
 }
 
-/* Used sparingly — sticky navigation and overlays only. */
 @utility surface-glass {
-  background-color: --alpha(var(--color-canvas) / 72%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border-color: --alpha(var(--color-line) / 90%);
-}
-
-/* --- Borders ------------------------------------------------------------ */
-
-/* A 1px divider that reads as a hairline rather than an outline. */
-@utility hairline {
-  border-color: var(--color-line);
+  background-color: color-mix(in oklab, var(--color-canvas) 82%, transparent);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
 }
 
 @utility hairline-b {
@@ -273,43 +314,11 @@
   border-top: 1px solid var(--color-line);
 }
 
-/* --- Glow --------------------------------------------------------------- */
+/* ==========================================================================
+   Typography helpers
+   ========================================================================== */
 
-@utility glow-sm {
-  box-shadow: var(--shadow-glow-sm);
-}
-
-@utility glow-md {
-  box-shadow: var(--shadow-glow-md);
-}
-
-@utility glow-lg {
-  box-shadow: var(--shadow-glow-lg);
-}
-
-/* A soft accent bloom placed behind hero / featured content. */
-@utility glow-field {
-  position: relative;
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: -20% -10% auto -10%;
-    height: 22rem;
-    z-index: -1;
-    pointer-events: none;
-    background: radial-gradient(
-      50% 50% at 50% 40%,
-      --alpha(var(--color-accent) / 16%),
-      transparent 70%
-    );
-    filter: blur(12px);
-  }
-}
-
-/* --- Typography helpers -------------------------------------------------- */
-
-/* Eyebrow / overline. Mono + wide tracking is the system's "technical" voice. */
+/* Overline / eyebrow. Mono + wide tracking is the system's technical voice. */
 @utility label-mono {
   font-family: var(--font-mono);
   font-size: var(--text-label);
@@ -320,125 +329,185 @@
   color: var(--color-ink-subtle);
 }
 
-/* --- Link interaction ---------------------------------------------------- */
-
-/* Underline that wipes in from the left on hover/focus. */
-@utility link-underline {
-  position: relative;
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  transition: background-color 0.3s ease, color 0.3s ease;
+/* The two-digit index that runs through the whole site. */
+@utility index-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
 }
 
-::selection {
-  background: var(--select-bg);
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--scroll-thumb);
-  border-radius: 999px;
-  border: 3px solid var(--color-canvas);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scroll-thumb-hover);
+@utility measure {
+  max-width: var(--container-reading);
 }
 
 /* ==========================================================================
-   Hero motion
-   Entrance choreography, ambient background drift and the scroll cue.
-   All of it is plain CSS so the hero costs no JavaScript to animate, and all
-   of it is neutralised by the reduced-motion block below.
+   Link & control interactions
    ========================================================================== */
 
-/* Entrance: rise + fade + a touch of defocus. */
-@keyframes hero-rise {
+/* Underline that wipes in from the left. */
+@utility link-underline {
+  position: relative;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size var(--duration-normal) var(--ease-smooth),
+    color var(--duration-normal) var(--ease-smooth);
+
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
+  }
+}
+
+@utility link-accent {
+  color: var(--color-accent);
+  transition: color var(--duration-normal) var(--ease-smooth);
+
+  &:hover {
+    color: var(--color-accent-strong);
+  }
+}
+
+/* Nudges any descendant `.arrow` on hover/focus of the link or its group. */
+@utility link-arrow {
+  & .arrow {
+    transition: transform var(--duration-normal) var(--ease-smooth);
+  }
+
+  &:hover .arrow,
+  &:focus-visible .arrow {
+    transform: translateX(3px);
+  }
+}
+
+.group:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   Project artwork
+   Deterministic, monochrome-leaning plate used when a project has no real
+   screenshot. Pattern and rotation come from lib/projectArt.js, so the same
+   project always renders the same plate — and it never pretends to be a UI.
+   ========================================================================== */
+
+.plate {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--plate-ground);
+  isolation: isolate;
+}
+
+.plate::before {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  z-index: 0;
+  background-image: var(--plate-pattern);
+  background-size: var(--plate-size, 30px 30px);
+  transform: rotate(var(--plate-angle, 0deg));
+  transition: transform var(--duration-slow) var(--ease-smooth);
+}
+
+.group:hover .plate::before {
+  transform: rotate(var(--plate-angle, 0deg)) scale(1.06);
+}
+
+.plate > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   Motion system
+   Three moves only:
+     rise      — page entrance, staggered by inline delay
+     reveal    — scroll entrance for content further down the page
+     swap      — filter/result changes
+   Everything else is a hover transition measured in ~200ms.
+   ========================================================================== */
+
+@keyframes rise {
   from {
     opacity: 0;
-    transform: translate3d(0, 14px, 0);
-    filter: blur(6px);
+    transform: translate3d(0, 12px, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
-    filter: blur(0);
+    transform: none;
   }
 }
 
-/* ---------- Premium primitives ---------- */
-
-.text-gradient {
-  background: linear-gradient(100deg, var(--color-accent) 0%, var(--color-accent-2) 45%, var(--color-accent-3) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.rise {
+  animation: rise 620ms var(--ease-entrance) both;
 }
 
-.bg-grid {
-  background-image: radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 0);
-  background-size: 26px 26px;
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
-.aurora {
-  position: absolute;
-  border-radius: 999px;
-  filter: blur(60px);
-  opacity: var(--hero-glow-opacity);
-  pointer-events: none;
-  will-change: transform;
+.rule-draw {
+  transform-origin: left center;
+  animation: rule-draw 720ms var(--ease-entrance) both;
 }
 
-.card-hover:hover {
-  border-color: var(--card-border-hover);
-}
-
-.reveal {
+[data-reveal] {
   opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translate3d(0, 16px, 0);
+  transition: opacity 620ms var(--ease-entrance), transform 620ms var(--ease-entrance);
   transition-delay: var(--reveal-delay, 0ms);
 }
-.reveal.is-visible {
+
+[data-reveal].is-revealed {
   opacity: 1;
   transform: none;
 }
 
-.sheen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
-  transform: translateX(-120%);
-  transition: transform 0.8s ease;
-  pointer-events: none;
-}
-.group:hover .sheen::after {
-  transform: translateX(120%);
+@keyframes swap-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-@keyframes float-slow {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -26px, 0); }
+.project-swap {
+  animation: swap-in 320ms var(--ease-entrance) both;
 }
-.animate-float-slow { animation: float-slow 11s ease-in-out infinite; }
 
-@keyframes float-slower {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, 22px, 0); }
+/* Marker that travels the experience timeline rule as it enters view. */
+@keyframes timeline-draw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
 }
-.animate-float-slower { animation: float-slower 14s ease-in-out infinite; }
 
+.timeline-rule {
+  transform-origin: top center;
+  animation: timeline-draw 900ms var(--ease-entrance) both;
+}
+
+/* ==========================================================================
+   Reduced motion — content is never withheld
+   ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
@@ -450,11 +519,8 @@
     scroll-behavior: auto !important;
   }
 
-  /* Scroll-reveal content is visible immediately, with no offset or stagger. */
   [data-reveal] {
     opacity: 1 !important;
     transform: none !important;
-    filter: none !important;
   }
-  .reveal { opacity: 1; transform: none; }
 }

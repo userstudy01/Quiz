@@ -39,7 +39,7 @@ export default function ThemeToggle() {
     }
     document.documentElement.setAttribute('data-theme', next);
     const meta = document.querySelector('meta[name="theme-color"]:not([media])');
-    if (meta) meta.setAttribute('content', next === 'dark' ? '#0a0c14' : '#fafafb');
+    if (meta) meta.setAttribute('content', next === 'dark' ? '#0e0d0b' : '#f6f4ef');
   };
 
   const isDark = theme === 'dark';
@@ -52,7 +52,7 @@ export default function ThemeToggle() {
       aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       onClick={() => apply(isDark ? 'light' : 'dark')}
-      className="grid h-9 w-9 place-items-center rounded-lg border border-line bg-surface text-ink-muted transition-colors hover:border-accent/40 hover:text-ink"
+      className="grid h-9 w-9 place-items-center rounded-control border border-line text-ink-muted transition-colors duration-200 ease-smooth hover:border-line-strong hover:text-accent"
     >
       <svg
         aria-hidden="true"
@@ -60,7 +60,7 @@ export default function ThemeToggle() {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
@@ -73,7 +73,7 @@ export default function ThemeToggle() {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       >

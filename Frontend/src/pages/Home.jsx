@@ -1,259 +1,247 @@
+import { useRef } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import Hero from '../components/Hero';
-import ProjectCard from '../components/ProjectCard';
-import { ButtonLink, EmptyState, Loader, Section, SectionHeading } from '../components/ui';
 import {
-  getExperience,
-  getFeaturedProjects,
-  getProjectFilters,
-  getProjects,
-  getSkills,
-} from '../lib/api';
+  FeaturedProject,
+  ProjectCompactRow,
+  TechList,
+} from '../components/ProjectShowcase';
+import { Arrow, ButtonLink, EmptyState, Loader, MoreLink, SectionHeading } from '../components/ui';
+import { getExperience, getProjectFilters, getProjects, getSkills } from '../lib/api';
 import useRequest from '../lib/useRequest';
-import useReveal from '../lib/useReveal';
+import useScrollReveal from '../lib/useScrollReveal';
 import useSeo from '../lib/useSeo';
 
-function Stat({ value, label }) {
-  return (
-    <div className="reveal">
-      <p className="text-3xl font-bold tracking-tight sm:text-4xl">{value}</p>
-      <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-ink-muted">{label}</p>
-    </div>
-  );
-}
+/* ==========================================================================
+   Home.
+
+   The page is a route to the work: hero, featured spreads, then the rest of
+   the archive one click away. Skills and experience appear only when the API
+   has something to show for them.
+   ========================================================================== */
+
+const COMPACT_LIMIT = 8;
 
 export default function Home() {
   const { profile } = useOutletContext();
-  const { data: featured, loading: loadingFeatured } = useRequest(() => getFeaturedProjects(6), []);
-  const { data: allProjects } = useRequest(() => getProjects({ limit: 1 }), []);
+
+  // One list request serves the hero figures, the featured spreads and the
+  // archive preview.
+  const { data: list, loading } = useRequest(() => getProjects({ limit: 100 }), []);
   const { data: meta } = useRequest(getProjectFilters, []);
   const { data: skills } = useRequest(getSkills, []);
   const { data: experience } = useRequest(getExperience, []);
-  const revealRef = useReveal();
+
+  const bodyRef = useRef(null);
+  const items = list?.items || [];
+  const featured = items.filter((project) => project.featured);
+  const rest = items.filter((project) => !project.featured);
+  const skillGroups = skills?.groups || [];
+  const technologies = meta?.technologies || [];
+  const recentExperience = (experience || []).slice(0, 3);
+
+  useScrollReveal(bodyRef, [items.length, skillGroups.length, recentExperience.length]);
 
   useSeo({
     title: profile?.name ? `${profile.name} — ${profile.title || 'Developer'}` : 'Home',
     description:
-      profile?.tagline || profile?.bio || 'Personal developer portfolio: projects, skills and experience.',
+      profile?.tagline ||
+      profile?.bio ||
+      'Selected professional work: client platforms, admin panels and product builds.',
     image: profile?.profileImage,
   });
 
-  const skillGroups = skills?.groups || [];
-  const recentExperience = (experience || []).slice(0, 3);
-  const totalProjects = allProjects?.total ?? 0;
-  const totalCategories = (meta?.categories || []).length;
-  const totalTech = (meta?.technologies || []).length;
-
   return (
-    <div ref={revealRef}>
-      {/* ---------- Hero ---------- */}
-      <div className="relative overflow-hidden">
-        {/* animated backdrop */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-grid opacity-60" />
-          <div
-            className="aurora animate-float-slow left-[-8%] top-[-20%] h-[26rem] w-[26rem]"
-            style={{ background: 'radial-gradient(circle, var(--hero-glow-1), transparent 70%)' }}
+    <>
+      <Hero
+        profile={profile}
+        featured={featured}
+        stats={{
+          projects: list?.total,
+          categories: meta?.categories?.length,
+          technologies: technologies.length,
+        }}
+      />
+
+      <div ref={bodyRef} className="container-page mt-20 space-y-20 sm:mt-24 sm:space-y-24">
+        {/* --- Featured work ---------------------------------------------- */}
+        <section aria-labelledby="featured-heading">
+          <SectionHeading
+            eyebrow="Selected work"
+            title={<span id="featured-heading">Featured projects</span>}
+            description="Client platforms and product builds, in detail."
+            action={<MoreLink to="/projects">All projects</MoreLink>}
+            reveal={0}
           />
-          <div
-            className="aurora animate-float-slower right-[-10%] top-[-10%] h-[24rem] w-[24rem]"
-            style={{ background: 'radial-gradient(circle, var(--hero-glow-2), transparent 70%)' }}
-          />
-          <div
-            className="aurora animate-float-slow bottom-[-30%] left-[30%] h-[22rem] w-[22rem]"
-            style={{ background: 'radial-gradient(circle, var(--hero-glow-3), transparent 70%)' }}
-          />
-        </div>
 
-        <Section className="relative pb-16 pt-10 sm:pt-16">
-          <div className="grid gap-10 md:grid-cols-[1.5fr_1fr] md:items-center">
-            <div>
-              <p className="reveal inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3 py-1 text-xs font-medium text-ink-muted backdrop-blur">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                </span>
-                {profile?.title || 'Full-Stack Developer'}
-                {profile?.location ? ` · ${profile.location}` : ''}
-              </p>
-
-              <h1
-                className="reveal mt-5 text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl"
-                style={{ '--reveal-delay': '80ms' }}
-              >
-                {profile?.name || 'Developer Portfolio'}
-                <span className="mt-2 block text-gradient">Building real products.</span>
-              </h1>
-
-              <p
-                className="reveal mt-5 max-w-xl text-lg leading-relaxed text-ink-muted"
-                style={{ '--reveal-delay': '160ms' }}
-              >
-                {profile?.tagline ||
-                  'A developer who ships. Explore real, delivered projects across web platforms, portals and product builds.'}
-              </p>
-
-              <div
-                className="reveal mt-8 flex flex-wrap gap-3"
-                style={{ '--reveal-delay': '240ms' }}
-              >
-                <ButtonLink to="/projects">View Projects</ButtonLink>
-                <ButtonLink to="/contact" variant="secondary">
-                  Get in Touch
-                </ButtonLink>
-                {profile?.resumeUrl ? (
-                  <ButtonLink href={profile.resumeUrl} variant="secondary">
-                    Résumé
-                  </ButtonLink>
-                ) : null}
-              </div>
-
-              {/* stats */}
-              <div className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-line pt-6">
-                <Stat value={totalProjects || '16'} label="Projects" />
-                <Stat value={totalCategories || '—'} label="Domains" />
-                <Stat value={totalTech || '—'} label="Technologies" />
-              </div>
+          {loading ? (
+            <Loader label="Loading projects…" />
+          ) : featured.length ? (
+            <div className="mt-4">
+              {featured.map((project, index) => (
+                <FeaturedProject
+                  key={project._id}
+                  project={project}
+                  index={index}
+                  revealIndex={index + 1}
+                />
+              ))}
             </div>
-
-            {profile?.profileImage ? (
-              <div className="reveal justify-self-start md:justify-self-end" style={{ '--reveal-delay': '160ms' }}>
-                <div className="relative">
-                  <div
-                    aria-hidden="true"
-                    className="absolute -inset-3 rounded-[2rem] opacity-40 blur-2xl"
-                    style={{ background: 'linear-gradient(135deg,#6366f1,#0ea5e9)' }}
-                  />
-                  <img
-                    src={profile.profileImage}
-                    alt={profile.name ? `Portrait of ${profile.name}` : 'Profile photo'}
-                    loading="lazy"
-                    decoding="async"
-                    className="relative h-52 w-52 rounded-[1.75rem] border border-line object-cover shadow-[var(--shadow-lift)] sm:h-64 sm:w-64"
-                  />
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </Section>
-      </div>
-
-      {/* ---------- Featured projects (the hero of the portfolio) ---------- */}
-      <Section className="py-16">
-        <SectionHeading
-          eyebrow="Selected work"
-          title="Featured projects"
-          description="Real, delivered work — from client platforms to internal portals."
-          action={
-            <Link
-              to="/projects"
-              className="text-sm font-semibold text-accent transition-colors hover:text-ink"
-            >
-              All projects →
-            </Link>
-          }
-        />
-
-        {loadingFeatured ? (
-          <Loader />
-        ) : featured?.length ? (
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featured.map((project, i) => (
-              <div key={project._id} className="reveal" style={{ '--reveal-delay': `${i * 70}ms` }}>
-                <ProjectCard project={project} index={i} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-10">
+          ) : items.length ? (
+            <div className="mt-8">
+              {items.slice(0, 3).map((project, index) => (
+                <FeaturedProject
+                  key={project._id}
+                  project={project}
+                  index={index}
+                  revealIndex={index + 1}
+                />
+              ))}
+            </div>
+          ) : (
             <EmptyState
-              title="No featured projects yet"
-              description="Mark projects as featured in the admin panel to show them here."
+              title="No projects published yet"
+              description="Published projects appear here as soon as they exist."
             />
-          </div>
-        )}
-      </Section>
+          )}
+        </section>
 
-      {/* ---------- Skills preview ---------- */}
-      {skillGroups.length ? (
-        <Section className="pb-16">
-          <SectionHeading
-            eyebrow="Toolkit"
-            title="Skills"
-            action={
-              <Link to="/skills" className="text-sm font-semibold text-accent hover:text-ink">
-                All skills →
-              </Link>
-            }
-          />
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {skillGroups.slice(0, 3).map((group) => (
-              <div
-                key={group.category}
-                className="reveal rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-soft)]"
-              >
-                <p className="text-sm font-semibold">{group.category}</p>
-                <ul className="mt-3 flex flex-wrap gap-1.5">
-                  {group.items.slice(0, 10).map((skill) => (
-                    <li
-                      key={skill._id}
-                      className="rounded-md border border-line bg-canvas px-2 py-0.5 text-xs text-ink-muted"
-                    >
-                      {skill.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </Section>
-      ) : null}
+        {/* --- Archive preview -------------------------------------------- */}
+        {rest.length ? (
+          <section aria-labelledby="archive-heading">
+            <SectionHeading
+              eyebrow="Archive"
+              title={<span id="archive-heading">More work</span>}
+              description={
+                list?.total
+                  ? `The full archive holds ${list.total} projects.`
+                  : undefined
+              }
+              action={<MoreLink to="/projects">Open the archive</MoreLink>}
+              reveal={0}
+            />
 
-      {/* ---------- Experience preview ---------- */}
-      {recentExperience.length ? (
-        <Section className="pb-16">
-          <SectionHeading
-            eyebrow="Background"
-            title="Experience"
-            action={
-              <Link to="/experience" className="text-sm font-semibold text-accent hover:text-ink">
-                Full timeline →
-              </Link>
-            }
-          />
-          <ul className="reveal mt-8 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-soft)]">
-            {recentExperience.map((item) => (
-              <li key={item._id} className="flex flex-col gap-1 p-5 sm:flex-row sm:justify-between">
-                <div>
-                  <p className="font-medium">{item.role}</p>
-                  <p className="text-sm text-ink-muted">{item.company}</p>
+            <ul className="mt-6">
+              {rest.slice(0, COMPACT_LIMIT).map((project, index) => (
+                <ProjectCompactRow
+                  key={project._id}
+                  project={project}
+                  index={index}
+                  revealIndex={index}
+                />
+              ))}
+            </ul>
+
+            {rest.length > COMPACT_LIMIT ? (
+              <p data-reveal="" className="hairline-t pt-5">
+                <Link
+                  to="/projects"
+                  className="link-arrow inline-flex items-center gap-2 text-small text-ink-muted transition-colors duration-200 ease-smooth hover:text-accent"
+                >
+                  <span className="link-underline">
+                    {rest.length - COMPACT_LIMIT} more in the archive
+                  </span>
+                  <Arrow />
+                </Link>
+              </p>
+            ) : null}
+          </section>
+        ) : null}
+
+        {/* --- Technical focus -------------------------------------------- *
+         * Skill groups when the skills API has them; otherwise the tech list
+         * counted from the projects themselves. Never a fabricated stack.  */}
+        {skillGroups.length ? (
+          <section aria-labelledby="skills-heading">
+            <SectionHeading
+              eyebrow="Toolkit"
+              title={<span id="skills-heading">Skills</span>}
+              action={<MoreLink to="/skills">All skills</MoreLink>}
+              reveal={0}
+            />
+            <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {skillGroups.slice(0, 3).map((group, index) => (
+                <div key={group.category} data-reveal="" data-reveal-index={index}>
+                  <p className="label-mono text-accent">{group.category}</p>
+                  <ul className="mt-4 space-y-2">
+                    {group.items.slice(0, 10).map((skill) => (
+                      <li key={skill._id} className="hairline-b py-2 text-small text-ink-muted">
+                        {skill.name}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <p className="text-sm text-ink-muted">
-                  {[item.startDate, item.current ? 'Present' : item.endDate].filter(Boolean).join(' — ')}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </Section>
-      ) : null}
-
-      {/* ---------- CTA ---------- */}
-      <Section className="pb-8">
-        <div className="reveal relative overflow-hidden rounded-3xl border border-line p-8 shadow-[var(--shadow-soft)] sm:p-10">
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 opacity-[0.07]"
-            style={{ background: 'linear-gradient(120deg,#4f46e5,#7c3aed,#0ea5e9)' }}
-          />
-          <div className="relative flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
-            <div>
-              <h2 className="text-2xl font-semibold tracking-tight">Have a project in mind?</h2>
-              <p className="mt-1 text-ink-muted">Send a message and I will get back to you.</p>
+              ))}
             </div>
-            <ButtonLink to="/contact">Contact me</ButtonLink>
+          </section>
+        ) : technologies.length ? (
+          <section aria-labelledby="tech-heading">
+            <SectionHeading
+              eyebrow="Toolkit"
+              title={<span id="tech-heading">Technical focus</span>}
+              description="Technologies recorded across the projects in this portfolio."
+              action={<MoreLink to="/skills">Full index</MoreLink>}
+              reveal={0}
+            />
+            <div data-reveal="" data-reveal-index={1} className="mt-8">
+              <TechList technologies={technologies} limit={technologies.length} className="gap-x-8 gap-y-3" />
+            </div>
+          </section>
+        ) : null}
+
+        {/* --- Experience preview ------------------------------------------ */}
+        {recentExperience.length ? (
+          <section aria-labelledby="experience-heading">
+            <SectionHeading
+              eyebrow="Background"
+              title={<span id="experience-heading">Experience</span>}
+              action={<MoreLink to="/experience">Full timeline</MoreLink>}
+              reveal={0}
+            />
+            <ol className="mt-6">
+              {recentExperience.map((item, index) => (
+                <li
+                  key={item._id}
+                  data-reveal=""
+                  data-reveal-index={index}
+                  className="hairline-t flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between"
+                >
+                  <div>
+                    <p className="text-h3 text-ink">{item.role}</p>
+                    {item.company ? (
+                      <p className="mt-1 text-small text-ink-muted">{item.company}</p>
+                    ) : null}
+                  </div>
+                  <p className="label-mono shrink-0">
+                    {[item.startDate, item.current ? 'Present' : item.endDate]
+                      .filter(Boolean)
+                      .join(' — ')}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
+
+        {/* --- Contact ------------------------------------------------------ */}
+        <section data-reveal="" className="hairline-t pt-12 sm:pt-16">
+          <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="label-mono text-accent">Contact</p>
+              <h2 className="mt-4 measure text-h2 text-ink">
+                Have a project that needs building?
+              </h2>
+              <p className="mt-4 measure text-body text-ink-muted">
+                Send a message with the details and I will reply by email.
+              </p>
+            </div>
+            <ButtonLink to="/contact" className="shrink-0">
+              Contact Me
+              <Arrow />
+            </ButtonLink>
           </div>
-        </div>
-      </Section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }

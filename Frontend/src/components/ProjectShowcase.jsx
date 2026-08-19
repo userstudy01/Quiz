@@ -1,181 +1,170 @@
 import { Link } from 'react-router-dom';
+import { Arrow } from './ui';
+import { monogram, plateStyle } from '../lib/projectArt';
+import { projectNumber, projectStatus } from '../lib/projectFields';
 
 /* ==========================================================================
-   Projects showcase pieces.
+   Project presentation.
 
-   Two presentations share one visual language:
-     FeaturedProject — full-width editorial row, sides alternate
-     ProjectTile     — grid card, width varies by position
+   Three treatments, one visual language — a mono index number, a serif title,
+   ruled structure and a single arrow affordance:
 
-   Only fields the API actually returns are rendered. Nothing is invented, and
-   no decorative slot is filled with placeholder copy.
+     ProjectPlate    the artwork (real screenshot, or a deterministic plate)
+     FeaturedProject the wide editorial spread used for featured work
+     ProjectIndexRow the ruled archive row used for everything else
 
-   Card interaction model: the "View Case Study" link carries an `after:` layer
-   covering the whole card, so the entire surface is clickable while keyboard
-   users get exactly one focus stop per project.
+   Only fields the API actually returns are rendered. Nothing is invented and
+   no slot is padded with placeholder copy.
+
+   Interaction model: the row/spread is a `group`, and the case-study link
+   carries an `after:` layer covering the whole surface. The entire block is
+   clickable while keyboard users get exactly one focus stop per project.
    ========================================================================== */
 
-const projectNumber = (project, index) =>
-  String(project.sortOrder ?? index + 1).padStart(2, '0');
+/* --- Artwork -------------------------------------------------------------- */
 
-/* Initials from the project title, e.g. "Netafim Video Portal" → "NV". */
-const initials = (title = '') =>
-  title
-    .split(/[\s/-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase())
-    .join('') || '—';
-
-/* --------------------------------------------------------------------------
-   Visual
-   Uses the first screenshot when one exists. None of the current projects have
-   images, so the fallback is built to look designed rather than missing: the
-   engineering grid from `project-visual`, the project category, and the title
-   initials.
-   -------------------------------------------------------------------------- */
-/* `caption` overrides the label shown inside the fallback artwork. The listing
-   uses the category; the case study passes its technologies instead, since the
-   category is already stated twice on that page. Pass null for no label. */
-export function ProjectVisual({ project, className = '', caption = undefined }) {
+export function ProjectPlate({ project, className = '', label = undefined, size = 'md' }) {
   const shot = project.screenshots?.[0];
-  const label = caption === undefined ? project.category : caption;
+  const caption = label === undefined ? project.category : label;
 
   if (shot?.url) {
     return (
       <div className={`overflow-hidden rounded-card border border-line bg-elevated ${className}`}>
         <img
           src={shot.url}
-          alt={shot.caption || `${project.title} screenshot`}
+          alt={shot.caption || `${project.title} — screenshot`}
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover opacity-90 transition-[transform,opacity,filter] duration-500 ease-smooth grayscale-[35%] group-hover:scale-[1.03] group-hover:opacity-100 group-hover:grayscale-0"
+          className="h-full w-full object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.03]"
         />
       </div>
     );
   }
 
+  const markSize = size === 'sm' ? 'text-2xl' : size === 'lg' ? 'text-6xl sm:text-7xl' : 'text-4xl';
+
   return (
     <div
       aria-hidden="true"
-      className={`project-visual rounded-card border border-line transition-colors duration-500 ease-smooth group-hover:border-line-strong ${className}`}
+      style={plateStyle(project)}
+      className={`plate rounded-card border border-line transition-colors duration-500 ease-smooth group-hover:border-line-strong ${className}`}
     >
-      {/* Kept out of the card body so the two halves do not repeat one line. */}
-      {label ? (
-        <div className="absolute inset-x-0 bottom-0 p-5">
-          <span className="label-mono text-ink-subtle">{label}</span>
-        </div>
-      ) : null}
-
       <div className="absolute inset-0 grid place-items-center">
-        <span className="font-mono text-5xl font-medium tracking-tight text-ink-muted/45 transition-[color,transform] duration-500 ease-smooth group-hover:text-accent/70 sm:text-6xl">
-          {initials(project.title)}
+        <span
+          className={`font-display ${markSize} leading-none text-ink-subtle transition-colors duration-500 ease-smooth group-hover:text-accent`}
+        >
+          {monogram(project.title)}
         </span>
       </div>
+
+      {caption ? (
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <span className="label-mono">{caption}</span>
+        </div>
+      ) : null}
     </div>
   );
 }
 
-/* --------------------------------------------------------------------------
-   Shared bits
-   -------------------------------------------------------------------------- */
+/* --- Shared bits ---------------------------------------------------------- */
 
-function TechList({ technologies = [], limit = 6 }) {
+export function TechList({ technologies = [], limit = 6, className = '' }) {
   if (!technologies.length) return null;
   const shown = technologies.slice(0, limit);
   const rest = technologies.length - shown.length;
 
   return (
-    <ul className="flex flex-wrap gap-1.5">
+    <ul className={`flex flex-wrap items-center gap-x-4 gap-y-1.5 ${className}`}>
       {shown.map((tech) => (
-        <li
-          key={tech}
-          className="rounded-md border border-line bg-elevated px-2 py-0.5 text-meta text-ink-muted transition-colors duration-300 ease-smooth group-hover:border-line-strong"
-        >
+        <li key={tech} className="label-mono text-ink-muted">
           {tech}
         </li>
       ))}
-      {rest > 0 ? <li className="px-1 py-0.5 text-meta text-ink-subtle">+{rest}</li> : null}
+      {rest > 0 ? <li className="label-mono">+{rest}</li> : null}
     </ul>
   );
 }
 
-function FeaturedBadge() {
-  return (
-    <span className="rounded-md border border-accent/40 bg-accent-soft px-2 py-0.5 text-meta text-accent">
-      Featured
-    </span>
-  );
-}
-
-function CaseStudyLink({ project, stretch = true }) {
+function CaseStudyLink({ project, stretch = true, children = 'Read case study' }) {
   return (
     <Link
       to={`/projects/${project.slug}`}
-      aria-label={`View case study for ${project.title}`}
-      className={`link-arrow inline-flex items-center gap-1.5 text-small font-medium text-ink transition-colors duration-300 ease-smooth group-hover:text-accent ${
+      aria-label={`Read the case study for ${project.title}`}
+      className={`link-arrow inline-flex items-center gap-2 text-small font-medium text-ink transition-colors duration-200 ease-smooth group-hover:text-accent ${
         stretch ? "after:absolute after:inset-0 after:content-['']" : ''
       }`}
     >
-      View Case Study
-      <svg
-        className="arrow h-4 w-4"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        aria-hidden="true"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0-5-5m5 5-5 5" />
-      </svg>
+      <span className="link-underline">{children}</span>
+      <Arrow />
     </Link>
   );
 }
 
-/* --------------------------------------------------------------------------
-   Featured row
-   -------------------------------------------------------------------------- */
+function StatusMark({ status }) {
+  if (!status) return null;
+  return (
+    <span className="label-mono flex items-center gap-2">
+      <span aria-hidden="true" className="inline-block h-1 w-1 rounded-full bg-accent" />
+      {status}
+    </span>
+  );
+}
+
+/* --- Featured spread ------------------------------------------------------ *
+ * No enclosing card: a hairline above, generous air, and alternating sides.  */
 export function FeaturedProject({ project, index, revealIndex }) {
   const flip = index % 2 === 1;
+  const status = projectStatus(project);
 
   return (
     <article
       data-reveal=""
       data-reveal-index={revealIndex}
-      className="group relative grid items-center gap-6 rounded-panel border border-line bg-surface p-5 transition-[border-color,box-shadow] duration-500 ease-smooth hover:border-accent/35 hover:glow-md sm:p-6 lg:grid-cols-2 lg:gap-10 lg:p-8"
+      className="group hairline-t relative grid items-center gap-8 py-10 sm:py-14 lg:grid-cols-2 lg:gap-16"
     >
-      <ProjectVisual
+      <ProjectPlate
         project={project}
-        className={`aspect-[16/10] w-full ${flip ? 'lg:order-2' : ''}`}
+        size="lg"
+        className={`aspect-[16/11] w-full ${flip ? 'lg:order-2' : ''}`}
       />
 
       <div className={flip ? 'lg:order-1' : ''}>
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-small text-accent transition-transform duration-500 ease-smooth group-hover:-translate-y-0.5">
-            {projectNumber(project, index)}
-          </span>
-          <span className="h-px w-8 bg-line" aria-hidden="true" />
-          <FeaturedBadge />
+        <div className="flex items-center gap-4">
+          <span className="index-mono text-accent">{projectNumber(project, index)}</span>
+          <span aria-hidden="true" className="h-px w-10 bg-line-strong" />
+          <span className="label-mono">Featured</span>
         </div>
 
-        <h3 className="mt-4 text-h2 text-ink">{project.title}</h3>
+        <h3 className="mt-5 text-h2 text-ink transition-colors duration-300 ease-smooth group-hover:text-accent">
+          {project.title}
+        </h3>
+
+        {project.category ? (
+          <p className="mt-2 text-small text-ink-subtle">{project.category}</p>
+        ) : null}
 
         {project.shortDescription ? (
-          <p className="mt-4 max-w-reading text-body text-ink-muted">{project.shortDescription}</p>
+          <p className="mt-5 measure text-body text-ink-muted">{project.shortDescription}</p>
         ) : null}
 
-        {project.role ? (
-          <p className="mt-3 text-small text-ink-muted">
-            <span className="text-ink-subtle">Role: </span>
-            {project.role}
-          </p>
-        ) : null}
+        <dl className="mt-6 flex flex-wrap gap-x-10 gap-y-3">
+          {project.role ? (
+            <div>
+              <dt className="label-mono">Role</dt>
+              <dd className="mt-1 text-small text-ink">{project.role}</dd>
+            </div>
+          ) : null}
+          {status ? (
+            <div>
+              <dt className="label-mono">Status</dt>
+              <dd className="mt-1 text-small text-ink">{status}</dd>
+            </div>
+          ) : null}
+        </dl>
 
-        <div className="mt-5">
-          <TechList technologies={project.technologies} limit={8} />
-        </div>
+        <TechList technologies={project.technologies} limit={8} className="mt-6" />
 
-        <div className="mt-6">
+        <div className="mt-8">
           <CaseStudyLink project={project} />
         </div>
       </div>
@@ -183,49 +172,91 @@ export function FeaturedProject({ project, index, revealIndex }) {
   );
 }
 
-/* --------------------------------------------------------------------------
-   Grid tile
-   `wide` tiles take half the row instead of a third, which is what stops the
-   remaining projects reading as a uniform card wall.
-   -------------------------------------------------------------------------- */
-export function ProjectTile({ project, index, revealIndex, wide = false }) {
+/* --- Archive row ---------------------------------------------------------- *
+ * A ruled index entry. Deliberately not a card: the archive should read like
+ * a contents page, so nothing here looks like filler next to the spreads.    */
+export function ProjectIndexRow({ project, index, revealIndex }) {
+  const status = projectStatus(project);
+
   return (
     <article
       data-reveal=""
       data-reveal-index={revealIndex}
-      className={`group relative flex flex-col overflow-hidden rounded-card border border-line bg-surface transition-[border-color,box-shadow,transform] duration-500 ease-smooth hover:-translate-y-0.5 hover:border-accent/35 hover:glow-sm ${
-        wide ? 'lg:col-span-3' : 'lg:col-span-2'
-      }`}
+      className="group hairline-t relative transition-colors duration-300 ease-smooth"
     >
-      <ProjectVisual
-        project={project}
-        className={`w-full rounded-none border-0 border-b border-line ${
-          wide ? 'aspect-[16/9]' : 'aspect-[4/3]'
-        }`}
-      />
+      <div className="grid gap-5 py-8 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-8 lg:grid-cols-[auto_11rem_minmax(0,1fr)]">
+        <span className="index-mono pt-1 text-ink-subtle transition-colors duration-300 ease-smooth group-hover:text-accent">
+          {projectNumber(project, index)}
+        </span>
 
-      <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-start justify-between gap-3">
-          <span className="font-mono text-small text-ink-subtle transition-[color,transform] duration-500 ease-smooth group-hover:-translate-y-0.5 group-hover:text-accent">
-            {projectNumber(project, index)}
-          </span>
-          {project.featured ? <FeaturedBadge /> : null}
-        </div>
+        <ProjectPlate
+          project={project}
+          size="sm"
+          label={null}
+          className="hidden aspect-[4/3] w-full lg:block"
+        />
 
-        <h3 className="mt-3 text-h3 text-ink">{project.title}</h3>
+        <div>
+          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <h3 className="text-h3 text-ink transition-colors duration-300 ease-smooth group-hover:text-accent">
+              {project.title}
+            </h3>
+            {project.category ? (
+              <span className="label-mono">{project.category}</span>
+            ) : null}
+          </div>
 
-        {project.shortDescription ? (
-          <p className="mt-3 line-clamp-3 text-small text-ink-muted">{project.shortDescription}</p>
-        ) : null}
+          {project.shortDescription ? (
+            <p className="mt-3 measure text-small text-ink-muted">{project.shortDescription}</p>
+          ) : null}
 
-        <div className="mt-4">
-          <TechList technologies={project.technologies} limit={5} />
-        </div>
+          <div className="mt-4 flex flex-wrap items-center gap-x-8 gap-y-2">
+            {project.role ? (
+              <span className="label-mono">
+                Role — <span className="text-ink-muted">{project.role}</span>
+              </span>
+            ) : null}
+            <StatusMark status={status} />
+          </div>
 
-        <div className="mt-5 pt-1">
-          <CaseStudyLink project={project} />
+          <TechList technologies={project.technologies} limit={6} className="mt-4" />
+
+          <div className="mt-5">
+            <CaseStudyLink project={project} />
+          </div>
         </div>
       </div>
     </article>
+  );
+}
+
+/* --- Compact row ---------------------------------------------------------- *
+ * Used on the home page beneath the featured spreads: title, category and an
+ * arrow, nothing else. Keeps the route to all 16 projects one click away.    */
+export function ProjectCompactRow({ project, index, revealIndex }) {
+  return (
+    <li data-reveal="" data-reveal-index={revealIndex} className="hairline-t">
+      <Link
+        to={`/projects/${project.slug}`}
+        className="group flex items-baseline gap-4 py-4 transition-colors duration-200 ease-smooth sm:gap-6"
+      >
+        <span className="index-mono text-ink-subtle transition-colors duration-200 ease-smooth group-hover:text-accent">
+          {projectNumber(project, index)}
+        </span>
+
+        <span className="min-w-0 flex-1">
+          <span className="link-underline text-body text-ink transition-colors duration-200 ease-smooth group-hover:text-accent">
+            {project.title}
+          </span>
+          {project.category ? (
+            <span className="mt-1 block label-mono sm:mt-0 sm:ml-4 sm:inline">
+              {project.category}
+            </span>
+          ) : null}
+        </span>
+
+        <Arrow className="shrink-0 text-ink-subtle transition-colors duration-200 ease-smooth group-hover:text-accent" />
+      </Link>
+    </li>
   );
 }

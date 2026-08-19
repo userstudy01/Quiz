@@ -71,6 +71,10 @@ export function stripRemainingPrefix(item = '') {
   return String(item).replace(/^remaining work:\s*/i, '').trim() || String(item);
 }
 
+/** The labelled `Status:` line the importer stores inside `description`. */
+export const projectStatus = (project) =>
+  parseDescription(project?.description).fields.Status || '';
+
 /** Two-digit display number, from sortOrder. Never a Mongo id. */
 export const projectNumber = (project, fallbackIndex = 0) =>
   String(project?.sortOrder ?? fallbackIndex + 1).padStart(2, '0');

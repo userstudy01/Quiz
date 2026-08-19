@@ -25,8 +25,14 @@ export default function Layout() {
     <div className="flex min-h-screen flex-col">
       <ScrollToTop />
       <Navbar profile={profile} />
-      <main className="flex-1 pb-16 pt-10 sm:pt-14">
-        <Suspense fallback={<div className="container-page"><Loader /></div>}>
+      <main id="main" className="flex-1 pb-20 pt-10 sm:pt-14">
+        <Suspense
+          fallback={
+            <div className="container-page">
+              <Loader />
+            </div>
+          }
+        >
           <Outlet context={{ profile }} />
         </Suspense>
       </main>

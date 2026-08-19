@@ -1,19 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FeaturedProject, ProjectTile } from '../components/ProjectShowcase';
-import { EmptyState, ErrorState, Loader, Section } from '../components/ui';
+import { FeaturedProject, ProjectIndexRow } from '../components/ProjectShowcase';
+import { EmptyState, ErrorState, Loader, PageHeader, Section } from '../components/ui';
 import { inputClass } from '../lib/styles';
 import { getProjectFilters, getProjects } from '../lib/api';
 import useRequest from '../lib/useRequest';
 import useScrollReveal from '../lib/useScrollReveal';
 import useSeo from '../lib/useSeo';
 
-const PAGE_SIZE = 24;
+/* ==========================================================================
+   Selected Work — the case-study archive.
 
-/* Rhythm for the non-featured grid on large screens: the 6-column track is
-   split 3+3, then 2+2+2, so rows alternate between two-up and three-up instead
-   of repeating one card width. */
-const isWide = (index) => index % 5 < 2;
+   Featured projects lead as full spreads; everything else follows as ruled
+   index rows. The archive rows are a different *treatment*, not a lesser one:
+   each still carries its number, category, description, role, status and tech.
+   ========================================================================== */
+
+const PAGE_SIZE = 100;
 
 export default function Projects() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,62 +57,51 @@ export default function Projects() {
 
   const { data, loading, error, reload } = useRequest(() => getProjects(query), [query]);
   const { data: meta } = useRequest(getProjectFilters, []);
-  // Unfiltered count for the header, so the headline total does not change
+  // Unfiltered count for the masthead, so the headline total does not move
   // while the visitor is filtering. limit=1 keeps the payload tiny.
   const { data: totals } = useRequest(() => getProjects({ limit: 1 }), []);
 
   useSeo({
-    title: 'Projects',
-    description: 'Professional projects with technologies, role and case-study details.',
+    title: 'Selected Work',
+    description: 'Professional project archive with technologies, role and case-study detail.',
   });
 
   const items = data?.items || [];
   const hasFilters = Boolean(search) || category !== 'all' || technology !== 'all' || featured;
   const totalAll = totals?.total;
 
-  // Featured projects lead the page; everything else follows in the grid.
   const featuredItems = items.filter((project) => project.featured);
   const restItems = items.filter((project) => !project.featured);
 
   // Remounts the results on any filter change so the swap animation replays.
   const resultsKey = `${search}|${category}|${technology}|${featured}`;
-
   const resultsRef = useRef(null);
   useScrollReveal(resultsRef, [resultsKey, items.length]);
 
-  const selectClass = `${inputClass()} appearance-none pr-9 cursor-pointer`;
+  const selectClass = `${inputClass()} cursor-pointer appearance-none bg-transparent pr-9`;
 
-  // min-h on small screens keeps the chips at a comfortable touch target;
-  // desktop drops back to the tighter editorial height.
   const chipClass = (active) =>
-    `inline-flex min-h-11 items-center rounded-full border px-4 text-meta transition-colors duration-200 ease-smooth sm:min-h-0 sm:px-3.5 sm:py-1.5 ${
+    `inline-flex min-h-10 items-center rounded-control border px-4 label-mono transition-colors duration-200 ease-smooth ${
       active
-        ? 'border-accent bg-accent text-accent-contrast'
-        : 'border-line bg-surface text-ink-muted hover:border-line-strong hover:text-ink'
+        ? 'border-ink bg-ink text-canvas'
+        : 'border-line text-ink-muted hover:border-line-strong hover:text-ink'
     }`;
 
   return (
     <Section>
-      {/* --- Header ------------------------------------------------------- */}
-      <header className="hairline-b flex flex-col gap-6 pb-8 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="label-mono text-accent">Selected work</p>
-          <h1 className="mt-3 text-h1 text-ink">My Projects</h1>
-          <p className="mt-4 max-w-reading text-body text-ink-muted">
-            Client and product work across web applications, admin panels and long-running
-            support engagements. Each entry links to its case study.
-          </p>
-        </div>
+      <PageHeader
+        eyebrow="Archive"
+        title="Selected Work"
+        lede="Client and product work across web applications, admin panels and long-running support engagements. Each entry links to its case study."
+        meta={
+          typeof totalAll === 'number'
+            ? `${totalAll} Project${totalAll === 1 ? '' : 's'}`
+            : undefined
+        }
+      />
 
-        {typeof totalAll === 'number' ? (
-          <p className="label-mono shrink-0 sm:text-right">
-            {totalAll} Project{totalAll === 1 ? '' : 's'}
-          </p>
-        ) : null}
-      </header>
-
-      {/* --- Controls ----------------------------------------------------- */}
-      <div className="mt-8 grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
+      {/* --- Controls ------------------------------------------------------ */}
+      <div className="hairline-t mt-10 grid gap-4 pt-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <div className="relative">
           <label htmlFor="project-search" className="sr-only">
             Search projects
@@ -120,7 +112,7 @@ export default function Projects() {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.8"
+            strokeWidth="1.5"
           >
             <circle cx="11" cy="11" r="7" />
             <path strokeLinecap="round" d="m20 20-3.2-3.2" />
@@ -130,7 +122,7 @@ export default function Projects() {
             type="search"
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
-            placeholder="Search by name, technology, category or description"
+            placeholder="Search by name, technology or category"
             className={inputClass(false, 'pl-10')}
           />
         </div>
@@ -174,7 +166,7 @@ export default function Projects() {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2.5">
+      <div className="mt-5 flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => setSearchParams({}, { replace: true })}
@@ -197,14 +189,14 @@ export default function Projects() {
           <button
             type="button"
             onClick={() => setSearchParams({}, { replace: true })}
-            className="link-accent inline-flex min-h-11 items-center text-small underline underline-offset-4 sm:min-h-0"
+            className="link-accent inline-flex min-h-10 items-center text-small underline underline-offset-4"
           >
             Clear filters
           </button>
         ) : null}
 
         {!loading && data ? (
-          <p className="label-mono ml-auto">
+          <p className="label-mono ml-auto" role="status">
             {typeof totalAll === 'number' && data.total !== totalAll
               ? `Showing ${data.total} of ${totalAll}`
               : `${data.total} result${data.total === 1 ? '' : 's'}`}
@@ -212,8 +204,8 @@ export default function Projects() {
         ) : null}
       </div>
 
-      {/* --- Results ------------------------------------------------------ */}
-      <div className="mt-10">
+      {/* --- Results -------------------------------------------------------- */}
+      <div className="mt-12">
         {loading ? (
           <Loader label="Loading projects…" />
         ) : error ? (
@@ -221,7 +213,7 @@ export default function Projects() {
         ) : items.length ? (
           <div key={resultsKey} ref={resultsRef} className="project-swap">
             {featuredItems.length ? (
-              <div className="flex flex-col gap-6">
+              <div>
                 {featuredItems.map((project, index) => (
                   <FeaturedProject
                     key={project._id}
@@ -234,28 +226,23 @@ export default function Projects() {
             ) : null}
 
             {restItems.length ? (
-              <div
-                className={`grid gap-5 sm:grid-cols-2 lg:grid-cols-6 ${
-                  featuredItems.length ? 'mt-6' : ''
-                }`}
-              >
+              <div className={featuredItems.length ? 'mt-16' : ''}>
+                {featuredItems.length ? (
+                  <p className="label-mono pb-2">Archive</p>
+                ) : null}
                 {restItems.map((project, index) => (
-                  <ProjectTile
+                  <ProjectIndexRow
                     key={project._id}
                     project={project}
                     index={index}
                     revealIndex={featuredItems.length + index}
-                    wide={isWide(index)}
                   />
                 ))}
               </div>
             ) : null}
           </div>
         ) : (
-          <EmptyState
-            title="No projects found."
-            description="Try another search or filter."
-          />
+          <EmptyState title="No projects found" description="Try another search or filter." />
         )}
       </div>
     </Section>
