@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import API, { apiError, getStoredAuth } from '../utils/api';
-import { PageHeader } from '../components/ui';
+import { Badge, PageHeader } from '../components/ui';
 
 /* ---------- small presentational helpers ---------- */
 
@@ -34,21 +34,10 @@ function StatCard({ label, value, sub, to, loading, error }) {
   );
 }
 
+const STATUS_TONE = { published: 'success', draft: 'warn', archived: 'neutral' };
+
 function StatusBadge({ status }) {
-  const styles = {
-    published: 'bg-success-soft text-success',
-    draft: 'bg-warn-soft text-warn',
-    archived: 'bg-canvas text-ink-muted',
-  };
-  return (
-    <span
-      className={`rounded-md px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide ${
-        styles[status] || 'bg-line text-ink-muted'
-      }`}
-    >
-      {status || 'unknown'}
-    </span>
-  );
+  return <Badge tone={STATUS_TONE[status] || 'neutral'}>{status || 'unknown'}</Badge>;
 }
 
 function SectionError({ message }) {

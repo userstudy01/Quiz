@@ -1,23 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import API, { apiError } from '../utils/api';
-import { EmptyRow, Loader, PageHeader, Toast } from '../components/ui';
+import { Badge, EmptyRow, Loader, PageHeader, Toast } from '../components/ui';
 
-const STATUS_STYLES = {
-  pending: 'bg-warn-soft text-warn',
-  approved: 'bg-success-soft text-success',
-  rejected: 'bg-danger-soft text-danger',
-};
+const STATUS_TONE = { pending: 'warn', approved: 'success', rejected: 'danger' };
 
 function StatusBadge({ status }) {
-  return (
-    <span
-      className={`rounded-md px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide ${
-        STATUS_STYLES[status] || 'bg-line text-ink-muted'
-      }`}
-    >
-      {status}
-    </span>
-  );
+  return <Badge tone={STATUS_TONE[status] || 'neutral'}>{status}</Badge>;
 }
 
 export default function Requests() {

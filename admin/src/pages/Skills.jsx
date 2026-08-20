@@ -19,6 +19,7 @@ export default function Skills() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -42,16 +43,24 @@ export default function Skills() {
 
   const openNew = () => {
     setForm({ ...EMPTY, sortOrder: skills.length });
+    setFieldErrors({});
     setEditing('new');
   };
 
   const openEdit = (skill) => {
     setForm({ ...EMPTY, ...skill });
+    setFieldErrors({});
     setEditing(skill._id);
   };
 
   const save = async (event) => {
     event.preventDefault();
+    const errors = {};
+    if (!form.name.trim()) errors.name = 'Name is required.';
+    if (!form.category.trim()) errors.category = 'Category is required.';
+    setFieldErrors(errors);
+    if (Object.keys(errors).length) return;
+
     setSaving(true);
     try {
       if (editing === 'new') await API.post('/skills', form);
@@ -181,20 +190,26 @@ export default function Skills() {
         title={editing === 'new' ? 'Add skill' : 'Edit skill'}
         onClose={() => setEditing(null)}
       >
-        <form id="skill-form" onSubmit={save} className="space-y-4">
-          <Field label="Name">
+        <form id="skill-form" onSubmit={save} noValidate className="space-y-4">
+          <Field label="Name" error={fieldErrors.name}>
             <input
-              required
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              onChange={(e) => {
+                setForm({ ...form, name: e.target.value });
+                if (fieldErrors.name) setFieldErrors((p) => ({ ...p, name: undefined }));
+              }}
+              aria-invalid={Boolean(fieldErrors.name)}
               className={inputClass}
             />
           </Field>
-          <Field label="Category">
+          <Field label="Category" error={fieldErrors.category}>
             <input
-              required
               value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              onChange={(e) => {
+                setForm({ ...form, category: e.target.value });
+                if (fieldErrors.category) setFieldErrors((p) => ({ ...p, category: undefined }));
+              }}
+              aria-invalid={Boolean(fieldErrors.category)}
               className={inputClass}
             />
           </Field>

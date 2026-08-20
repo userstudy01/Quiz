@@ -39,6 +39,7 @@ export default function Experience() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -62,6 +63,12 @@ export default function Experience() {
 
   const save = async (event) => {
     event.preventDefault();
+    const errors = {};
+    if (!form.role.trim()) errors.role = 'Role is required.';
+    if (!form.company.trim()) errors.company = 'Company is required.';
+    setFieldErrors(errors);
+    if (Object.keys(errors).length) return;
+
     setSaving(true);
     try {
       if (editing === 'new') await API.post('/experience', form);
@@ -116,6 +123,7 @@ export default function Experience() {
           <Button
             onClick={() => {
               setForm({ ...EMPTY, sortOrder: items.length });
+              setFieldErrors({});
               setEditing('new');
             }}
           >
@@ -175,6 +183,7 @@ export default function Experience() {
                           type="button"
                           onClick={() => {
                             setForm(toForm(item));
+                            setFieldErrors({});
                             setEditing(item._id);
                           }}
                           className="rounded-lg border border-line px-2.5 py-1.5 text-xs hover:border-ink/30"
@@ -206,20 +215,26 @@ export default function Experience() {
         title={editing === 'new' ? 'Add experience' : 'Edit experience'}
         onClose={() => setEditing(null)}
       >
-        <form onSubmit={save} className="grid gap-4 sm:grid-cols-2">
-          <Field label="Role">
+        <form onSubmit={save} noValidate className="grid gap-4 sm:grid-cols-2">
+          <Field label="Role" error={fieldErrors.role}>
             <input
-              required
               value={form.role}
-              onChange={(e) => setForm({ ...form, role: e.target.value })}
+              onChange={(e) => {
+                setForm({ ...form, role: e.target.value });
+                if (fieldErrors.role) setFieldErrors((p) => ({ ...p, role: undefined }));
+              }}
+              aria-invalid={Boolean(fieldErrors.role)}
               className={inputClass}
             />
           </Field>
-          <Field label="Company">
+          <Field label="Company" error={fieldErrors.company}>
             <input
-              required
               value={form.company}
-              onChange={(e) => setForm({ ...form, company: e.target.value })}
+              onChange={(e) => {
+                setForm({ ...form, company: e.target.value });
+                if (fieldErrors.company) setFieldErrors((p) => ({ ...p, company: undefined }));
+              }}
+              aria-invalid={Boolean(fieldErrors.company)}
               className={inputClass}
             />
           </Field>
