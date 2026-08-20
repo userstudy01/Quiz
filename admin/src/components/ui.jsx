@@ -143,22 +143,47 @@ export function ConfirmDialog({ open, title, message, onCancel, onConfirm, busy 
 export function Toast({ toast, onDismiss }) {
   useEffect(() => {
     if (!toast) return undefined;
-    const id = setTimeout(() => onDismiss(), 4000);
+    const id = setTimeout(() => onDismiss(), 5000);
     return () => clearTimeout(id);
   }, [toast, onDismiss]);
 
   if (!toast) return null;
 
+  const isError = toast.type === 'error';
+
   return (
-    <div
-      role="status"
-      className={`fixed bottom-5 right-5 z-[60] max-w-sm rounded-lg border px-4 py-3 text-sm shadow-lg ${
-        toast.type === 'error'
-          ? 'border-red-200 bg-white text-red-700'
-          : 'border-emerald-200 bg-white text-emerald-700'
-      }`}
-    >
-      {toast.message}
+    <div className="fixed inset-x-0 top-5 z-[60] flex justify-center px-4 sm:inset-x-auto sm:right-5 sm:justify-end">
+      <div
+        role={isError ? 'alert' : 'status'}
+        className={`animate-toast-in flex w-full max-w-sm items-start gap-3 rounded-xl border-l-4 bg-surface px-4 py-3.5 shadow-xl ring-1 ring-black/5 ${
+          isError ? 'border-red-500' : 'border-emerald-500'
+        }`}
+      >
+        <span
+          className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full text-white ${
+            isError ? 'bg-red-500' : 'bg-emerald-500'
+          }`}
+          aria-hidden="true"
+        >
+          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            {isError ? <path d="M18 6 6 18M6 6l12 12" /> : <path d="M20 6 9 17l-5-5" />}
+          </svg>
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-ink">{isError ? 'Something went wrong' : 'Success'}</p>
+          <p className="mt-0.5 text-sm text-ink-muted">{toast.message}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onDismiss}
+          aria-label="Dismiss"
+          className="-mr-1 -mt-0.5 shrink-0 rounded-md p-1 text-ink-muted hover:bg-line/60 hover:text-ink"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }
