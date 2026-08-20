@@ -123,7 +123,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
   user.status = nextStatus;
   if (nextStatus === 'approved') {
-    user.role = req.body.role === 'admin' ? 'admin' : 'editor';
+    user.role = 'admin';
   }
   await user.save();
 

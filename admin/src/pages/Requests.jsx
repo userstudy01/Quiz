@@ -24,7 +24,6 @@ export default function Requests() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
-  const [roleChoice, setRoleChoice] = useState({}); // userId -> 'admin' | 'editor'
   const [toast, setToast] = useState(null);
 
   const load = useCallback(async () => {
@@ -46,8 +45,7 @@ export default function Requests() {
   const act = async (user, status) => {
     setBusyId(user._id);
     try {
-      const role = roleChoice[user._id] || 'editor';
-      const { data } = await API.patch(`/auth/users/${user._id}`, { status, role });
+      const { data } = await API.patch(`/auth/users/${user._id}`, { status });
       setUsers((prev) => prev.map((u) => (u._id === data.id ? { ...u, ...data, _id: data.id } : u)));
       setToast({
         type: 'success',
@@ -95,21 +93,7 @@ export default function Requests() {
                         <p className="text-xs text-ink-muted">{user.email}</p>
                       </td>
                       <td className="px-4 py-3">
-                        {isPending ? (
-                          <select
-                            value={roleChoice[user._id] || 'editor'}
-                            onChange={(e) =>
-                              setRoleChoice((prev) => ({ ...prev, [user._id]: e.target.value }))
-                            }
-                            aria-label="Assign role"
-                            className="rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs focus:border-ink/30 focus:outline-none"
-                          >
-                            <option value="editor">editor</option>
-                            <option value="admin">admin</option>
-                          </select>
-                        ) : (
-                          <span className="text-ink-muted">{user.role}</span>
-                        )}
+                        <span className="text-ink-muted">{isPending ? 'admin (on approval)' : user.role}</span>
                       </td>
                       <td className="px-4 py-3">
                         <StatusBadge status={user.status || 'approved'} />

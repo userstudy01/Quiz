@@ -19,19 +19,7 @@ const protect = (req, res, next) => {
   }
 };
 
-// 2. Staff Only Middleware (must run AFTER `protect`)
-// Content management (projects, skills, experience, profile, messages) is open
-// to every approved staff role: editor, admin and superadmin.
-const staffOnly = (req, res, next) => {
-  const staffRoles = ['editor', 'admin', 'superadmin'];
-  if (req.user && staffRoles.includes(req.user.role)) {
-    return next();
-  }
-  return res.status(403).json({ message: 'Access denied. Staff privileges required.' });
-};
-
-// 3. Admin Only Middleware (must run AFTER `protect`)
-// Higher-trust areas (analytics) require admin or superadmin — editors are excluded.
+// 2. Admin Only Middleware (must run AFTER `protect`)
 // Superadmin is a higher role and passes every admin check.
 const adminOnly = (req, res, next) => {
   if (req.user && (req.user.role === 'admin' || req.user.role === 'superadmin')) {
@@ -40,7 +28,7 @@ const adminOnly = (req, res, next) => {
   return res.status(403).json({ message: 'Access denied. Admin privileges required.' });
 };
 
-// 4. Super Admin Only Middleware (approving/managing other users)
+// 3. Super Admin Only Middleware (approving/managing other users)
 const superAdminOnly = (req, res, next) => {
   if (req.user && req.user.role === 'superadmin') {
     return next();
@@ -48,4 +36,4 @@ const superAdminOnly = (req, res, next) => {
   return res.status(403).json({ message: 'Access denied. Super admin privileges required.' });
 };
 
-module.exports = { protect, staffOnly, adminOnly, superAdminOnly };
+module.exports = { protect, adminOnly, superAdminOnly };

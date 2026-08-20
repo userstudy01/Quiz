@@ -4,11 +4,8 @@ const baseURL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').re
 
 const API = axios.create({ baseURL, timeout: 20000 });
 
-// Roles allowed to sign in and manage content (projects, skills, experience,
-// profile, messages). Kept in one place so the login gate, route guards and
-// sidebar stay in sync.
-export const STAFF_ROLES = ['editor', 'admin', 'superadmin'];
-// Higher-trust areas (analytics). Editors are intentionally excluded.
+// Roles allowed to sign in to the admin panel. Kept in one place so the login
+// gate and route guard stay in sync.
 export const ADMIN_ROLES = ['admin', 'superadmin'];
 
 export const getStoredAuth = () => {

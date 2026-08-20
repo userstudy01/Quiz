@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import API, { apiError, STAFF_ROLES } from '../utils/api';
+import API, { apiError, ADMIN_ROLES } from '../utils/api';
 import { Button, Field, PasswordInput, inputClass } from '../components/ui';
 
 export default function Login() {
@@ -29,8 +29,8 @@ export default function Login() {
     try {
       const { data } = await API.post('/auth/login', form);
 
-      if (!STAFF_ROLES.includes(data.user?.role)) {
-        setError('Access denied. Staff privileges required.');
+      if (!ADMIN_ROLES.includes(data.user?.role)) {
+        setError('Access denied. Admin privileges required.');
         return;
       }
 

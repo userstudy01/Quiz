@@ -13,7 +13,7 @@ import Messages from './pages/Messages';
 import Analytics from './pages/Analytics';
 import Requests from './pages/Requests';
 import Account from './pages/Account';
-import { getStoredAuth, ADMIN_ROLES, STAFF_ROLES } from './utils/api';
+import { getStoredAuth, ADMIN_ROLES } from './utils/api';
 
 // Listens for the `auth:unauthorized` event the API layer fires on a 401 and
 // redirects inside the router — no full-page reload, so app state survives.
@@ -31,11 +31,11 @@ function AuthWatcher() {
   return null;
 }
 
-// Guards every admin route: no token or a non-staff role means back to /login.
+// Guards every admin route: no token or a non-admin role means back to /login.
 function ProtectedLayout() {
   const auth = getStoredAuth();
 
-  if (!auth?.token || !STAFF_ROLES.includes(auth?.user?.role)) {
+  if (!auth?.token || !ADMIN_ROLES.includes(auth?.user?.role)) {
     return <Navigate to="/login" replace />;
   }
 
@@ -47,15 +47,6 @@ function ProtectedLayout() {
       </main>
     </div>
   );
-}
-
-// Admin/superadmin-only guard (analytics). Editors are redirected home.
-function AdminRoute({ children }) {
-  const auth = getStoredAuth();
-  if (!ADMIN_ROLES.includes(auth?.user?.role)) {
-    return <Navigate to="/" replace />;
-  }
-  return children;
 }
 
 // Super-admin-only guard for account management.
@@ -84,14 +75,7 @@ export default function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="messages" element={<Messages />} />
           <Route path="account" element={<Account />} />
-          <Route
-            path="analytics"
-            element={
-              <AdminRoute>
-                <Analytics />
-              </AdminRoute>
-            }
-          />
+          <Route path="analytics" element={<Analytics />} />
           <Route
             path="requests"
             element={
