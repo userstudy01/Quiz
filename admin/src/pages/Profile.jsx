@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import API, { apiError } from '../utils/api';
 import { Button, Field, Loader, PageHeader, Toast, inputClass } from '../components/ui';
+import ImageInput from '../components/ImageInput';
 
 const EMPTY = {
   name: '',
@@ -81,10 +82,16 @@ export default function Profile() {
             <Field label="Bio" className="sm:col-span-2">
               <textarea rows={7} value={form.bio} onChange={set('bio')} className={inputClass} />
             </Field>
-            <Field label="Profile image URL" hint="Any publicly reachable image URL">
-              <input value={form.profileImage} onChange={set('profileImage')} className={inputClass} />
+            <Field label="Profile image" hint="Drag & drop or browse — the image is stored with your profile">
+              <ImageInput
+                value={form.profileImage}
+                onChange={(v) => setForm((prev) => ({ ...prev, profileImage: v }))}
+                round
+                maxW={640}
+                maxH={640}
+              />
             </Field>
-            <Field label="Résumé URL">
+            <Field label="Resume URL">
               <input value={form.resumeUrl} onChange={set('resumeUrl')} className={inputClass} />
             </Field>
             <Field label="Email">

@@ -28,7 +28,9 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: '1mb' }));
+// Generous limit so base64-embedded images (profile photo, project
+// screenshots) fit in a single JSON body.
+app.use(express.json({ limit: '12mb' }));
 // Analytics beacons (navigator.sendBeacon) arrive as text/plain to stay
 // preflight-free; parse them as a raw string for the analytics controller.
 app.use(express.text({ type: 'text/plain', limit: '16kb' }));

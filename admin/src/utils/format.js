@@ -14,6 +14,11 @@ export const isValidUrl = (value = '') => {
   }
 };
 
+// Valid <img src>: an http(s) URL or an inline base64 data:image URI (produced
+// by the image uploader).
+export const isImageSrc = (value = '') =>
+  /^data:image\//i.test(value) || isValidUrl(value);
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const isValidEmail = (value = '') => EMAIL_RE.test(String(value).trim());
 

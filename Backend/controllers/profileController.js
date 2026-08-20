@@ -17,7 +17,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     title: str(body.title, 160),
     tagline: str(body.tagline, 300),
     bio: str(body.bio, 8000),
-    profileImage: str(body.profileImage, 1000),
+    profileImage: str(body.profileImage, 8_000_000),
     email: str(body.email, 200).toLowerCase(),
     phone: str(body.phone, 60),
     location: str(body.location, 160),

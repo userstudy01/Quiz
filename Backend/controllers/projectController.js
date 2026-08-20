@@ -3,8 +3,11 @@ const { asyncHandler } = require('../middleware/errorHandler');
 const { str, toStringArray, toBool, toInt } = require('../middleware/validate');
 const { slugify } = require('../utils/slugify');
 
+// Screenshots (which may hold base64 image data) are intentionally excluded
+// from list responses to keep them light — the single-project route returns
+// the full document, including screenshots, for the case study.
 const PUBLIC_FIELDS =
-  'title slug shortDescription category role technologies featured sortOrder createdAt screenshots liveUrl githubUrl';
+  'title slug shortDescription category role technologies featured sortOrder createdAt liveUrl githubUrl';
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -63,7 +66,7 @@ const buildProjectPayload = (body = {}) => {
     sortOrder: toInt(body.sortOrder, 0),
     screenshots: Array.isArray(body.screenshots)
       ? body.screenshots
-          .map((s) => ({ url: str(s?.url, 1000), caption: str(s?.caption, 200) }))
+          .map((s) => ({ url: str(s?.url, 8_000_000), caption: str(s?.caption, 200) }))
           .filter((s) => s.url)
       : [],
   };
@@ -81,6 +84,9 @@ const listPublicProjects = asyncHandler(async (req, res) => {
   const [items, total] = await Promise.all([
     Project.find(filter)
       .select(PUBLIC_FIELDS)
+      // Only the first screenshot travels with a list card; the full set loads
+      // on the case study. Keeps list responses small even with base64 images.
+      .slice('screenshots', 1)
       .sort({ sortOrder: 1, createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
@@ -109,6 +115,7 @@ const getFeaturedProjects = asyncHandler(async (req, res) => {
   const limit = Math.min(Math.max(toInt(req.query.limit, 6), 1), 24);
   const items = await Project.find({ status: 'published', featured: true })
     .select(PUBLIC_FIELDS)
+    .slice('screenshots', 1)
     .sort({ sortOrder: 1, createdAt: -1 })
     .limit(limit)
     .lean();
@@ -134,7 +141,8 @@ const getProjectBySlug = asyncHandler(async (req, res) => {
 
 // @route GET /api/projects/admin/all
 const listAllProjects = asyncHandler(async (req, res) => {
-  const items = await Project.find().sort({ sortOrder: 1, createdAt: -1 }).lean();
+  // Exclude screenshots (possible base64) — the admin list never shows them.
+  const items = await Project.find().select('-screenshots').sort({ sortOrder: 1, createdAt: -1 }).lean();
   res.json(items);
 });
 

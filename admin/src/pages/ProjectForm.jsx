@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import API, { apiError } from '../utils/api';
 import { Button, Field, Loader, PageHeader, Toast, inputClass } from '../components/ui';
 import { ListInput, TagInput } from '../components/fields';
-import { isValidUrl, slugify } from '../utils/format';
+import ImageInput from '../components/ImageInput';
+import { isImageSrc, isValidUrl, slugify } from '../utils/format';
 
 // Longer list fields get repeatable rows; technologies get a chip input.
 const LIST_FIELDS = [
@@ -97,7 +98,7 @@ export default function ProjectForm() {
     if (form.liveUrl.trim() && !isValidUrl(form.liveUrl)) next.liveUrl = 'Enter a valid URL (http/https).';
     if (form.githubUrl.trim() && !isValidUrl(form.githubUrl)) next.githubUrl = 'Enter a valid URL (http/https).';
     screenshots.forEach((s, i) => {
-      if (s.url?.trim() && !isValidUrl(s.url)) next[`shot-${i}`] = 'Invalid image URL.';
+      if (s.url?.trim() && !isImageSrc(s.url)) next[`shot-${i}`] = 'Invalid image.';
     });
     return next;
   };
@@ -245,34 +246,28 @@ export default function ProjectForm() {
           {screenshots.length ? (
             <div className="space-y-4">
               {screenshots.map((shot, index) => (
-                <div key={index} className="grid gap-3 sm:grid-cols-[auto_1fr] sm:items-start">
-                  <div className="grid h-20 w-28 place-items-center overflow-hidden rounded-lg border border-line bg-canvas">
-                    {shot.url && isValidUrl(shot.url) ? (
-                      <img src={shot.url} alt={shot.caption || 'Screenshot'} className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-[11px] text-ink-muted">Preview</span>
-                    )}
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-[2fr_1fr_auto] sm:items-end">
-                    <Field label={`Image URL ${index + 1}`} error={errors[`shot-${index}`]}>
+                <div
+                  key={index}
+                  className="grid gap-3 rounded-lg border border-line bg-canvas/40 p-3 sm:grid-cols-[1fr_auto] sm:items-start"
+                >
+                  <div className="min-w-0 space-y-3">
+                    <ImageInput value={shot.url} onChange={(v) => updateShot(index, 'url', v)} />
+                    <Field label={`Caption ${index + 1}`} error={errors[`shot-${index}`]}>
                       <input
-                        value={shot.url}
-                        onChange={(e) => updateShot(index, 'url', e.target.value)}
-                        placeholder="https://…"
+                        value={shot.caption || ''}
+                        onChange={(e) => updateShot(index, 'caption', e.target.value)}
+                        placeholder="Optional caption"
                         className={inputClass}
                       />
                     </Field>
-                    <Field label="Caption">
-                      <input value={shot.caption || ''} onChange={(e) => updateShot(index, 'caption', e.target.value)} className={inputClass} />
-                    </Field>
-                    <Button
-                      type="button"
-                      variant="danger"
-                      onClick={() => setScreenshots((prev) => prev.filter((_, i) => i !== index))}
-                    >
-                      Remove
-                    </Button>
                   </div>
+                  <Button
+                    type="button"
+                    variant="danger"
+                    onClick={() => setScreenshots((prev) => prev.filter((_, i) => i !== index))}
+                  >
+                    Remove
+                  </Button>
                 </div>
               ))}
             </div>
