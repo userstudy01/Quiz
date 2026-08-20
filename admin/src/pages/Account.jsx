@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import API, { apiError, getStoredAuth } from '../utils/api';
+import { useNavigate } from 'react-router-dom';
+import API, { apiError, clearAuth, getStoredAuth } from '../utils/api';
 import { Button, Field, PageHeader, PasswordInput, Toast } from '../components/ui';
 
 const EMPTY = { currentPassword: '', newPassword: '', confirmPassword: '' };
 
 export default function Account() {
   const auth = getStoredAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState(EMPTY);
   const [fieldErrors, setFieldErrors] = useState({});
   const [saving, setSaving] = useState(false);
@@ -42,10 +44,15 @@ export default function Account() {
         newPassword: form.newPassword,
       });
       setForm(EMPTY);
-      setToast({ type: 'success', message: 'Password updated.' });
+      setToast({ type: 'success', message: 'Password updated. Please sign in again.' });
+      // Give the toast a moment, then end the session so the user re-authenticates
+      // with the new password.
+      setTimeout(() => {
+        clearAuth();
+        navigate('/login', { replace: true });
+      }, 1500);
     } catch (err) {
       setToast({ type: 'error', message: apiError(err, 'Could not update password.') });
-    } finally {
       setSaving(false);
     }
   };
