@@ -36,6 +36,39 @@
   --shadow-pop: 0 12px 32px -12px rgba(17, 24, 39, .28), 0 4px 10px -4px rgba(17, 24, 39, .1);
 }
 
+/* Dark theme — activated by data-theme="dark" on <html> (set by ThemeToggle
+   and the early-init script in index.html). Only the tokens change; every
+   component that styles through them flips automatically. */
+:root[data-theme="dark"] {
+  --color-ink: #e9ecf3;
+  --color-ink-muted: #9aa3b3;
+  --color-ink-subtle: #6b7484;
+  --color-line: #262d3a;
+  --color-line-strong: #343d4d;
+  --color-canvas: #0d1017;
+  --color-surface: #151a23;
+  --color-elevated: #1b212c;
+
+  --color-accent: #6366f1;
+  --color-accent-hover: #7c83ff;
+  --color-accent-soft: #20263e;
+  --color-accent-contrast: #ffffff;
+
+  --color-success: #4ade80;
+  --color-success-soft: #12291d;
+  --color-warn: #fbbf24;
+  --color-warn-soft: #2c2411;
+  --color-danger: #fb7185;
+  --color-danger-soft: #2e1820;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, .4), 0 1px 3px rgba(0, 0, 0, .3);
+  --shadow-raised: 0 4px 14px -4px rgba(0, 0, 0, .55), 0 2px 6px -2px rgba(0, 0, 0, .4);
+  --shadow-pop: 0 16px 40px -14px rgba(0, 0, 0, .7), 0 6px 14px -6px rgba(0, 0, 0, .5);
+}
+
+:root[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #333c4c; background-clip: padding-box; }
+:root[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #44506a; background-clip: padding-box; }
+
 html { scroll-behavior: smooth; }
 
 body {

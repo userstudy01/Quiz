@@ -34,7 +34,7 @@ export function TagInput({ value = [], onChange, placeholder = 'Add and press En
                 type="button"
                 onClick={() => onChange(value.filter((_, idx) => idx !== i))}
                 aria-label={`Remove ${tag}`}
-                className="text-ink-muted hover:text-red-600"
+                className="text-ink-muted hover:text-danger"
               >
                 ×
               </button>
@@ -75,7 +75,7 @@ export function ListInput({ value = [], onChange, placeholder = 'Add an item', a
             type="button"
             onClick={() => remove(i)}
             aria-label="Remove item"
-            className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line text-ink-muted hover:border-red-200 hover:text-red-600"
+            className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line text-ink-muted hover:border-danger/40 hover:text-danger"
           >
             ×
           </button>

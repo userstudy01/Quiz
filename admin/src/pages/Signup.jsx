@@ -109,7 +109,7 @@ export default function Signup() {
           <div className="space-y-4">
             <p
               role="status"
-              className="rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-sm text-emerald-700"
+              className="rounded-lg border border-success/30 bg-success-soft px-3.5 py-3 text-sm text-success"
             >
               {done.isFirstUser
                 ? 'Account created — you are the super admin. You can sign in now.'
@@ -124,7 +124,7 @@ export default function Signup() {
             {error ? (
               <p
                 role="alert"
-                className="mb-5 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700"
+                className="mb-5 rounded-lg border border-danger/30 bg-danger-soft px-3.5 py-2.5 text-sm text-danger"
               >
                 {error}
               </p>

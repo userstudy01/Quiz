@@ -121,7 +121,7 @@ export default function Analytics() {
       />
 
       {error ? (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+        <p className="rounded-lg border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger" role="alert">
           {error}
         </p>
       ) : (
@@ -143,7 +143,7 @@ export default function Analytics() {
           ) : (
             <div className="mt-8 grid gap-8 lg:grid-cols-3">
               <section className="lg:col-span-2 min-w-0">
-                <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Views over time</h2>
+                <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Views over time</h2>
                 <div className="rounded-card border border-line bg-surface shadow-card p-5">
                   {loading ? (
                     <div className="h-40 animate-pulse rounded bg-line" aria-hidden="true" />
@@ -156,7 +156,7 @@ export default function Analytics() {
               </section>
 
               <section className="min-w-0">
-                <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Devices</h2>
+                <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Devices</h2>
                 <div className="space-y-3 rounded-card border border-line bg-surface shadow-card p-5">
                   {(data?.devices || []).length ? (
                     data.devices.map((d) => (
@@ -177,7 +177,7 @@ export default function Analytics() {
               </section>
 
               <section className="min-w-0 lg:col-span-2">
-                <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Most viewed projects</h2>
+                <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Most viewed projects</h2>
                 {(data?.topProjects || []).length ? (
                   <ul className="space-y-3 rounded-card border border-line bg-surface shadow-card p-5">
                     {data.topProjects.map((p, i) => (
@@ -204,7 +204,7 @@ export default function Analytics() {
               </section>
 
               <section className="min-w-0">
-                <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Referrers</h2>
+                <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Referrers</h2>
                 <div className="space-y-3 rounded-card border border-line bg-surface shadow-card p-5">
                   {(data?.referrers || []).length ? (
                     data.referrers.map((r) => (

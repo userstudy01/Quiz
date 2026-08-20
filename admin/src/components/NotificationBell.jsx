@@ -134,7 +134,7 @@ export default function NotificationBell({ onNavigate }) {
             {loading ? (
               <p className="px-4 py-6 text-center text-sm text-ink-muted">Loading…</p>
             ) : error ? (
-              <p className="px-4 py-6 text-center text-sm text-red-600" role="alert">
+              <p className="px-4 py-6 text-center text-sm text-danger" role="alert">
                 {error}
               </p>
             ) : items.length ? (

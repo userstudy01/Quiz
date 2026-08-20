@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import API, { clearAuth, getStoredAuth } from '../utils/api';
 import { setFlash } from '../utils/flash';
 import NotificationBell from './NotificationBell';
+import ThemeToggle from './ThemeToggle';
 
 // Simple line-icon paths (24×24, stroked) keyed by route.
 const ICONS = {
@@ -93,7 +94,10 @@ export default function Sidebar() {
             </span>
             <span className="text-sm font-semibold tracking-tight">Portfolio Admin</span>
           </Link>
-          <NotificationBell onNavigate={() => setOpen(false)} />
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <NotificationBell onNavigate={() => setOpen(false)} />
+          </div>
         </div>
 
         <p className="label-mono mb-2 px-3">Menu</p>

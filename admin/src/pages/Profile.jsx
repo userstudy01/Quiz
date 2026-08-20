@@ -104,7 +104,7 @@ export default function Profile() {
 
         <section className="rounded-card border border-line bg-surface shadow-card p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Social links</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Social links</h2>
             <Button
               type="button"
               variant="secondary"

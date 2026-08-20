@@ -145,7 +145,7 @@ export default function ProjectForm() {
     return (
       <>
         <PageHeader title="Edit project" />
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+        <p className="rounded-lg border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger" role="alert">
           {loadError}
         </p>
         <Button variant="secondary" className="mt-4" onClick={() => navigate('/projects')}>
@@ -170,7 +170,7 @@ export default function ProjectForm() {
       <form onSubmit={submit} className="space-y-6 pb-10" noValidate>
         {/* Basics */}
         <section className="rounded-card border border-line bg-surface shadow-card p-6">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Basics</h2>
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Basics</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Title" error={errors.title}>
               <input value={form.title} onChange={set('title')} className={inputClass} aria-invalid={Boolean(errors.title)} />
@@ -199,7 +199,7 @@ export default function ProjectForm() {
 
         {/* Technologies + detail lists */}
         <section className="rounded-card border border-line bg-surface shadow-card p-6">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Details</h2>
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Details</h2>
           <div className="grid gap-5">
             <Field label="Technologies" hint="Type a technology and press Enter or comma.">
               <TagInput
@@ -232,7 +232,7 @@ export default function ProjectForm() {
         {/* Screenshots */}
         <section className="rounded-card border border-line bg-surface shadow-card p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Screenshots</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Screenshots</h2>
             <Button
               type="button"
               variant="secondary"
@@ -283,7 +283,7 @@ export default function ProjectForm() {
 
         {/* Links & publishing */}
         <section className="rounded-card border border-line bg-surface shadow-card p-6">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Links &amp; publishing</h2>
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Links &amp; publishing</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Live URL" error={errors.liveUrl}>
               <input value={form.liveUrl} onChange={set('liveUrl')} placeholder="https://…" className={inputClass} />
@@ -307,12 +307,12 @@ export default function ProjectForm() {
           </div>
         </section>
 
-        <div className="flex gap-3">
-          <Button type="submit" disabled={saving}>
-            {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Create project'}
-          </Button>
+        <div className="sticky bottom-0 z-10 -mx-5 flex items-center justify-end gap-3 border-t border-line bg-canvas/85 px-5 py-4 backdrop-blur sm:-mx-8 sm:px-8">
           <Button type="button" variant="secondary" onClick={() => navigate('/projects')}>
             Cancel
+          </Button>
+          <Button type="submit" disabled={saving}>
+            {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Create project'}
           </Button>
         </div>
       </form>

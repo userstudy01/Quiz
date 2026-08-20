@@ -198,7 +198,7 @@ export default function Projects() {
                         <button
                           type="button"
                           onClick={() => setPendingDelete(project)}
-                          className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                          className="rounded-lg border border-danger/30 px-2.5 py-1.5 text-xs text-danger hover:bg-danger-soft"
                         >
                           Delete
                         </button>

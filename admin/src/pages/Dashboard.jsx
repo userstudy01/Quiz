@@ -12,7 +12,7 @@ function StatCard({ label, value, sub, to, loading, error }) {
       {loading ? (
         <span className="mt-3 block h-8 w-14 animate-pulse rounded bg-line" aria-hidden="true" />
       ) : error ? (
-        <p className="mt-2 text-sm text-red-600">Unavailable</p>
+        <p className="mt-2 text-sm text-danger">Unavailable</p>
       ) : (
         <p className="mt-2 text-3xl font-semibold tracking-tight">
           {value}
@@ -36,9 +36,9 @@ function StatCard({ label, value, sub, to, loading, error }) {
 
 function StatusBadge({ status }) {
   const styles = {
-    published: 'bg-emerald-100 text-emerald-700',
-    draft: 'bg-amber-100 text-amber-700',
-    archived: 'bg-slate-200 text-slate-600',
+    published: 'bg-success-soft text-success',
+    draft: 'bg-warn-soft text-warn',
+    archived: 'bg-canvas text-ink-muted',
   };
   return (
     <span
@@ -53,7 +53,7 @@ function StatusBadge({ status }) {
 
 function SectionError({ message }) {
   return (
-    <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+    <p className="rounded-xl border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger" role="alert">
       {message}
     </p>
   );
@@ -176,7 +176,7 @@ export default function Dashboard() {
         {/* ---------- Project overview ---------- */}
         <section aria-label="Project overview" className="min-w-0 lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Projects</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Projects</h2>
             <Link to="/projects" className="text-sm font-medium text-ink hover:underline">
               View all projects →
             </Link>
@@ -236,7 +236,7 @@ export default function Dashboard() {
 
         {/* ---------- Quick actions ---------- */}
         <section aria-label="Quick actions">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Quick actions</h2>
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Quick actions</h2>
           <nav className="space-y-2">
             {QUICK_ACTIONS.map((a) => (
               <Link
@@ -276,7 +276,7 @@ export default function Dashboard() {
       {/* ---------- Recent activity (recent messages) ---------- */}
       <section aria-label="Recent activity" className="mt-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Recent messages</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Recent messages</h2>
           {messages?.total ? (
             <Link to="/messages" className="text-sm font-medium text-ink hover:underline">
               All messages →

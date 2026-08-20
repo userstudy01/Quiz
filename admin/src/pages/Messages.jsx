@@ -133,7 +133,7 @@ export default function Messages() {
       {loading ? (
         <Loader />
       ) : loadError ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700" role="alert">
+        <div className="rounded-xl border border-danger/30 bg-danger-soft px-4 py-4 text-sm text-danger" role="alert">
           <p>{loadError}</p>
           <button
             type="button"
@@ -199,7 +199,7 @@ export default function Messages() {
                         <button
                           type="button"
                           onClick={() => setPendingDelete(message)}
-                          className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                          className="rounded-lg border border-danger/30 px-2.5 py-1.5 text-xs text-danger hover:bg-danger-soft"
                         >
                           Delete
                         </button>
@@ -265,7 +265,7 @@ export default function Messages() {
               From <span className="font-medium text-ink">{selected.name}</span> · {selected.email}
             </p>
             {!isValidEmail(selected.email) ? (
-              <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+              <p className="rounded-lg border border-warn/30 bg-warn-soft px-3 py-2 text-xs text-warn">
                 This message has no valid sender email — you cannot reply to it directly.
               </p>
             ) : null}

@@ -3,9 +3,9 @@ import API, { apiError } from '../utils/api';
 import { EmptyRow, Loader, PageHeader, Toast } from '../components/ui';
 
 const STATUS_STYLES = {
-  pending: 'bg-amber-100 text-amber-700',
-  approved: 'bg-emerald-100 text-emerald-700',
-  rejected: 'bg-red-100 text-red-700',
+  pending: 'bg-warn-soft text-warn',
+  approved: 'bg-success-soft text-success',
+  rejected: 'bg-danger-soft text-danger',
 };
 
 function StatusBadge({ status }) {
@@ -111,7 +111,7 @@ export default function Requests() {
                                 type="button"
                                 disabled={busyId === user._id || user.status === 'approved'}
                                 onClick={() => act(user, 'approved')}
-                                className="rounded-lg border border-emerald-200 px-2.5 py-1.5 text-xs text-emerald-700 hover:bg-emerald-50 disabled:opacity-50"
+                                className="rounded-lg border border-success/30 px-2.5 py-1.5 text-xs text-success hover:bg-success-soft disabled:opacity-50"
                               >
                                 {isPending ? 'Approve' : 'Approved'}
                               </button>
@@ -119,7 +119,7 @@ export default function Requests() {
                                 type="button"
                                 disabled={busyId === user._id || user.status === 'rejected'}
                                 onClick={() => act(user, 'rejected')}
-                                className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50"
+                                className="rounded-lg border border-danger/30 px-2.5 py-1.5 text-xs text-danger hover:bg-danger-soft disabled:opacity-50"
                               >
                                 Reject
                               </button>
