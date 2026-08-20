@@ -203,11 +203,12 @@ export default function ProjectDetail() {
       <div className="group rise mt-10" style={{ animationDelay: '280ms' }}>
         {screenshots.length ? (
           <figure>
-            <div className="overflow-hidden rounded-panel border border-line bg-elevated">
+            <div className="visual-frame rounded-panel">
               <img
                 src={screenshots[0].url}
                 alt={screenshots[0].caption || `${project.title} — screenshot`}
-                loading="lazy"
+                loading="eager"
+                fetchPriority="high"
                 decoding="async"
                 className="w-full object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.02]"
               />
@@ -217,12 +218,21 @@ export default function ProjectDetail() {
             ) : null}
           </figure>
         ) : (
-          <ProjectPlate
-            project={project}
-            size="lg"
-            label={technologies.join(' · ') || project.category || null}
-            className="aspect-[16/9] w-full rounded-panel sm:aspect-[21/8]"
-          />
+          /* No capture on file. The plate is drawn from this project's own
+             subject and is captioned as artwork, never passed off as a
+             screenshot of the software. */
+          <figure>
+            <ProjectPlate
+              project={project}
+              size="lg"
+              fit="meet"
+              label={technologies.join(' · ') || project.category || null}
+              className="aspect-[16/9] w-full rounded-panel sm:aspect-[21/8]"
+            />
+            <figcaption className="mt-3 label-mono">
+              Cover artwork — no screenshot recorded for this project
+            </figcaption>
+          </figure>
         )}
       </div>
 

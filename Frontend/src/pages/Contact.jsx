@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Arrow, FieldError, FieldLabel, Input, PageHeader, Section, Textarea } from '../components/ui';
+import { SceneArtwork } from '../components/Artwork';
 import { buttonClass } from '../lib/styles';
 import { errorMessage, sendContactMessage } from '../lib/api';
 import useSeo from '../lib/useSeo';
@@ -201,6 +202,13 @@ export default function Contact() {
 
         {/* --- Details ------------------------------------------------------ */}
         <aside className="hairline-t pt-10">
+          {/* Supporting visual only — the form on the left stays the page's
+              one interaction. Decorative, so it is hidden from screen
+              readers. */}
+          <div className="group visual-frame mb-9 aspect-[5/3] w-full">
+            <SceneArtwork scene="network" variant={2} />
+          </div>
+
           <h2 className="label-mono text-accent">Details</h2>
 
           <dl className="mt-5">

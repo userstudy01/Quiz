@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { EmptyState, ErrorState, Loader, PageHeader, Section } from '../components/ui';
+import TechMark from '../components/TechMark';
 import { getProjects, getSkills } from '../lib/api';
 import useRequest from '../lib/useRequest';
 import useScrollReveal from '../lib/useScrollReveal';
@@ -95,9 +96,12 @@ export default function Skills() {
                     {group.items.map((skill) => (
                       <li
                         key={skill._id}
-                        className="flex items-baseline justify-between gap-4 border-b border-line py-2.5"
+                        className="group flex items-center justify-between gap-4 border-b border-line py-2.5"
                       >
-                        <span className="text-small text-ink-muted">{skill.name}</span>
+                        <span className="flex min-w-0 items-center gap-3">
+                          <TechMark name={skill.name} className="h-4 w-4" />
+                          <span className="truncate text-small text-ink-muted">{skill.name}</span>
+                        </span>
                         {skill.level ? <span className="label-mono">{skill.level}</span> : null}
                       </li>
                     ))}
@@ -130,6 +134,12 @@ export default function Skills() {
                     <span className="index-mono w-8 shrink-0 text-ink-subtle">
                       {String(index + 1).padStart(2, '0')}
                     </span>
+
+                    {/* Drawn mark, not a brand logo — see TechMark.jsx. */}
+                    <TechMark
+                      name={entry.name}
+                      className="h-9 w-9 rounded-control border border-line p-2 transition-colors duration-200 ease-smooth group-hover:border-line-strong"
+                    />
 
                     <span className="min-w-0 flex-1">
                       <span className="font-display text-h3 text-ink transition-colors duration-200 ease-smooth group-hover:text-accent">

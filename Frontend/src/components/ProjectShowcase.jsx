@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Arrow } from './ui';
+import { ProjectArtwork } from './Artwork';
 import { monogram, plateStyle } from '../lib/projectArt';
 import { projectNumber, projectStatus } from '../lib/projectFields';
 
@@ -23,33 +24,51 @@ import { projectNumber, projectStatus } from '../lib/projectFields';
 
 /* --- Artwork -------------------------------------------------------------- */
 
-export function ProjectPlate({ project, className = '', label = undefined, size = 'md' }) {
+export function ProjectPlate({
+  project,
+  className = '',
+  label = undefined,
+  size = 'md',
+  priority = false,
+  fit = 'slice',
+}) {
   const shot = project.screenshots?.[0];
   const caption = label === undefined ? project.category : label;
 
+  /* A real capture always wins. Only when the database has none does the
+     project fall back to the drawn plate below. */
   if (shot?.url) {
     return (
-      <div className={`overflow-hidden rounded-card border border-line bg-elevated ${className}`}>
+      <div className={`visual-frame ${className}`}>
         <img
           src={shot.url}
           alt={shot.caption || `${project.title} — screenshot`}
-          loading="lazy"
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : undefined}
           decoding="async"
-          className="h-full w-full object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.03]"
+          className="h-full w-full object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.04]"
         />
+        {caption ? (
+          <div className="visual-scrim">
+            <span className="label-mono">{caption}</span>
+          </div>
+        ) : null}
       </div>
     );
   }
 
-  const markSize = size === 'sm' ? 'text-2xl' : size === 'lg' ? 'text-6xl sm:text-7xl' : 'text-4xl';
+  const markSize = size === 'sm' ? 'text-2xl' : size === 'lg' ? 'text-5xl sm:text-6xl' : 'text-4xl';
 
   return (
-    <div
-      aria-hidden="true"
-      style={plateStyle(project)}
-      className={`plate rounded-card border border-line transition-colors duration-500 ease-smooth group-hover:border-line-strong ${className}`}
-    >
-      <div className="absolute inset-0 grid place-items-center">
+    <div style={plateStyle(project)} className={`plate visual-frame ${className}`}>
+      {/* The drawing itself is decoration; the surrounding row already names
+          the project, its category and its technologies in text. */}
+      <div aria-hidden="true" className="absolute inset-0">
+        <ProjectArtwork project={project} fit={fit} />
+      </div>
+
+      {/* Monogram sits top-left so it never fights the motif's centre. */}
+      <div aria-hidden="true" className="absolute left-4 top-3.5">
         <span
           className={`font-display ${markSize} leading-none text-ink-subtle transition-colors duration-500 ease-smooth group-hover:text-accent`}
         >
@@ -58,8 +77,11 @@ export function ProjectPlate({ project, className = '', label = undefined, size 
       </div>
 
       {caption ? (
-        <div className="absolute inset-x-0 bottom-0 p-4">
+        <div className="visual-scrim flex items-end justify-between gap-4">
           <span className="label-mono">{caption}</span>
+          {size !== 'sm' ? (
+            <span className="label-mono text-ink-subtle">Artwork</span>
+          ) : null}
         </div>
       ) : null}
     </div>
@@ -125,6 +147,7 @@ export function FeaturedProject({ project, index, revealIndex }) {
       <ProjectPlate
         project={project}
         size="lg"
+        priority={index === 0}
         className={`aspect-[16/11] w-full ${flip ? 'lg:order-2' : ''}`}
       />
 
@@ -184,7 +207,7 @@ export function ProjectIndexRow({ project, index, revealIndex }) {
       data-reveal-index={revealIndex}
       className="group hairline-t relative transition-colors duration-300 ease-smooth"
     >
-      <div className="grid gap-5 py-8 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-8 lg:grid-cols-[auto_11rem_minmax(0,1fr)]">
+      <div className="grid gap-5 py-8 sm:grid-cols-[auto_10rem_minmax(0,1fr)] sm:gap-8 lg:grid-cols-[auto_13rem_minmax(0,1fr)]">
         <span className="index-mono pt-1 text-ink-subtle transition-colors duration-300 ease-smooth group-hover:text-accent">
           {projectNumber(project, index)}
         </span>
@@ -193,7 +216,7 @@ export function ProjectIndexRow({ project, index, revealIndex }) {
           project={project}
           size="sm"
           label={null}
-          className="hidden aspect-[4/3] w-full lg:block"
+          className="aspect-[16/9] w-full sm:aspect-[4/3]"
         />
 
         <div>

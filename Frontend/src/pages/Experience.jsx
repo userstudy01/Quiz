@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Arrow, ButtonLink, ErrorState, Loader, PageHeader, Section } from '../components/ui';
+import { SceneArtwork } from '../components/Artwork';
 import { getExperience } from '../lib/api';
 import useRequest from '../lib/useRequest';
 import useScrollReveal from '../lib/useScrollReveal';
@@ -33,6 +34,12 @@ export default function Experience() {
         lede="Roles, engagements and the work each one covered."
         meta={items.length ? `${items.length} Entr${items.length === 1 ? 'y' : 'ies'}` : undefined}
       />
+
+      {/* A slim drawn band under the masthead. Decorative: the timeline below
+          is the real content and carries every date and role. */}
+      <div className="group visual-frame mt-10 aspect-[21/6] w-full rounded-panel sm:aspect-[21/5]">
+        <SceneArtwork scene="timeline" variant={3} fit="meet" />
+      </div>
 
       <div ref={bodyRef} className="mt-12">
         {loading ? (

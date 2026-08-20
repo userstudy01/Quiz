@@ -1,6 +1,8 @@
 import { useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Arrow, ButtonLink, EmptyState, MoreLink, PageHeader, Section } from '../components/ui';
+import { SceneArtwork } from '../components/Artwork';
+import TechMark from '../components/TechMark';
 import { monogram } from '../lib/projectArt';
 import { getExperience, getProjectFilters, getProjects } from '../lib/api';
 import useRequest from '../lib/useRequest';
@@ -28,15 +30,19 @@ function Block({ title, children, reveal, action }) {
   );
 }
 
-/* Initials mark, used only when a name exists but no image does. Never a stock
-   photo, never a generated face. */
+/* Stands in for a portrait when no image is on file: initials over an abstract
+   drawn mark. Never a stock photo, and never a generated face — an invented
+   portrait would be a claim about a real person. */
 function PortraitMark({ name }) {
   return (
     <div
       aria-hidden="true"
-      className="grid aspect-square w-full max-w-[15rem] place-items-center rounded-card border border-line bg-elevated"
+      className="group visual-frame aspect-square w-full max-w-[15rem]"
     >
-      <span className="font-display text-6xl leading-none text-ink-subtle">{monogram(name)}</span>
+      <SceneArtwork scene="signature" />
+      <div className="absolute inset-0 grid place-items-center">
+        <span className="font-display text-6xl leading-none text-ink">{monogram(name)}</span>
+      </div>
     </div>
   );
 }
@@ -174,8 +180,9 @@ export default function About() {
                 {technologies.map((tech) => (
                   <li
                     key={tech}
-                    className="border-b border-line py-2.5 text-small text-ink-muted transition-colors duration-200 ease-smooth hover:text-ink"
+                    className="group flex items-center gap-3 border-b border-line py-2.5 text-small text-ink-muted transition-colors duration-200 ease-smooth hover:text-ink"
                   >
+                    <TechMark name={tech} className="h-4 w-4" />
                     {tech}
                   </li>
                 ))}
@@ -234,20 +241,24 @@ export default function About() {
         {/* --- Rail --------------------------------------------------------- */}
         <aside className="space-y-10">
           {profile?.profileImage ? (
-            <div data-reveal="">
+            <div data-reveal="" className="group visual-frame aspect-square w-full max-w-[15rem]">
               <img
                 src={profile.profileImage}
                 alt={profile.name ? `Portrait of ${profile.name}` : 'Profile photo'}
                 loading="lazy"
                 decoding="async"
-                className="aspect-square w-full max-w-[15rem] rounded-card border border-line object-cover"
+                className="h-full w-full object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.04]"
               />
             </div>
           ) : profile?.name ? (
             <div data-reveal="">
               <PortraitMark name={profile.name} />
             </div>
-          ) : null}
+          ) : (
+            <div data-reveal="" className="group visual-frame aspect-[4/3] w-full max-w-[15rem]">
+              <SceneArtwork scene="network" variant={1} />
+            </div>
+          )}
 
           {stats.length ? (
             <div data-reveal="" data-reveal-index={1} className="hairline-t pt-8">

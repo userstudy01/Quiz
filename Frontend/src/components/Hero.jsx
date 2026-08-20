@@ -1,4 +1,5 @@
 import { Arrow, ButtonLink } from './ui';
+import { SceneArtwork } from './Artwork';
 
 /* ==========================================================================
    Home hero.
@@ -119,15 +120,28 @@ export default function Hero({ profile, stats = {}, featured = [] }) {
           style={{ animationDelay: '360ms' }}
           aria-label="Portfolio at a glance"
         >
+          {/* The hero's picture. A real portrait when the profile carries one;
+              otherwise a drawn studio scene — abstract on purpose, because an
+              invented portrait would be a claim about a real person. */}
           {profile?.profileImage ? (
-            <img
-              src={profile.profileImage}
-              alt={profile.name ? `Portrait of ${profile.name}` : 'Profile photo'}
-              loading="lazy"
-              decoding="async"
-              className="mb-8 aspect-square w-32 rounded-card border border-line object-cover sm:w-40"
-            />
-          ) : null}
+            <div className="group visual-frame mb-8 aspect-square w-40 sm:w-48">
+              <img
+                src={profile.profileImage}
+                alt={profile.name ? `Portrait of ${profile.name}` : 'Profile photo'}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="h-full w-full object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.04]"
+              />
+            </div>
+          ) : (
+            <div className="group visual-frame mb-8 aspect-[4/3] w-full">
+              <SceneArtwork scene="studio" />
+              <div className="visual-scrim">
+                <span className="label-mono">{profile?.title || 'Studio'}</span>
+              </div>
+            </div>
+          )}
 
           {figures.length ? (
             <div>

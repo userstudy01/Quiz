@@ -415,9 +415,122 @@
   transform: rotate(var(--plate-angle, 0deg)) scale(1.06);
 }
 
+/* Children carry their own positioning (they are all absolute overlays); this
+   only lifts them above the ::before hatch. */
 .plate > * {
-  position: relative;
   z-index: 1;
+}
+
+/* --- Drawn artwork -------------------------------------------------------- *
+ * The inline SVG illustrations in components/Artwork.jsx. Every stroke resolves
+ * to a theme token here rather than in the component, so one palette change
+ * re-colours every drawing on the site and both themes stay legible.        */
+
+.artwork {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scale(1.001);
+  transition: transform var(--duration-slow) var(--ease-smooth);
+}
+
+.artwork .art-motif {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.art-line,
+.art-line-soft,
+.art-accent {
+  fill: none;
+  stroke-width: 1.6;
+  /* Keeps the drawing a hairline at any size, so a thumbnail and a full-bleed
+     lead visual read as the same pen. */
+  vector-effect: non-scaling-stroke;
+}
+
+.art-line {
+  stroke: var(--color-ink);
+  opacity: 0.34;
+}
+
+.art-line-soft {
+  stroke: var(--color-ink);
+  opacity: 0.2;
+}
+
+.art-accent {
+  stroke: var(--color-accent);
+  opacity: 0.85;
+}
+
+.art-fill-soft {
+  fill: var(--color-ink);
+  stroke: none;
+  opacity: 0.05;
+}
+
+.art-fill-accent {
+  fill: var(--color-accent);
+  stroke: none;
+  opacity: 0.1;
+}
+
+.art-dot-soft {
+  fill: var(--color-ink);
+  stroke: none;
+  opacity: 0.22;
+}
+
+.art-dot-accent {
+  fill: var(--color-accent);
+  stroke: none;
+  opacity: 0.9;
+}
+
+/* Movement on hover is the same everywhere: a small, slow push in. */
+.group:hover .artwork,
+.group:focus-within .artwork {
+  transform: scale(1.045);
+}
+
+/* The frame drawn artwork and real screenshots share, so a project with a
+   capture and one without sit at exactly the same weight in a grid. */
+@utility visual-frame {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background-color: var(--plate-ground);
+  transition: border-color var(--duration-normal) var(--ease-smooth);
+}
+
+.group:hover .visual-frame,
+.visual-frame:hover {
+  border-color: var(--color-line-strong);
+}
+
+/* Bottom scrim, so a caption stays readable over any artwork or capture in
+   either theme rather than relying on the image being dark enough. */
+@utility visual-scrim {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 1rem;
+  background-image: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--plate-ground) 92%, transparent),
+    transparent
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .group:hover .artwork,
+  .group:focus-within .artwork {
+    transform: none;
+  }
 }
 
 /* ==========================================================================
