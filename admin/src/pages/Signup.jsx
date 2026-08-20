@@ -1,42 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import API, { apiError } from '../utils/api';
-import { Button, Field, inputClass } from '../components/ui';
+import { Button, Field, PasswordInput, inputClass } from '../components/ui';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-// Small eye / eye-off button used to toggle password visibility.
-function RevealButton({ shown, onToggle, label }) {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-label={shown ? `Hide ${label}` : `Show ${label}`}
-      aria-pressed={shown}
-      className="absolute inset-y-0 right-0 grid w-10 place-items-center text-ink-muted hover:text-ink"
-    >
-      {shown ? (
-        <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
-          <path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8" />
-          <path d="M9.9 4.2A9.5 9.5 0 0112 4c5 0 9 4.5 10 8a12 12 0 01-2.2 3.3M6.1 6.1C3.8 7.6 2.3 9.9 2 12c1 3.5 5 8 10 8a9.6 9.6 0 004-.9" />
-        </svg>
-      ) : (
-        <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
-          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-      )}
-    </button>
-  );
-}
 
 export default function Signup() {
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [done, setDone] = useState(null); // { isFirstUser }
   // ADM-003: registration is only available on first run (no account yet).
   // null = still checking, true = open, false = closed.
@@ -181,39 +154,23 @@ export default function Signup() {
               </Field>
 
               <Field label="Password" hint="At least 8 characters." error={fieldErrors.password}>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    value={form.password}
-                    onChange={set('password')}
-                    aria-invalid={Boolean(fieldErrors.password)}
-                    className={`${inputClass} pr-11`}
-                  />
-                  <RevealButton
-                    shown={showPassword}
-                    onToggle={() => setShowPassword((v) => !v)}
-                    label="password"
-                  />
-                </div>
+                <PasswordInput
+                  label="password"
+                  autoComplete="new-password"
+                  value={form.password}
+                  onChange={set('password')}
+                  aria-invalid={Boolean(fieldErrors.password)}
+                />
               </Field>
 
               <Field label="Confirm password" error={fieldErrors.confirmPassword}>
-                <div className="relative">
-                  <input
-                    type={showConfirm ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    value={form.confirmPassword}
-                    onChange={set('confirmPassword')}
-                    aria-invalid={Boolean(fieldErrors.confirmPassword)}
-                    className={`${inputClass} pr-11`}
-                  />
-                  <RevealButton
-                    shown={showConfirm}
-                    onToggle={() => setShowConfirm((v) => !v)}
-                    label="confirm password"
-                  />
-                </div>
+                <PasswordInput
+                  label="confirm password"
+                  autoComplete="new-password"
+                  value={form.confirmPassword}
+                  onChange={set('confirmPassword')}
+                  aria-invalid={Boolean(fieldErrors.confirmPassword)}
+                />
               </Field>
 
               <Button type="submit" disabled={loading} className="w-full">

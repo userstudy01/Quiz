@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import API, { clearAuth, getStoredAuth } from '../utils/api';
+import API, { ADMIN_ROLES, clearAuth, getStoredAuth } from '../utils/api';
 import NotificationBell from './NotificationBell';
 
 const links = [
@@ -10,7 +10,8 @@ const links = [
   { to: '/experience', label: 'Experience' },
   { to: '/profile', label: 'Profile' },
   { to: '/messages', label: 'Messages' },
-  { to: '/analytics', label: 'Analytics' },
+  { to: '/analytics', label: 'Analytics', admin: true },
+  { to: '/account', label: 'Account' },
   { to: '/requests', label: 'Requests', superAdmin: true },
 ];
 
@@ -72,7 +73,11 @@ export default function Sidebar() {
 
         <nav className="flex-1 space-y-1">
           {links
-            .filter((link) => !link.superAdmin || auth?.user?.role === 'superadmin')
+            .filter((link) => {
+              if (link.superAdmin) return auth?.user?.role === 'superadmin';
+              if (link.admin) return ADMIN_ROLES.includes(auth?.user?.role);
+              return true;
+            })
             .map((link) => (
               <NavLink
                 key={link.to}

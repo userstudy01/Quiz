@@ -4,6 +4,13 @@ const baseURL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').re
 
 const API = axios.create({ baseURL, timeout: 20000 });
 
+// Roles allowed to sign in and manage content (projects, skills, experience,
+// profile, messages). Kept in one place so the login gate, route guards and
+// sidebar stay in sync.
+export const STAFF_ROLES = ['editor', 'admin', 'superadmin'];
+// Higher-trust areas (analytics). Editors are intentionally excluded.
+export const ADMIN_ROLES = ['admin', 'superadmin'];
+
 export const getStoredAuth = () => {
   try {
     return JSON.parse(localStorage.getItem('adminUser')) || null;
@@ -23,14 +30,19 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// An expired or invalid token ends the session immediately.
+// An expired or invalid token ends the session immediately. The app's
+// AuthWatcher listens for this event and redirects within the router (no full
+// reload); the hard redirect is only a fallback if nothing handles it.
 API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error?.response?.status === 401) {
       clearAuth();
       if (window.location.pathname !== '/login') {
-        window.location.replace('/login');
+        const handled = window.dispatchEvent(new CustomEvent('auth:unauthorized', { cancelable: true }));
+        // dispatchEvent returns false only if a listener called preventDefault();
+        // AuthWatcher does, so a handled event skips the hard redirect.
+        if (handled) window.location.replace('/login');
       }
     }
     return Promise.reject(error);

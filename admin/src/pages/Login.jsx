@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import API, { apiError } from '../utils/api';
-import { Button, Field, inputClass } from '../components/ui';
-
-const ADMIN_ROLES = ['admin', 'superadmin'];
+import API, { apiError, STAFF_ROLES } from '../utils/api';
+import { Button, Field, PasswordInput, inputClass } from '../components/ui';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -31,8 +29,8 @@ export default function Login() {
     try {
       const { data } = await API.post('/auth/login', form);
 
-      if (!ADMIN_ROLES.includes(data.user?.role)) {
-        setError('Access denied. Admin privileges required.');
+      if (!STAFF_ROLES.includes(data.user?.role)) {
+        setError('Access denied. Staff privileges required.');
         return;
       }
 
@@ -75,13 +73,11 @@ export default function Login() {
           </Field>
 
           <Field label="Password">
-            <input
-              type="password"
+            <PasswordInput
               required
               autoComplete="current-password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className={inputClass}
             />
           </Field>
 
