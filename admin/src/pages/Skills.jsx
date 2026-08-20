@@ -9,7 +9,6 @@ import {
   Modal,
   PageHeader,
   Toast,
-  Toggle,
   inputClass,
 } from '../components/ui';
 
@@ -64,15 +63,6 @@ export default function Skills() {
       setToast({ type: 'error', message: apiError(err, 'Save failed.') });
     } finally {
       setSaving(false);
-    }
-  };
-
-  const toggleVisible = async (skill) => {
-    try {
-      const { data } = await API.put(`/skills/${skill._id}`, { ...skill, visible: !skill.visible });
-      setSkills((prev) => prev.map((s) => (s._id === data._id ? data : s)));
-    } catch (err) {
-      setToast({ type: 'error', message: apiError(err, 'Update failed.') });
     }
   };
 
@@ -157,13 +147,7 @@ export default function Skills() {
                     <td className="px-4 py-3 font-medium">{skill.name}</td>
                     <td className="px-4 py-3 text-ink-muted">{skill.category}</td>
                     <td className="px-4 py-3 text-ink-muted">{skill.level || '—'}</td>
-                    <td className="px-4 py-3">
-                      <Toggle
-                        checked={skill.visible}
-                        onChange={() => toggleVisible(skill)}
-                        label={`Show ${skill.name} on the site`}
-                      />
-                    </td>
+                    <td className="px-4 py-3 text-ink-muted">{skill.visible ? 'Yes' : 'No'}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-2">
                         <button

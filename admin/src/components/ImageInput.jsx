@@ -38,11 +38,10 @@ function compress(file, maxW, maxH, quality) {
 export default function ImageInput({
   value,
   onChange,
-  onRemove,
   round = false,
-  maxW = 1100,
-  maxH = 1100,
-  quality = 0.7,
+  maxW = 1400,
+  maxH = 1400,
+  quality = 0.82,
   className = '',
 }) {
   const inputRef = useRef(null);
@@ -80,18 +79,8 @@ export default function ImageInput({
 
   const hasImage = isImageSrc(value);
 
-  const clear = (e) => {
-    e.stopPropagation();
-    setError('');
-    if (inputRef.current) inputRef.current.value = '';
-    // When a remove handler is given, the × discards the whole entry;
-    // otherwise it just clears the current image.
-    if (onRemove) onRemove();
-    else onChange('');
-  };
-
   return (
-    <div className={`max-w-sm ${className}`}>
+    <div className={className}>
       <div
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => {
@@ -103,44 +92,47 @@ export default function ImageInput({
         role="button"
         tabIndex={0}
         onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && inputRef.current?.click()}
-        className={`flex cursor-pointer items-center gap-3 rounded-lg border border-dashed p-2.5 transition-colors ${
+        className={`flex cursor-pointer items-center gap-4 rounded-lg border border-dashed p-3 transition-colors ${
           dragging ? 'border-accent bg-accent-soft' : 'border-line-strong bg-surface hover:border-accent/50'
         }`}
       >
         <div
-          className={`relative grid shrink-0 place-items-center overflow-hidden border border-line bg-canvas ${
-            round ? 'h-16 w-16 rounded-full' : 'h-16 w-24 rounded-lg'
+          className={`grid shrink-0 place-items-center overflow-hidden border border-line bg-canvas ${
+            round ? 'h-20 w-20 rounded-full' : 'h-20 w-28 rounded-lg'
           }`}
         >
           {hasImage ? (
             <img src={value} alt="Preview" className="h-full w-full object-cover" />
           ) : (
-            <svg className="h-6 w-6 text-ink-subtle" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg className="h-7 w-7 text-ink-subtle" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6" />
               <circle cx="8.5" cy="9" r="1.5" />
             </svg>
           )}
-          {hasImage || onRemove ? (
-            <button
-              type="button"
-              onClick={clear}
-              aria-label={onRemove ? 'Remove' : 'Remove image'}
-              className="absolute right-0.5 top-0.5 grid h-5 w-5 place-items-center rounded-full bg-ink/70 text-white transition-colors hover:bg-danger"
-            >
-              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M6 6l12 12M18 6L6 18" />
-              </svg>
-            </button>
-          ) : null}
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-ink">
-            {busy ? 'Processing…' : hasImage ? 'Change image' : 'Upload image'}
+          <p className="text-sm font-medium text-ink">
+            {busy ? 'Processing…' : hasImage ? 'Change image' : 'Upload an image'}
           </p>
-          <p className="mt-0.5 truncate text-xs text-ink-subtle">Drag &amp; drop or browse</p>
+          <p className="mt-0.5 text-xs text-ink-subtle">Drag &amp; drop, or click to browse</p>
           {error ? <p className="mt-1 text-xs font-medium text-danger">{error}</p> : null}
         </div>
+
+        {hasImage ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange('');
+              setError('');
+              if (inputRef.current) inputRef.current.value = '';
+            }}
+            className="shrink-0 rounded-lg border border-line-strong px-2.5 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:border-danger/40 hover:text-danger"
+          >
+            Remove
+          </button>
+        ) : null}
       </div>
 
       <input

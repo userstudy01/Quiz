@@ -246,20 +246,28 @@ export default function ProjectForm() {
           {screenshots.length ? (
             <div className="space-y-4">
               {screenshots.map((shot, index) => (
-                <div key={index} className="space-y-3 rounded-lg border border-line bg-canvas/40 p-3">
-                  <ImageInput
-                    value={shot.url}
-                    onChange={(v) => updateShot(index, 'url', v)}
-                    onRemove={() => setScreenshots((prev) => prev.filter((_, i) => i !== index))}
-                  />
-                  <Field label={`Caption ${index + 1}`} error={errors[`shot-${index}`]} className="max-w-sm">
-                    <input
-                      value={shot.caption || ''}
-                      onChange={(e) => updateShot(index, 'caption', e.target.value)}
-                      placeholder="Optional caption"
-                      className={inputClass}
-                    />
-                  </Field>
+                <div
+                  key={index}
+                  className="grid gap-3 rounded-lg border border-line bg-canvas/40 p-3 sm:grid-cols-[1fr_auto] sm:items-start"
+                >
+                  <div className="min-w-0 space-y-3">
+                    <ImageInput value={shot.url} onChange={(v) => updateShot(index, 'url', v)} />
+                    <Field label={`Caption ${index + 1}`} error={errors[`shot-${index}`]}>
+                      <input
+                        value={shot.caption || ''}
+                        onChange={(e) => updateShot(index, 'caption', e.target.value)}
+                        placeholder="Optional caption"
+                        className={inputClass}
+                      />
+                    </Field>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="danger"
+                    onClick={() => setScreenshots((prev) => prev.filter((_, i) => i !== index))}
+                  >
+                    Remove
+                  </Button>
                 </div>
               ))}
             </div>
