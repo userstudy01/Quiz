@@ -57,7 +57,7 @@ export function PasswordInput({ label = 'password', className = '', ...rest }) {
         onClick={() => setShown((v) => !v)}
         aria-label={shown ? `Hide ${label}` : `Show ${label}`}
         aria-pressed={shown}
-        className="absolute inset-y-0 right-0 grid w-10 place-items-center text-ink-muted hover:text-ink"
+        className="absolute inset-y-0 right-0 grid w-10 cursor-pointer place-items-center text-ink-muted hover:text-ink"
       >
         {shown ? (
           <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
