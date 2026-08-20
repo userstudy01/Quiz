@@ -58,13 +58,13 @@ export function PasswordInput({ label = 'password', className = '', ...rest }) {
       >
         {shown ? (
           <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
-            <path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8" />
-            <path d="M9.9 4.2A9.5 9.5 0 0112 4c5 0 9 4.5 10 8a12 12 0 01-2.2 3.3M6.1 6.1C3.8 7.6 2.3 9.9 2 12c1 3.5 5 8 10 8a9.6 9.6 0 004-.9" />
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+            <circle cx="12" cy="12" r="3" />
           </svg>
         ) : (
           <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
-            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
-            <circle cx="12" cy="12" r="3" />
+            <path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8" />
+            <path d="M9.9 4.2A9.5 9.5 0 0112 4c5 0 9 4.5 10 8a12 12 0 01-2.2 3.3M6.1 6.1C3.8 7.6 2.3 9.9 2 12c1 3.5 5 8 10 8a9.6 9.6 0 004-.9" />
           </svg>
         )}
       </button>
