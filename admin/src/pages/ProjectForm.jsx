@@ -169,7 +169,7 @@ export default function ProjectForm() {
 
       <form onSubmit={submit} className="space-y-6 pb-10" noValidate>
         {/* Basics */}
-        <section className="rounded-xl border border-line bg-surface p-6">
+        <section className="rounded-card border border-line bg-surface shadow-card p-6">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Basics</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Title" error={errors.title}>
@@ -198,7 +198,7 @@ export default function ProjectForm() {
         </section>
 
         {/* Technologies + detail lists */}
-        <section className="rounded-xl border border-line bg-surface p-6">
+        <section className="rounded-card border border-line bg-surface shadow-card p-6">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Details</h2>
           <div className="grid gap-5">
             <Field label="Technologies" hint="Type a technology and press Enter or comma.">
@@ -230,7 +230,7 @@ export default function ProjectForm() {
         </section>
 
         {/* Screenshots */}
-        <section className="rounded-xl border border-line bg-surface p-6">
+        <section className="rounded-card border border-line bg-surface shadow-card p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Screenshots</h2>
             <Button
@@ -282,7 +282,7 @@ export default function ProjectForm() {
         </section>
 
         {/* Links & publishing */}
-        <section className="rounded-xl border border-line bg-surface p-6">
+        <section className="rounded-card border border-line bg-surface shadow-card p-6">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Links &amp; publishing</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Live URL" error={errors.liveUrl}>

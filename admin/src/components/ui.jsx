@@ -191,7 +191,7 @@ export function Toast({ toast, onDismiss }) {
 export function Loader({ label = 'Loading…' }) {
   return (
     <div className="flex items-center gap-3 py-14 text-sm text-ink-muted" role="status">
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-line border-t-ink" />
+      <span className="h-5 w-5 animate-spin rounded-full border-2 border-accent/25 border-t-accent" />
       {label}
     </div>
   );
@@ -200,9 +200,33 @@ export function Loader({ label = 'Loading…' }) {
 export function EmptyRow({ colSpan, message }) {
   return (
     <tr>
-      <td colSpan={colSpan} className="px-4 py-10 text-center text-sm text-ink-muted">
-        {message}
+      <td colSpan={colSpan} className="px-4 py-14 text-center">
+        <span className="mx-auto mb-3 grid h-11 w-11 place-items-center rounded-full bg-canvas text-ink-subtle">
+          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h10M4 17h7" />
+          </svg>
+        </span>
+        <p className="text-sm text-ink-muted">{message}</p>
       </td>
     </tr>
+  );
+}
+
+// Status pill. `tone` picks the color set; defaults to a neutral grey.
+const BADGE_TONES = {
+  neutral: 'bg-canvas text-ink-muted',
+  accent: 'bg-accent-soft text-accent',
+  success: 'bg-success-soft text-success',
+  warn: 'bg-warn-soft text-warn',
+  danger: 'bg-danger-soft text-danger',
+};
+
+export function Badge({ tone = 'neutral', children, className = '' }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${BADGE_TONES[tone] || BADGE_TONES.neutral} ${className}`}
+    >
+      {children}
+    </span>
   );
 }

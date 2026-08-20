@@ -144,7 +144,7 @@ export default function Analytics() {
             <div className="mt-8 grid gap-8 lg:grid-cols-3">
               <section className="lg:col-span-2 min-w-0">
                 <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Views over time</h2>
-                <div className="rounded-xl border border-line bg-surface p-5">
+                <div className="rounded-card border border-line bg-surface shadow-card p-5">
                   {loading ? (
                     <div className="h-40 animate-pulse rounded bg-line" aria-hidden="true" />
                   ) : daily.length ? (
@@ -157,7 +157,7 @@ export default function Analytics() {
 
               <section className="min-w-0">
                 <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Devices</h2>
-                <div className="space-y-3 rounded-xl border border-line bg-surface p-5">
+                <div className="space-y-3 rounded-card border border-line bg-surface shadow-card p-5">
                   {(data?.devices || []).length ? (
                     data.devices.map((d) => (
                       <div key={d.device}>
@@ -179,7 +179,7 @@ export default function Analytics() {
               <section className="min-w-0 lg:col-span-2">
                 <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Most viewed projects</h2>
                 {(data?.topProjects || []).length ? (
-                  <ul className="space-y-3 rounded-xl border border-line bg-surface p-5">
+                  <ul className="space-y-3 rounded-card border border-line bg-surface shadow-card p-5">
                     {data.topProjects.map((p, i) => (
                       <li key={p.slug}>
                         <div className="mb-1 flex items-center justify-between gap-3 text-sm">
@@ -205,7 +205,7 @@ export default function Analytics() {
 
               <section className="min-w-0">
                 <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Referrers</h2>
-                <div className="space-y-3 rounded-xl border border-line bg-surface p-5">
+                <div className="space-y-3 rounded-card border border-line bg-surface shadow-card p-5">
                   {(data?.referrers || []).length ? (
                     data.referrers.map((r) => (
                       <div key={r.host}>

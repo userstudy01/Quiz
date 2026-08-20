@@ -63,7 +63,7 @@ export default function Account() {
     <>
       <PageHeader title="Account" description="Your admin sign-in details." />
 
-      <section className="mb-6 rounded-xl border border-line bg-surface p-6">
+      <section className="mb-6 rounded-card border border-line bg-surface shadow-card p-6">
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Signed in as</h2>
         <dl className="grid gap-3 text-sm sm:grid-cols-2">
           <div>
@@ -81,7 +81,7 @@ export default function Account() {
         </dl>
       </section>
 
-      <section className="rounded-xl border border-line bg-surface p-6">
+      <section className="rounded-card border border-line bg-surface shadow-card p-6">
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Change password</h2>
         <form onSubmit={submit} noValidate className="max-w-sm space-y-4">
           <Field label="Current password" error={fieldErrors.currentPassword}>

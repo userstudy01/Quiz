@@ -66,7 +66,7 @@ export default function Sidebar() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? 'Close menu' : 'Open menu'}
-        className="fixed left-4 top-4 z-50 grid h-10 w-10 place-items-center rounded-xl border border-line bg-surface text-ink shadow-card lg:hidden"
+        className="fixed left-4 top-4 z-50 grid h-10 w-10 place-items-center rounded-card border border-line bg-surface shadow-card text-ink shadow-card lg:hidden"
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <path strokeLinecap="round" d={open ? 'M6 6l12 12M18 6L6 18' : 'M4 7h16M4 12h16M4 17h16'} />

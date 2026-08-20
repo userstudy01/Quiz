@@ -67,7 +67,7 @@ export default function Profile() {
       <PageHeader title="Profile" description="Shown across the public site: hero, about, footer and contact." />
 
       <form onSubmit={submit} className="space-y-6 pb-10">
-        <section className="rounded-xl border border-line bg-surface p-6">
+        <section className="rounded-card border border-line bg-surface shadow-card p-6">
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Name">
               <input value={form.name} onChange={set('name')} className={inputClass} />
@@ -102,7 +102,7 @@ export default function Profile() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-line bg-surface p-6">
+        <section className="rounded-card border border-line bg-surface shadow-card p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-muted">Social links</h2>
             <Button

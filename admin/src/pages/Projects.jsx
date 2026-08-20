@@ -114,9 +114,9 @@ export default function Projects() {
       {loading ? (
         <Loader />
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-line bg-surface">
+        <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-card">
           <table className="w-full min-w-[52rem] text-left text-sm">
-            <thead className="border-b border-line text-xs uppercase tracking-wide text-ink-muted">
+            <thead className="border-b border-line bg-canvas/70 text-xs font-semibold uppercase tracking-wider text-ink-subtle">
               <tr>
                 <th className="px-4 py-3 font-medium">Order</th>
                 <th className="px-4 py-3 font-medium">Title</th>
@@ -167,10 +167,10 @@ export default function Projects() {
                         onClick={() =>
                           patch(project, { status: project.status === 'published' ? 'draft' : 'published' })
                         }
-                        className={`rounded-md border px-2 py-1 text-xs ${
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                           project.status === 'published'
-                            ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                            : 'border-line bg-canvas text-ink-muted'
+                            ? 'bg-success-soft text-success hover:brightness-95'
+                            : 'bg-canvas text-ink-muted hover:bg-line/60'
                         }`}
                       >
                         {project.status === 'published' ? 'Published' : 'Draft'}

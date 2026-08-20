@@ -87,6 +87,10 @@ body {
 
 .tabular { font-variant-numeric: tabular-nums; }
 
+/* Subtle row hover for every data table in the content area. */
+main table tbody tr { transition: background-color .15s ease; }
+main table tbody tr:hover { background-color: color-mix(in srgb, var(--color-canvas) 70%, transparent); }
+
 /* A card that lifts slightly on hover — used across dashboards and lists. */
 .lift { transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease; }
 .lift:hover { box-shadow: var(--shadow-raised); transform: translateY(-1px); }

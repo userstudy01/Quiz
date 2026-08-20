@@ -185,15 +185,15 @@ export default function Dashboard() {
           {loading ? (
             <div className="space-y-2" aria-hidden="true">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-14 animate-pulse rounded-xl border border-line bg-surface" />
+                <div key={i} className="h-14 animate-pulse rounded-card border border-line bg-surface shadow-card" />
               ))}
             </div>
           ) : err('projects') ? (
             <SectionError message={err('projects')} />
           ) : recentProjects.length ? (
-            <div className="overflow-x-auto rounded-xl border border-line bg-surface">
+            <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-card">
               <table className="w-full min-w-[34rem] text-left text-sm">
-                <thead className="border-b border-line text-xs uppercase tracking-wide text-ink-muted">
+                <thead className="border-b border-line bg-canvas/70 text-xs font-semibold uppercase tracking-wider text-ink-subtle">
                   <tr>
                     <th className="px-4 py-3 font-medium">Project</th>
                     <th className="px-4 py-3 font-medium">Category</th>
@@ -242,7 +242,7 @@ export default function Dashboard() {
               <Link
                 key={a.to}
                 to={a.to}
-                className="flex items-center justify-between rounded-xl border border-line bg-surface px-4 py-3 transition-colors hover:border-ink/25"
+                className="flex items-center justify-between rounded-card border border-line bg-surface shadow-card px-4 py-3 transition-colors hover:border-ink/25"
               >
                 <span>
                   <span className="block text-sm font-medium">{a.label}</span>
@@ -256,7 +256,7 @@ export default function Dashboard() {
             {isSuperAdmin ? (
               <Link
                 to="/requests"
-                className="flex items-center justify-between rounded-xl border border-line bg-surface px-4 py-3 transition-colors hover:border-ink/25"
+                className="flex items-center justify-between rounded-card border border-line bg-surface shadow-card px-4 py-3 transition-colors hover:border-ink/25"
               >
                 <span>
                   <span className="block text-sm font-medium">Access requests</span>
@@ -285,11 +285,11 @@ export default function Dashboard() {
         </div>
 
         {loading ? (
-          <div className="h-24 animate-pulse rounded-xl border border-line bg-surface" aria-hidden="true" />
+          <div className="h-24 animate-pulse rounded-card border border-line bg-surface shadow-card" aria-hidden="true" />
         ) : err('messages') ? (
           <SectionError message={err('messages')} />
         ) : recentMessages.length ? (
-          <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
+          <ul className="divide-y divide-line rounded-card border border-line bg-surface shadow-card">
             {recentMessages.map((m) => (
               <li key={m._id} className="flex flex-col gap-1 p-4 sm:flex-row sm:justify-between">
                 <div className="min-w-0">
