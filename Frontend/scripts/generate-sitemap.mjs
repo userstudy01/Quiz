@@ -34,23 +34,49 @@ const escape = (value) =>
     ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c])
   );
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/* The API sleeps on a free-tier host, so the first build-time request often
+   cold-starts it and can take the better part of a minute. A single short
+   timeout would give up before it wakes and silently drop every project from
+   the sitemap. So each attempt gets a generous timeout and we retry a few
+   times — the first attempt wakes the instance, a later one gets the data. */
+async function fetchProjects() {
+  const ATTEMPTS = 4;
+  const PER_ATTEMPT_TIMEOUT = 45_000;
+
+  for (let attempt = 1; attempt <= ATTEMPTS; attempt += 1) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), PER_ATTEMPT_TIMEOUT);
+    try {
+      const response = await fetch(`${API}/projects?limit=100`, { signal: controller.signal });
+      clearTimeout(timer);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const body = await response.json();
+      return body.items || [];
+    } catch (error) {
+      clearTimeout(timer);
+      const last = attempt === ATTEMPTS;
+      console.warn(`[sitemap] fetch attempt ${attempt}/${ATTEMPTS} failed: ${error.message}${last ? '' : ' — retrying'}`);
+      if (last) throw error;
+      await sleep(3000);
+    }
+  }
+  return [];
+}
+
 async function projectRoutes() {
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 20_000);
-    const response = await fetch(`${API}/projects?limit=100`, { signal: controller.signal });
-    clearTimeout(timer);
-
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    const body = await response.json();
-    return (body.items || [])
+    const items = await fetchProjects();
+    return items
       .filter((project) => project.slug)
       .map((project) => ({
         path: `/projects/${project.slug}`,
         priority: project.featured ? '0.8' : '0.7',
         changefreq: 'monthly',
-        lastmod: project.updatedAt ? String(project.updatedAt).slice(0, 10) : undefined,
+        lastmod: (project.updatedAt || project.createdAt)
+          ? String(project.updatedAt || project.createdAt).slice(0, 10)
+          : undefined,
       }));
   } catch (error) {
     console.warn(`[sitemap] project routes skipped: ${error.message}`);
