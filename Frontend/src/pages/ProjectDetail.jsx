@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ProjectPlate } from '../components/ProjectShowcase';
-import { Arrow, ButtonLink, ErrorState, Loader, Section } from '../components/ui';
+import { Arrow, ButtonLink, ErrorState, Loader, Section, StaleNotice } from '../components/ui';
 import { getProject, getProjects } from '../lib/api';
 import {
   parseDescription,
@@ -11,7 +11,7 @@ import {
 } from '../lib/projectFields';
 import useRequest from '../lib/useRequest';
 import useScrollReveal from '../lib/useScrollReveal';
-import useSeo from '../lib/useSeo';
+import useSeo, { projectJsonLd } from '../lib/useSeo';
 
 /* ==========================================================================
    Project case study.
@@ -70,7 +70,10 @@ function MetaRow({ label, children }) {
 
 export default function ProjectDetail() {
   const { slug } = useParams();
-  const { data: project, loading, error, reload } = useRequest(() => getProject(slug), [slug]);
+  const { data: project, loading, error, stale, reload } = useRequest(
+    () => getProject(slug),
+    [slug]
+  );
 
   // Sibling lookup for previous/next. The list endpoint is already sorted by
   // sortOrder, so position in this array is the reading order.
@@ -99,6 +102,7 @@ export default function ProjectDetail() {
     description: project?.shortDescription || project?.description?.slice(0, 160),
     image: project?.screenshots?.[0]?.url,
     type: 'article',
+    jsonLd: projectJsonLd(project),
   });
 
   if (loading) {
@@ -151,6 +155,8 @@ export default function ProjectDetail() {
         <Arrow className="rotate-180" />
         <span className="link-underline">Back to Projects</span>
       </Link>
+
+      {stale ? <StaleNotice onRetry={reload} /> : null}
 
       {/* --- Masthead ------------------------------------------------------ */}
       <header className="mt-8 hairline-b pb-10">

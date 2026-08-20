@@ -6,11 +6,19 @@ import {
   ProjectCompactRow,
   TechList,
 } from '../components/ProjectShowcase';
-import { Arrow, ButtonLink, EmptyState, Loader, MoreLink, SectionHeading } from '../components/ui';
+import {
+  Arrow,
+  ButtonLink,
+  EmptyState,
+  Loader,
+  MoreLink,
+  SectionHeading,
+  StaleNotice,
+} from '../components/ui';
 import { getExperience, getProjectFilters, getProjects, getSkills } from '../lib/api';
 import useRequest from '../lib/useRequest';
 import useScrollReveal from '../lib/useScrollReveal';
-import useSeo from '../lib/useSeo';
+import useSeo, { portfolioJsonLd } from '../lib/useSeo';
 
 /* ==========================================================================
    Home.
@@ -27,7 +35,7 @@ export default function Home() {
 
   // One list request serves the hero figures, the featured spreads and the
   // archive preview.
-  const { data: list, loading } = useRequest(() => getProjects({ limit: 100 }), []);
+  const { data: list, loading, stale, reload } = useRequest(() => getProjects({ limit: 100 }), []);
   const { data: meta } = useRequest(getProjectFilters, []);
   const { data: skills } = useRequest(getSkills, []);
   const { data: experience } = useRequest(getExperience, []);
@@ -49,6 +57,7 @@ export default function Home() {
       profile?.bio ||
       'Selected professional work: client platforms, admin panels and product builds.',
     image: profile?.profileImage,
+    jsonLd: portfolioJsonLd(profile),
   });
 
   return (
@@ -64,6 +73,7 @@ export default function Home() {
       />
 
       <div ref={bodyRef} className="container-page mt-20 space-y-20 sm:mt-24 sm:space-y-24">
+        {stale ? <StaleNotice onRetry={reload} /> : null}
         {/* --- Featured work ---------------------------------------------- */}
         <section aria-labelledby="featured-heading">
           <SectionHeading

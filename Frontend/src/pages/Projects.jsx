@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { FeaturedProject, ProjectIndexRow } from '../components/ProjectShowcase';
-import { EmptyState, ErrorState, Loader, PageHeader, Section } from '../components/ui';
+import { EmptyState, ErrorState, Loader, PageHeader, Section, StaleNotice } from '../components/ui';
 import { inputClass } from '../lib/styles';
 import { getProjectFilters, getProjects } from '../lib/api';
 import useRequest from '../lib/useRequest';
@@ -55,7 +55,7 @@ export default function Projects() {
     [search, category, technology, featured]
   );
 
-  const { data, loading, error, reload } = useRequest(() => getProjects(query), [query]);
+  const { data, loading, error, stale, reload } = useRequest(() => getProjects(query), [query]);
   const { data: meta } = useRequest(getProjectFilters, []);
   // Unfiltered count for the masthead, so the headline total does not move
   // while the visitor is filtering. limit=1 keeps the payload tiny.
@@ -206,6 +206,7 @@ export default function Projects() {
 
       {/* --- Results -------------------------------------------------------- */}
       <div className="mt-12">
+        {stale ? <StaleNotice onRetry={reload} /> : null}
         {loading ? (
           <Loader label="Loading projects…" />
         ) : error ? (

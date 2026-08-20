@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { buttonClass, inputClass } from '../lib/styles';
 
@@ -166,15 +167,58 @@ export function Tag({ children }) {
   );
 }
 
+/**
+ * The API runs on an instance that sleeps when idle, and waking it takes long
+ * enough that a silent spinner reads as a broken page. After a few seconds the
+ * loader explains itself rather than leaving the visitor guessing.
+ */
 export function Loader({ label = 'Loading…' }) {
+  const [slow, setSlow] = useState(false);
+
+  useEffect(() => {
+    const id = setTimeout(() => setSlow(true), 4000);
+    return () => clearTimeout(id);
+  }, []);
+
   return (
-    <div className="flex items-center gap-3 py-16 label-mono" role="status">
-      <span
-        aria-hidden="true"
-        className="h-3 w-3 animate-spin rounded-full border border-line border-t-accent"
-      />
-      {label}
+    <div className="py-16" role="status">
+      <p className="flex items-center gap-3 label-mono">
+        <span
+          aria-hidden="true"
+          className="h-3 w-3 animate-spin rounded-full border border-line border-t-accent"
+        />
+        {label}
+      </p>
+      {slow ? (
+        <p className="mt-4 measure text-small text-ink-subtle">
+          The server sleeps when it has had no visitors, so the first request of
+          the day takes a little longer. This will load as soon as it wakes.
+        </p>
+      ) : null}
     </div>
+  );
+}
+
+/**
+ * Shown when the network failed and the page is rendering the last response
+ * this API returned. The content is real, just not fetched this minute — and
+ * saying so is better than passing it off as live.
+ */
+export function StaleNotice({ onRetry }) {
+  return (
+    <p className="hairline-t flex flex-wrap items-center gap-x-4 gap-y-2 py-3 text-meta text-ink-subtle">
+      <span className="label-mono text-accent">Offline copy</span>
+      <span>Showing the last version loaded — the server did not respond just now.</span>
+      {onRetry ? (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="link-accent underline underline-offset-4"
+        >
+          Retry
+        </button>
+      ) : null}
+    </p>
   );
 }
 
