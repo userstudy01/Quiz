@@ -9,6 +9,7 @@ import {
   Modal,
   PageHeader,
   Toast,
+  Toggle,
   inputClass,
 } from '../components/ui';
 
@@ -83,6 +84,15 @@ export default function Experience() {
     }
   };
 
+  const toggleVisible = async (item) => {
+    try {
+      const { data } = await API.put(`/experience/${item._id}`, { ...item, visible: !item.visible });
+      setItems((prev) => prev.map((i) => (i._id === data._id ? data : i)));
+    } catch (err) {
+      setToast({ type: 'error', message: apiError(err, 'Update failed.') });
+    }
+  };
+
   const move = async (index, direction) => {
     const next = [...items];
     const target = index + direction;
@@ -143,6 +153,7 @@ export default function Experience() {
                 <th className="px-4 py-3 font-medium">Role</th>
                 <th className="px-4 py-3 font-medium">Company</th>
                 <th className="px-4 py-3 font-medium">Period</th>
+                <th className="px-4 py-3 font-medium">Visible</th>
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
@@ -178,6 +189,13 @@ export default function Experience() {
                         .join(' — ') || '—'}
                     </td>
                     <td className="px-4 py-3">
+                      <Toggle
+                        checked={item.visible}
+                        onChange={() => toggleVisible(item)}
+                        label={`Show ${item.role} on the site`}
+                      />
+                    </td>
+                    <td className="px-4 py-3">
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
@@ -202,7 +220,7 @@ export default function Experience() {
                   </tr>
                 ))
               ) : (
-                <EmptyRow colSpan={5} message="No experience entries yet." />
+                <EmptyRow colSpan={6} message="No experience entries yet." />
               )}
             </tbody>
           </table>
