@@ -30,7 +30,10 @@ export default function Account() {
     event.preventDefault();
     const errors = validate();
     setFieldErrors(errors);
-    if (Object.keys(errors).length) return;
+    if (Object.keys(errors).length) {
+      setToast({ type: 'error', message: Object.values(errors)[0] || 'Please fix the highlighted fields.' });
+      return;
+    }
 
     setSaving(true);
     try {
