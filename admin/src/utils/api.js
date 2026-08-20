@@ -33,7 +33,11 @@ API.interceptors.request.use((config) => {
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error?.response?.status === 401) {
+    // Auth endpoints report their own 401s (e.g. wrong password) inline; only a
+    // 401 on a normal request means the session token itself is gone.
+    const url = error?.config?.url || '';
+    const isAuthEndpoint = url.includes('/auth/password') || url.includes('/auth/login');
+    if (error?.response?.status === 401 && !isAuthEndpoint) {
       clearAuth();
       if (window.location.pathname !== '/login') {
         const handled = window.dispatchEvent(new CustomEvent('auth:unauthorized', { cancelable: true }));

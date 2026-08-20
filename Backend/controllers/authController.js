@@ -160,8 +160,10 @@ const changePassword = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(req.user.id);
+  // 400 (not 401) so the client's global "session expired" 401 handler does not
+  // log the user out just because they mistyped their current password.
   if (!user || !(await bcrypt.compare(currentPassword, user.password))) {
-    return res.status(401).json({ message: 'Current password is incorrect' });
+    return res.status(400).json({ message: 'Current password is incorrect' });
   }
 
   user.password = await bcrypt.hash(newPassword, await bcrypt.genSalt(10));
