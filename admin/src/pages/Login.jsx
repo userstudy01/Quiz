@@ -47,13 +47,13 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-canvas px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-8">
+    <div className="flex min-h-screen items-center justify-center px-4 py-10">
+      <div className="animate-rise w-full max-w-sm rounded-2xl border border-line bg-surface p-8 shadow-pop">
         <div className="mb-7">
-          <span className="grid h-10 w-10 place-items-center rounded-lg bg-ink text-xs font-semibold text-white">
+          <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-accent to-accent-hover text-sm font-bold text-white shadow-card">
             PA
           </span>
-          <h1 className="mt-4 text-xl font-semibold tracking-tight">Portfolio Admin</h1>
+          <h1 className="mt-5 text-xl font-semibold tracking-tight">Welcome back</h1>
           <p className="mt-1 text-sm text-ink-muted">Sign in to manage your portfolio content.</p>
         </div>
 

@@ -23,7 +23,7 @@ function StatCard({ label, value, sub, to, loading, error }) {
   );
 
   const className =
-    'block rounded-xl border border-line bg-surface p-5 transition-colors hover:border-ink/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink';
+    'lift block rounded-card border border-line bg-surface p-5 shadow-card focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent';
 
   return to && !loading && !error ? (
     <Link to={to} className={className}>

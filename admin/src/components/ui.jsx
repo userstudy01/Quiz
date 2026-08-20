@@ -2,26 +2,29 @@ import { useEffect, useState } from 'react';
 
 export function PageHeader({ title, description, action }) {
   return (
-    <div className="mb-6 flex flex-col gap-3 border-b border-line pb-5 sm:flex-row sm:items-end sm:justify-between">
+    <div className="animate-rise mb-7 flex flex-col gap-3 border-b border-line pb-5 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">{title}</h1>
-        {description ? <p className="mt-1 text-sm text-ink-muted">{description}</p> : null}
+        <h1 className="text-[1.35rem] font-semibold tracking-tight text-ink sm:text-2xl">{title}</h1>
+        {description ? <p className="mt-1.5 text-sm text-ink-muted">{description}</p> : null}
       </div>
-      {action}
+      {action ? <div className="shrink-0">{action}</div> : null}
     </div>
   );
 }
 
 export function Button({ children, variant = 'primary', className = '', ...rest }) {
   const styles = {
-    primary: 'bg-ink text-white hover:opacity-90',
-    secondary: 'border border-line bg-surface text-ink hover:border-ink/30',
-    danger: 'border border-red-200 bg-white text-red-600 hover:bg-red-50',
+    primary:
+      'bg-accent text-accent-contrast shadow-card hover:bg-accent-hover active:translate-y-px',
+    secondary:
+      'border border-line-strong bg-surface text-ink hover:bg-canvas hover:border-ink-subtle',
+    danger:
+      'border border-danger/30 bg-surface text-danger hover:bg-danger-soft hover:border-danger/50',
   };
 
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors disabled:opacity-60 ${styles[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:pointer-events-none disabled:opacity-55 ${styles[variant]} ${className}`}
       {...rest}
     >
       {children}
@@ -32,16 +35,16 @@ export function Button({ children, variant = 'primary', className = '', ...rest 
 export function Field({ label, hint, error, children, className = '' }) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-1.5 block text-sm font-medium">{label}</span>
+      <span className="mb-1.5 block text-sm font-medium text-ink">{label}</span>
       {children}
-      {hint ? <span className="mt-1 block text-xs text-ink-muted">{hint}</span> : null}
-      {error ? <span className="mt-1 block text-xs text-red-600">{error}</span> : null}
+      {hint ? <span className="mt-1.5 block text-xs text-ink-subtle">{hint}</span> : null}
+      {error ? <span className="mt-1.5 block text-xs font-medium text-danger">{error}</span> : null}
     </label>
   );
 }
 
 export const inputClass =
-  'w-full rounded-lg border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted/70 focus:border-ink/30 focus:outline-none';
+  'w-full rounded-lg border border-line-strong bg-surface px-3.5 py-2.5 text-sm text-ink shadow-[inset_0_1px_1px_rgba(17,24,39,.02)] transition-colors placeholder:text-ink-subtle focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/12';
 
 // Password field with a show/hide eye toggle. `label` names it for a11y.
 export function PasswordInput({ label = 'password', className = '', ...rest }) {
@@ -87,12 +90,12 @@ export function Modal({ open, title, onClose, children, footer, wide = false }) 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/30 p-4 sm:p-8">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 p-4 backdrop-blur-sm sm:p-8">
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`w-full rounded-2xl border border-line bg-surface shadow-xl ${
+        className={`animate-rise mt-4 w-full rounded-2xl border border-line bg-surface shadow-pop sm:mt-10 ${
           wide ? 'max-w-3xl' : 'max-w-lg'
         }`}
       >

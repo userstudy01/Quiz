@@ -11,7 +11,7 @@ const RANGES = [
 
 function StatCard({ label, value, loading }) {
   return (
-    <div className="rounded-xl border border-line bg-surface p-5">
+    <div className="rounded-card border border-line bg-surface p-5 shadow-card">
       <p className="text-sm text-ink-muted">{label}</p>
       {loading ? (
         <span className="mt-3 block h-8 w-14 animate-pulse rounded bg-line" aria-hidden="true" />

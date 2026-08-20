@@ -73,9 +73,9 @@ export default function Signup() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-10">
-      <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-8">
+      <div className="animate-rise w-full max-w-sm rounded-2xl border border-line bg-surface p-8 shadow-pop">
         <div className="mb-7">
-          <span className="grid h-10 w-10 place-items-center rounded-lg bg-ink text-xs font-semibold text-white">
+          <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-accent to-accent-hover text-sm font-bold text-white shadow-card">
             PA
           </span>
           <h1 className="mt-4 text-xl font-semibold tracking-tight">
