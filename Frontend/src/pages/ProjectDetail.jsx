@@ -1,6 +1,7 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ProjectPlate } from '../components/ProjectShowcase';
+import Lightbox from '../components/Lightbox';
 import { Arrow, ButtonLink, ErrorState, Loader, Section, StaleNotice } from '../components/ui';
 import { getProject, getProjects } from '../lib/api';
 import {
@@ -96,6 +97,9 @@ export default function ProjectDetail() {
 
   const bodyRef = useRef(null);
   useScrollReveal(bodyRef, [slug, project?._id]);
+
+  // null = lightbox closed; otherwise the index into `screenshots` being viewed.
+  const [lightboxIndex, setLightboxIndex] = useState(null);
 
   useSeo({
     title: project?.title || 'Project',
@@ -209,7 +213,12 @@ export default function ProjectDetail() {
       <div className="group rise mt-10" style={{ animationDelay: '280ms' }}>
         {screenshots.length ? (
           <figure>
-            <div className="visual-frame rounded-panel">
+            <button
+              type="button"
+              onClick={() => setLightboxIndex(0)}
+              aria-label={`View ${project.title} screenshots full screen`}
+              className="visual-frame block w-full cursor-zoom-in rounded-panel"
+            >
               <img
                 src={screenshots[0].url}
                 alt={screenshots[0].caption || `${project.title} — screenshot`}
@@ -218,7 +227,7 @@ export default function ProjectDetail() {
                 decoding="async"
                 className="w-full object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.02]"
               />
-            </div>
+            </button>
             {screenshots[0].caption ? (
               <figcaption className="mt-3 label-mono">{screenshots[0].caption}</figcaption>
             ) : null}
@@ -330,13 +339,20 @@ export default function ProjectDetail() {
               <div className="grid gap-6 sm:grid-cols-2">
                 {screenshots.slice(1).map((shot, index) => (
                   <figure key={`${shot.url}-${index}`} className="group">
-                    <img
-                      src={shot.url}
-                      alt={shot.caption || `${project.title} — screenshot ${index + 2}`}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full rounded-card border border-line bg-elevated object-cover transition-colors duration-500 ease-smooth group-hover:border-line-strong"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => setLightboxIndex(index + 1)}
+                      aria-label={`View screenshot ${index + 2} full screen`}
+                      className="block w-full cursor-zoom-in overflow-hidden rounded-card border border-line bg-elevated transition-colors duration-500 ease-smooth group-hover:border-line-strong"
+                    >
+                      <img
+                        src={shot.url}
+                        alt={shot.caption || `${project.title} — screenshot ${index + 2}`}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full object-cover transition-transform duration-500 ease-smooth group-hover:scale-[1.03]"
+                      />
+                    </button>
                     {shot.caption ? (
                       <figcaption className="mt-2 label-mono">{shot.caption}</figcaption>
                     ) : null}
@@ -442,6 +458,14 @@ export default function ProjectDetail() {
           ) : null}
         </nav>
       ) : null}
+
+      <Lightbox
+        images={screenshots}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onIndex={setLightboxIndex}
+        title={project.title}
+      />
     </Section>
   );
 }
