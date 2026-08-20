@@ -155,12 +155,12 @@ export function Toast({ toast, onDismiss }) {
     <div className="fixed inset-x-0 top-5 z-[60] flex justify-center px-4 sm:inset-x-auto sm:right-5 sm:justify-end">
       <div
         role={isError ? 'alert' : 'status'}
-        className={`animate-toast-in flex w-full max-w-sm items-start gap-3 rounded-xl border-l-4 bg-surface px-4 py-3.5 shadow-xl ring-1 ring-black/5 ${
+        className={`animate-toast-in flex w-full max-w-sm items-center gap-3 rounded-xl border-l-4 bg-surface px-4 py-3.5 shadow-xl ring-1 ring-black/5 ${
           isError ? 'border-red-500' : 'border-emerald-500'
         }`}
       >
         <span
-          className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full text-white ${
+          className={`grid h-5 w-5 shrink-0 place-items-center rounded-full text-white ${
             isError ? 'bg-red-500' : 'bg-emerald-500'
           }`}
           aria-hidden="true"
@@ -169,15 +169,12 @@ export function Toast({ toast, onDismiss }) {
             {isError ? <path d="M18 6 6 18M6 6l12 12" /> : <path d="M20 6 9 17l-5-5" />}
           </svg>
         </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-ink">{isError ? 'Something went wrong' : 'Success'}</p>
-          <p className="mt-0.5 text-sm text-ink-muted">{toast.message}</p>
-        </div>
+        <p className="min-w-0 flex-1 text-sm font-medium text-ink">{toast.message}</p>
         <button
           type="button"
           onClick={onDismiss}
           aria-label="Dismiss"
-          className="-mr-1 -mt-0.5 shrink-0 rounded-md p-1 text-ink-muted hover:bg-line/60 hover:text-ink"
+          className="-mr-1 shrink-0 rounded-md p-1 text-ink-muted hover:bg-line/60 hover:text-ink"
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
             <path d="M6 6l12 12M18 6L6 18" />
