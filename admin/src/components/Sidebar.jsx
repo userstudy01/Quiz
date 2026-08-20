@@ -83,7 +83,7 @@ export default function Sidebar() {
       ) : null}
 
       <aside
-        className={`fixed left-0 top-0 z-40 flex h-screen w-64 shrink-0 flex-col border-r border-line bg-surface p-4 shadow-pop transition-transform lg:static lg:translate-x-0 lg:shadow-none ${
+        className={`fixed left-0 top-0 z-40 flex h-screen w-64 shrink-0 flex-col border-r border-line bg-surface p-4 shadow-pop transition-transform lg:sticky lg:top-0 lg:h-auto lg:max-h-screen lg:self-start lg:translate-x-0 lg:shadow-none ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
