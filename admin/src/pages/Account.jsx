@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API, { apiError, clearAuth, getStoredAuth } from '../utils/api';
 import { Button, Field, PageHeader, PasswordInput, Toast } from '../components/ui';
+import { setFlash } from '../utils/flash';
 
 const EMPTY = { currentPassword: '', newPassword: '', confirmPassword: '' };
 
@@ -45,12 +46,13 @@ export default function Account() {
       });
       setForm(EMPTY);
       setToast({ type: 'success', message: 'Password updated. Please sign in again.' });
-      // Give the toast a moment, then end the session so the user re-authenticates
-      // with the new password.
+      // Keep the toast visible for ~2s, then end the session so the user
+      // re-authenticates with the new password.
       setTimeout(() => {
         clearAuth();
+        setFlash('success', 'Password updated — please sign in');
         navigate('/login', { replace: true });
-      }, 1500);
+      }, 2000);
     } catch (err) {
       setToast({ type: 'error', message: apiError(err, 'Could not update password.') });
       setSaving(false);

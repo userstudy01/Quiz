@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { BrowserRouter, Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -14,6 +14,23 @@ import Analytics from './pages/Analytics';
 import Requests from './pages/Requests';
 import Account from './pages/Account';
 import { getStoredAuth, ADMIN_ROLES } from './utils/api';
+import { takeFlash } from './utils/flash';
+import { Toast } from './components/ui';
+
+// Shows a one-shot flash message (set before a redirect) as a toast on whatever
+// page the user lands on. Re-checks on every navigation.
+function FlashToaster() {
+  const location = useLocation();
+  const [toast, setToast] = useState(null);
+  useEffect(() => {
+    // Reading a one-shot value from sessionStorage on navigation is an external
+    // sync, not derived state — showing it requires setState here.
+    const flash = takeFlash();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (flash) setToast(flash);
+  }, [location.key]);
+  return <Toast toast={toast} onDismiss={() => setToast(null)} />;
+}
 
 // Listens for the `auth:unauthorized` event the API layer fires on a 401 and
 // redirects inside the router — no full-page reload, so app state survives.
@@ -62,6 +79,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthWatcher />
+      <FlashToaster />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

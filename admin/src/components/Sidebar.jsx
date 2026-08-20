@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import API, { clearAuth, getStoredAuth } from '../utils/api';
+import { setFlash } from '../utils/flash';
 import NotificationBell from './NotificationBell';
 
 const links = [
@@ -27,6 +28,7 @@ export default function Sidebar() {
       // The token is discarded locally regardless of the server response.
     }
     clearAuth();
+    setFlash('success', 'Logout successful');
     navigate('/login', { replace: true });
   };
 

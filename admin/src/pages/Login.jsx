@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import API, { apiError, ADMIN_ROLES } from '../utils/api';
-import { Button, Field, PasswordInput, inputClass } from '../components/ui';
+import { Button, Field, PasswordInput, Toast, inputClass } from '../components/ui';
+import { setFlash } from '../utils/flash';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(false);
   // ADM-003: only surface the first-run sign-up link while registration is open.
   const [registrationOpen, setRegistrationOpen] = useState(false);
@@ -23,21 +24,23 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError('');
+    setToast(null);
     setLoading(true);
 
     try {
       const { data } = await API.post('/auth/login', form);
 
       if (!ADMIN_ROLES.includes(data.user?.role)) {
-        setError('Access denied. Admin privileges required.');
+        setToast({ type: 'error', message: 'Access denied. Admin privileges required.' });
         return;
       }
 
       localStorage.setItem('adminUser', JSON.stringify(data));
+      // Flash shows on the dashboard after the redirect.
+      setFlash('success', 'Login successful');
       navigate('/', { replace: true });
     } catch (err) {
-      setError(apiError(err, 'Invalid credentials'));
+      setToast({ type: 'error', message: apiError(err, 'Invalid credentials') });
     } finally {
       setLoading(false);
     }
@@ -53,12 +56,6 @@ export default function Login() {
           <h1 className="mt-4 text-xl font-semibold tracking-tight">Portfolio Admin</h1>
           <p className="mt-1 text-sm text-ink-muted">Sign in to manage your portfolio content.</p>
         </div>
-
-        {error ? (
-          <p role="alert" className="mb-5 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
-            {error}
-          </p>
-        ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Field label="Email">
@@ -95,6 +92,8 @@ export default function Login() {
           </p>
         ) : null}
       </div>
+
+      <Toast toast={toast} onDismiss={() => setToast(null)} />
     </div>
   );
 }
