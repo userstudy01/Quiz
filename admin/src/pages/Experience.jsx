@@ -12,6 +12,7 @@ import {
   Toggle,
   inputClass,
 } from '../components/ui';
+import { formatDateForInput, isIsoDate } from '../utils/format';
 
 const EMPTY = {
   company: '',
@@ -31,6 +32,9 @@ const EMPTY = {
 const toForm = (item) => ({
   ...EMPTY,
   ...item,
+  // Normalise stored dates to YYYY-MM-DD so the native date picker shows them.
+  startDate: formatDateForInput(item.startDate),
+  endDate: formatDateForInput(item.endDate),
   highlights: (item.highlights || []).join('\n'),
   technologies: (item.technologies || []).join('\n'),
 });
@@ -67,6 +71,16 @@ export default function Experience() {
     const errors = {};
     if (!form.role.trim()) errors.role = 'Role is required.';
     if (!form.company.trim()) errors.company = 'Company is required.';
+    // End date, when set, must not precede the start date. YYYY-MM-DD strings
+    // compare chronologically, so a plain string compare is correct here.
+    if (
+      !form.current &&
+      isIsoDate(form.startDate) &&
+      isIsoDate(form.endDate) &&
+      form.endDate < form.startDate
+    ) {
+      errors.endDate = 'End date cannot be earlier than the start date.';
+    }
     setFieldErrors(errors);
     if (Object.keys(errors).length) return;
 
@@ -270,18 +284,29 @@ export default function Experience() {
               className={inputClass}
             />
           </Field>
-          <Field label="Start date" hint="Free text, e.g. Jan 2023">
+          <Field label="Start date">
             <input
+              type="date"
               value={form.startDate}
               onChange={(e) => setForm({ ...form, startDate: e.target.value })}
               className={inputClass}
             />
           </Field>
-          <Field label="End date">
+          <Field
+            label="End date"
+            hint={form.current ? 'Not needed for a current role.' : 'Leave empty if ongoing.'}
+            error={fieldErrors.endDate}
+          >
             <input
+              type="date"
               value={form.endDate}
-              onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+              min={form.startDate || undefined}
+              onChange={(e) => {
+                setForm({ ...form, endDate: e.target.value });
+                if (fieldErrors.endDate) setFieldErrors((p) => ({ ...p, endDate: undefined }));
+              }}
               disabled={form.current}
+              aria-invalid={Boolean(fieldErrors.endDate)}
               className={`${inputClass} disabled:opacity-50`}
             />
           </Field>
@@ -289,7 +314,17 @@ export default function Experience() {
             <input
               type="checkbox"
               checked={form.current}
-              onChange={(e) => setForm({ ...form, current: e.target.checked })}
+              onChange={(e) => {
+                setForm({
+                  ...form,
+                  current: e.target.checked,
+                  // A current role has no end date — clear it when toggled on.
+                  endDate: e.target.checked ? '' : form.endDate,
+                });
+                if (e.target.checked && fieldErrors.endDate) {
+                  setFieldErrors((p) => ({ ...p, endDate: undefined }));
+                }
+              }}
               className="h-4 w-4"
             />
             Current role
