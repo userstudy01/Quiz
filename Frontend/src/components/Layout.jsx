@@ -1,11 +1,14 @@
 import { Suspense, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { motion, useReducedMotion } from 'motion/react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { Loader } from './ui';
 import { getProfile } from '../lib/api';
 import { trackPageView } from '../lib/analytics';
 import useRequest from '../lib/useRequest';
+
+const MotionDiv = motion.div;
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -16,6 +19,26 @@ function ScrollToTop() {
     trackPageView(pathname, projectMatch ? projectMatch[1] : '');
   }, [pathname]);
   return null;
+}
+
+/* Short, subtle route transition: each page fades and rises a few pixels as it
+   mounts. Keyed by pathname so it replays on navigation but not on in-page
+   query changes (e.g. project filters). Enter-only — no exit — so it stays
+   robust with lazy routes and never makes navigation feel delayed. Motion is
+   removed entirely under prefers-reduced-motion. */
+function AnimatedPage({ profile }) {
+  const { pathname } = useLocation();
+  const reduce = useReducedMotion();
+  return (
+    <MotionDiv
+      key={pathname}
+      initial={reduce ? false : { opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <Outlet context={{ profile }} />
+    </MotionDiv>
+  );
 }
 
 export default function Layout() {
@@ -33,7 +56,7 @@ export default function Layout() {
             </div>
           }
         >
-          <Outlet context={{ profile }} />
+          <AnimatedPage profile={profile} />
         </Suspense>
       </main>
       <Footer profile={profile} />

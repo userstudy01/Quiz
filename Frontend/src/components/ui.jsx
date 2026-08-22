@@ -1,6 +1,22 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, useReducedMotion } from 'motion/react';
 import { buttonClass, inputClass } from '../lib/styles';
+
+const MotionLink = motion.create(Link);
+
+/* Shared press/hover feel for every button on the site: a small lift on hover
+   and a press on tap. Returns nothing under prefers-reduced-motion, so the
+   controls stay completely still for those users. */
+function usePressProps() {
+  const reduce = useReducedMotion();
+  if (reduce) return {};
+  return {
+    whileHover: { scale: 1.02 },
+    whileTap: { scale: 0.97 },
+    transition: { type: 'spring', stiffness: 420, damping: 26 },
+  };
+}
 
 /* ==========================================================================
    Shared public-site primitives.
@@ -101,29 +117,31 @@ export function MoreLink({ to, children }) {
 /* --- Buttons -------------------------------------------------------------- */
 
 export function Button({ children, variant = 'primary', className = '', ...rest }) {
+  const press = usePressProps();
   return (
-    <button className={buttonClass(variant, className)} {...rest}>
+    <motion.button className={buttonClass(variant, className)} {...press} {...rest}>
       {children}
-    </button>
+    </motion.button>
   );
 }
 
 /* `to` renders a router link, `href` an external anchor. */
 export function ButtonLink({ to, href, children, variant = 'primary', className = '', ...rest }) {
   const classes = buttonClass(variant, `link-arrow ${className}`);
+  const press = usePressProps();
 
   if (to) {
     return (
-      <Link to={to} className={classes} {...rest}>
+      <MotionLink to={to} className={classes} {...press} {...rest}>
         {children}
-      </Link>
+      </MotionLink>
     );
   }
 
   return (
-    <a href={href} className={classes} target="_blank" rel="noreferrer noopener" {...rest}>
+    <motion.a href={href} className={classes} target="_blank" rel="noreferrer noopener" {...press} {...rest}>
       {children}
-    </a>
+    </motion.a>
   );
 }
 

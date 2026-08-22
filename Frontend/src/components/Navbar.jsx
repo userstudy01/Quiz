@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import ThemeToggle from './ThemeToggle';
+
+const MotionDiv = motion.div;
 
 /* ==========================================================================
    Masthead.
@@ -70,6 +73,7 @@ export default function Navbar({ profile }) {
     };
   }, [open]);
 
+  const reduce = useReducedMotion();
   const name = profile?.name || 'Portfolio';
 
   /* Active page is marked with a short rule under the label rather than a
@@ -148,49 +152,59 @@ export default function Navbar({ profile }) {
         </div>
       </nav>
 
-      {/* --- Mobile panel ---------------------------------------------------- */}
-      <div
-        id="mobile-menu"
-        ref={panelRef}
-        hidden={!open}
-        className="surface-glass hairline-t md:hidden"
-      >
-        <ul className="container-page flex flex-col pb-6 pt-2">
-          {LINKS.map((link, i) => (
-            <li key={link.to} className="hairline-b last:border-0">
-              <NavLink
-                to={link.to}
-                onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  `rise flex items-center justify-between py-4 text-body transition-colors duration-200 ease-smooth ${
-                    isActive ? 'text-accent' : 'text-ink'
-                  }`
-                }
-                style={{ animationDelay: `${i * 40}ms` }}
-              >
-                {link.label}
-                <span className="index-mono text-ink-subtle">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-              </NavLink>
-            </li>
-          ))}
+      {/* --- Mobile panel ---------------------------------------------------- *
+       * AnimatePresence gives the panel a smooth height+fade on both open and
+       * close (a plain `hidden` toggle could only snap shut). Items keep their
+       * CSS `rise` stagger. Collapses to a simple fade under reduced motion.  */}
+      <AnimatePresence>
+        {open ? (
+          <MotionDiv
+            id="mobile-menu"
+            ref={panelRef}
+            className="surface-glass hairline-t overflow-hidden md:hidden"
+            initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            animate={reduce ? { opacity: 1 } : { height: 'auto', opacity: 1 }}
+            exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <ul className="container-page flex flex-col pb-6 pt-2">
+              {LINKS.map((link, i) => (
+                <li key={link.to} className="hairline-b last:border-0">
+                  <NavLink
+                    to={link.to}
+                    onClick={() => setOpen(false)}
+                    className={({ isActive }) =>
+                      `rise flex items-center justify-between py-4 text-body transition-colors duration-200 ease-smooth ${
+                        isActive ? 'text-accent' : 'text-ink'
+                      }`
+                    }
+                    style={{ animationDelay: `${i * 40}ms` }}
+                  >
+                    {link.label}
+                    <span className="index-mono text-ink-subtle">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                  </NavLink>
+                </li>
+              ))}
 
-          {profile?.resumeUrl ? (
-            <li className="hairline-t">
-              <a
-                href={profile.resumeUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-                onClick={() => setOpen(false)}
-                className="block py-4 text-body text-ink"
-              >
-                Résumé
-              </a>
-            </li>
-          ) : null}
-        </ul>
-      </div>
+              {profile?.resumeUrl ? (
+                <li className="hairline-t">
+                  <a
+                    href={profile.resumeUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    onClick={() => setOpen(false)}
+                    className="block py-4 text-body text-ink"
+                  >
+                    Résumé
+                  </a>
+                </li>
+              ) : null}
+            </ul>
+          </MotionDiv>
+        ) : null}
+      </AnimatePresence>
     </header>
   );
 }
