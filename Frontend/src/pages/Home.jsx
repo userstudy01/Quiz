@@ -169,13 +169,29 @@ export default function Home() {
               action={<MoreLink to="/skills">All skills</MoreLink>}
               reveal={0}
             />
-            <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {skillGroups.slice(0, 3).map((group, index) => (
-                <div key={group.category} data-reveal="" data-reveal-index={index}>
-                  <p className="label-mono text-accent">{group.category}</p>
-                  <ul className="mt-4 space-y-2">
-                    {group.items.slice(0, 10).map((skill) => (
-                      <li key={skill._id} className="hairline-b py-2 text-small text-ink-muted">
+                <div
+                  key={group.category}
+                  data-reveal=""
+                  data-reveal-index={index}
+                  className="card-lux p-6"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="grid h-11 w-11 place-items-center rounded-control bg-accent-soft text-accent"
+                  >
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m8 8-4 4 4 4m8-8 4 4-4 4" />
+                    </svg>
+                  </span>
+                  <h3 className="mt-5 text-h3 text-ink">{group.category}</h3>
+                  <ul className="mt-4 flex flex-wrap gap-2">
+                    {group.items.slice(0, 8).map((skill) => (
+                      <li
+                        key={skill._id}
+                        className="rounded-control border border-line px-2.5 py-1 text-meta text-ink-muted"
+                      >
                         {skill.name}
                       </li>
                     ))}
@@ -234,21 +250,27 @@ export default function Home() {
         ) : null}
 
         {/* --- Contact ------------------------------------------------------ */}
-        <section data-reveal="" className="hairline-t pt-12 sm:pt-16">
-          <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="label-mono text-accent">Contact</p>
-              <h2 className="mt-4 measure text-h2 text-ink">
-                Have a project that needs building?
-              </h2>
-              <p className="mt-4 measure text-body text-ink-muted">
-                Send a message with the details and I will reply by email.
-              </p>
+        <section data-reveal="">
+          <div className="cta-gradient card-lux relative overflow-hidden p-8 sm:p-12">
+            <div
+              aria-hidden="true"
+              className="glow-accent right-[-4rem] top-[-4rem] h-72 w-72 opacity-60"
+            />
+            <div className="relative flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="label-mono text-accent">Contact</p>
+                <h2 className="mt-4 measure text-h2 text-ink">
+                  Let&apos;s create something together
+                </h2>
+                <p className="mt-4 measure text-body text-ink-muted">
+                  Have a project that needs building? Send the details and I will reply by email.
+                </p>
+              </div>
+              <ButtonLink to="/contact" className="shrink-0">
+                Get in Touch
+                <Arrow />
+              </ButtonLink>
             </div>
-            <ButtonLink to="/contact" className="shrink-0">
-              Contact Me
-              <Arrow />
-            </ButtonLink>
           </div>
         </section>
       </div>

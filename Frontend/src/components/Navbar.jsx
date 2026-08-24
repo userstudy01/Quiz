@@ -75,6 +75,14 @@ export default function Navbar({ profile }) {
 
   const reduce = useReducedMotion();
   const name = profile?.name || 'Portfolio';
+  const role = profile?.title || '';
+  const initials =
+    name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join('') || 'PF';
 
   /* Active page is marked with a short rule under the label rather than a
      heavier weight — the row stays visually even. */
@@ -104,14 +112,19 @@ export default function Navbar({ profile }) {
       >
         <Link
           to="/"
-          className="group flex items-baseline gap-2.5 text-ink"
+          className="group flex items-center gap-3 text-ink"
           aria-label={`${name} — home`}
         >
           <span
             aria-hidden="true"
-            className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent transition-transform duration-300 ease-smooth group-hover:scale-125"
-          />
-          <span className="font-display text-lg tracking-tight">{name}</span>
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-control border border-line-strong bg-elevated font-display text-sm font-medium text-accent transition-colors duration-300 ease-smooth group-hover:border-accent"
+          >
+            {initials}
+          </span>
+          <span className="hidden leading-tight sm:block">
+            <span className="block font-display text-base tracking-tight">{name}</span>
+            {role ? <span className="label-mono block">{role}</span> : null}
+          </span>
         </Link>
 
         <div className="hidden items-center gap-7 md:flex">
@@ -135,6 +148,16 @@ export default function Navbar({ profile }) {
           ) : null}
 
           <ThemeToggle />
+
+          <Link
+            to="/contact"
+            className="hidden items-center gap-2 rounded-control bg-accent px-4 py-2 text-nav font-medium text-accent-contrast shadow-[var(--shadow-soft)] transition-colors duration-200 ease-smooth hover:bg-accent-strong md:inline-flex"
+          >
+            Let&apos;s Talk
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0-5-5m5 5-5 5" />
+            </svg>
+          </Link>
 
           <button
             ref={toggleRef}

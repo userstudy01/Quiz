@@ -75,20 +75,22 @@
   --color-line: #e0dcd1;
   --color-line-strong: #c8c2b3;
 
-  --color-accent: #9d4b2c;
-  --color-accent-strong: #7f3a20;
-  --color-accent-soft: #f0e4dc;
+  /* Warm copper-orange: the reference accent, kept dark enough on cream that
+     text and fills clear 4.5:1. */
+  --color-accent: #cf5a24;
+  --color-accent-strong: #a8410f;
+  --color-accent-soft: #f6e3d7;
   --color-accent-contrast: #fdfcfa;
 
   --color-danger: #a3341f;
   --color-success: #3f6b41;
 
   /* --- Geometry ---------------------------------------------------------- *
-   * Editorial, not SaaS: corners are barely rounded, so structure reads as
-   * ruled columns rather than a wall of pills.                              */
-  --radius-card: 3px;
-  --radius-panel: 4px;
-  --radius-control: 3px;
+   * Softer, more premium radii than the old editorial hairline corners —
+   * closer to the reference's rounded cards without becoming a wall of pills. */
+  --radius-card: 12px;
+  --radius-panel: 16px;
+  --radius-control: 10px;
 
   /* --- Measures ---------------------------------------------------------- */
   --container-content: 76rem;
@@ -125,19 +127,19 @@
  * re-points every text-ink / bg-surface / border-line utility at once.     */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-canvas: #0e0d0b;
-    --color-surface: #161512;
-    --color-elevated: #1e1c18;
-    --color-ink: #f0ede6;
-    --color-ink-muted: #a29c90;
-    --color-ink-subtle: #938c7c;
-    --color-line: #2a2823;
-    --color-line-strong: #403c34;
+    --color-canvas: #0a0908;
+    --color-surface: #141210;
+    --color-elevated: #1e1a16;
+    --color-ink: #f2efe8;
+    --color-ink-muted: #a8a294;
+    --color-ink-subtle: #948d7d;
+    --color-line: #29251f;
+    --color-line-strong: #443f36;
 
-    --color-accent: #d9885f;
-    --color-accent-strong: #eda079;
-    --color-accent-soft: #2a1d15;
-    --color-accent-contrast: #14120f;
+    --color-accent: #f97e3f;
+    --color-accent-strong: #ffa06a;
+    --color-accent-soft: #2c1a10;
+    --color-accent-contrast: #17130f;
 
     --color-danger: #e0806c;
     --color-success: #7fae7f;
@@ -155,19 +157,19 @@
 
 /* An explicit choice always wins over the OS preference. */
 :root[data-theme="dark"] {
-  --color-canvas: #0e0d0b;
-  --color-surface: #161512;
-  --color-elevated: #1e1c18;
-  --color-ink: #f0ede6;
-  --color-ink-muted: #a29c90;
-  --color-ink-subtle: #938c7c;
-  --color-line: #2a2823;
-  --color-line-strong: #403c34;
+  --color-canvas: #0a0908;
+  --color-surface: #141210;
+  --color-elevated: #1e1a16;
+  --color-ink: #f2efe8;
+  --color-ink-muted: #a8a294;
+  --color-ink-subtle: #948d7d;
+  --color-line: #29251f;
+  --color-line-strong: #443f36;
 
-  --color-accent: #d9885f;
-  --color-accent-strong: #eda079;
-  --color-accent-soft: #2a1d15;
-  --color-accent-contrast: #14120f;
+  --color-accent: #f97e3f;
+  --color-accent-strong: #ffa06a;
+  --color-accent-soft: #2c1a10;
+  --color-accent-contrast: #17130f;
 
   --color-danger: #e0806c;
   --color-success: #7fae7f;
@@ -304,6 +306,55 @@
   background-color: color-mix(in oklab, var(--color-canvas) 82%, transparent);
   backdrop-filter: blur(12px) saturate(130%);
   -webkit-backdrop-filter: blur(12px) saturate(130%);
+}
+
+/* ==========================================================================
+   Premium (reference) surfaces — rounded, layered, warm
+   ========================================================================== */
+
+/* A soft copper glow used behind the hero visual and CTA. Purely decorative,
+   pointer-events off, and it inherits the accent so it re-tints per theme. */
+@utility glow-accent {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-accent) 42%, transparent) 0%,
+    transparent 70%
+  );
+  filter: blur(56px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Rounded elevated card with a hairline that warms toward the accent on hover.
+   The lift itself is applied by Motion; this carries the resting look. */
+@utility card-lux {
+  position: relative;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-soft);
+  transition: border-color var(--duration-normal) var(--ease-smooth),
+    box-shadow var(--duration-normal) var(--ease-smooth);
+}
+.card-lux:hover {
+  border-color: color-mix(in oklab, var(--color-accent) 55%, var(--color-line));
+  box-shadow: var(--shadow-lift);
+}
+
+/* Warm gradient wash for the closing CTA panel. */
+@utility cta-gradient {
+  background-image: radial-gradient(
+      120% 140% at 100% 0%,
+      color-mix(in oklab, var(--color-accent) 24%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(
+      160deg,
+      color-mix(in oklab, var(--color-accent) 10%, var(--color-surface)),
+      var(--color-surface)
+    );
 }
 
 @utility hairline-b {

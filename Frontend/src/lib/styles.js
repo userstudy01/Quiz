@@ -16,8 +16,10 @@ const BUTTON_BASE =
   'disabled:pointer-events-none disabled:opacity-55';
 
 const BUTTON_VARIANTS = {
-  primary: 'bg-ink text-canvas hover:bg-accent',
-  secondary: 'border border-line-strong bg-transparent text-ink hover:border-ink hover:bg-elevated',
+  primary:
+    'bg-accent text-accent-contrast shadow-[var(--shadow-soft)] hover:bg-accent-strong',
+  secondary:
+    'border border-line-strong bg-transparent text-ink hover:border-accent hover:text-accent',
   ghost: 'text-ink-muted hover:text-accent',
 };
 
