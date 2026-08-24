@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { motion, useReducedMotion } from 'motion/react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { ScrollProgress } from './ScrollFx';
 import { Loader } from './ui';
 import { getProfile } from '../lib/api';
 import { trackPageView } from '../lib/analytics';
@@ -46,6 +47,7 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <ScrollProgress />
       <ScrollToTop />
       <Navbar profile={profile} />
       <main id="main" className="flex-1 pb-20 pt-10 sm:pt-14">

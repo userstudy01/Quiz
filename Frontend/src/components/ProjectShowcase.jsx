@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Arrow } from './ui';
 import { ProjectArtwork } from './Artwork';
+import { Parallax } from './ScrollFx';
 import { monogram, plateStyle } from '../lib/projectArt';
 import { projectNumber, projectStatus } from '../lib/projectFields';
 
@@ -144,12 +145,14 @@ export function FeaturedProject({ project, index, revealIndex }) {
       data-reveal-index={revealIndex}
       className="group hairline-t relative grid items-center gap-8 py-10 sm:py-14 lg:grid-cols-2 lg:gap-16"
     >
-      <ProjectPlate
-        project={project}
-        size="lg"
-        priority={index === 0}
-        className={`aspect-[16/11] w-full ${flip ? 'lg:order-2' : ''}`}
-      />
+      <Parallax className={flip ? 'lg:order-2' : ''}>
+        <ProjectPlate
+          project={project}
+          size="lg"
+          priority={index === 0}
+          className="aspect-[16/11] w-full"
+        />
+      </Parallax>
 
       <div className={flip ? 'lg:order-1' : ''}>
         <div className="flex items-center gap-4">
