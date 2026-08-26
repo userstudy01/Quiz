@@ -14,10 +14,18 @@ export const isValidUrl = (value = '') => {
   }
 };
 
-// Valid <img src>: an http(s) URL or an inline base64 data:image URI (produced
-// by the image uploader).
+// A root-relative path to a file served from Frontend/public, e.g.
+// "/images/momentum/hero.jpg". This is the route for large (4K) assets: they
+// live on disk and are served as files, so nothing bloats the Mongo document
+// the way an inline base64 copy would.
+const PUBLIC_IMAGE_PATH_RE = /^\/[\w\-./]+\.(?:avif|gif|jpe?g|png|svg|webp)$/i;
+
+export const isPublicImagePath = (value = '') => PUBLIC_IMAGE_PATH_RE.test(value.trim());
+
+// Valid <img src>: a public file path, an http(s) URL, or an inline base64
+// data:image URI (produced by the image uploader).
 export const isImageSrc = (value = '') =>
-  /^data:image\//i.test(value) || isValidUrl(value);
+  /^data:image\//i.test(value) || isPublicImagePath(value) || isValidUrl(value);
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const isValidEmail = (value = '') => EMAIL_RE.test(String(value).trim());

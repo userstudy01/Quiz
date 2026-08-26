@@ -24,6 +24,9 @@ const siteOrigin = () =>
 const absolute = (path) => {
   if (!path) return '';
   if (/^https?:\/\//i.test(path)) return path;
+  // An inline data: URI has no origin to resolve against, and crawlers cannot
+  // fetch one anyway, so it is not usable as a share image.
+  if (/^data:/i.test(path)) return '';
   return `${siteOrigin()}${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
@@ -153,6 +156,6 @@ export function projectJsonLd(project) {
     genre: project.category,
     keywords: (project.technologies || []).join(', '),
     url: project.liveUrl || undefined,
-    image: project.screenshots?.[0]?.url || undefined,
+    image: absolute(project.screenshots?.[0]?.url) || undefined,
   });
 }

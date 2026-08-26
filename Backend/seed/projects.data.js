@@ -31,6 +31,9 @@ const project = ({
   remaining,
   technologies = [],
   features = [],
+  // Each entry is { url, caption }. `url` is a path under Frontend/public, so
+  // the file is served at full resolution rather than inlined here.
+  screenshots = [],
   reference = '',
   featured = false,
 }) => {
@@ -58,7 +61,7 @@ const project = ({
     challenges: [],
     solutions: [],
     result: workStatus ? `${workStatus} — ${progress}% complete.` : '',
-    screenshots: [],
+    screenshots,
     liveUrl: '',
     githubUrl: '',
     featured,
@@ -85,6 +88,14 @@ const projects = [
     // Technology column reads "To Be Added" in the workbook.
     technologies: [],
     features: ['noova_obs', 'noova_lounge', 'noova_ideabox'],
+    // Served from Frontend/public/images/momentum/ as files, so these stay at
+    // full resolution instead of being inlined into the document.
+    screenshots: [
+      { url: '/images/momentum/home.jpg', caption: 'Home — "We speak hospitality"' },
+      { url: '/images/momentum/services.jpg', caption: 'Our Services — end-to-end hospitality solutions' },
+      { url: '/images/momentum/careers.jpg', caption: 'Careers — open positions' },
+      { url: '/images/momentum/contact.jpg', caption: 'Contact — enquiry form and office details' },
+    ],
   }),
 
   project({
