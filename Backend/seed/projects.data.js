@@ -120,6 +120,12 @@ const projects = [
       'Single/bulk Excel import',
       'Staging and production workflow',
     ],
+    screenshots: [
+      { url: '/images/vicharkrantibooks/overview.jpg', caption: 'Overview — stack and key screens' },
+      { url: '/images/vicharkrantibooks/ebooks.jpg', caption: 'E-Books library with category and language filters' },
+      { url: '/images/vicharkrantibooks/audiobooks.jpg', caption: 'Audio Books with inline player and playlist' },
+      { url: '/images/vicharkrantibooks/dashboard.jpg', caption: 'Reader dashboard — library, reading progress, listening time' },
+    ],
     featured: true,
   }),
 
@@ -135,6 +141,12 @@ const projects = [
     progress: '100',
     remaining: 'Add new products when required',
     technologies: ['HTML', 'CSS', 'JavaScript'],
+    screenshots: [
+      { url: '/images/nilkanth/overview.jpg', caption: 'Overview — stack and key highlights' },
+      { url: '/images/nilkanth/home.jpg', caption: 'Home — product range and after-sales service' },
+      { url: '/images/nilkanth/products.jpg', caption: 'Products, filtered by equipment category' },
+      { url: '/images/nilkanth/contact.jpg', caption: 'Contact — enquiry form and mapped location' },
+    ],
   }),
 
   project({
@@ -149,6 +161,12 @@ const projects = [
     progress: '100',
     remaining: 'Rare billing fixes or product image updates',
     technologies: ['PHP', 'Laravel'],
+    screenshots: [
+      { url: '/images/neotech/dashboard.jpg', caption: 'Admin dashboard — sales, stock alerts and cash flow' },
+      { url: '/images/neotech/products.jpg', caption: 'Product catalogue with stock status' },
+      { url: '/images/neotech/product-details.jpg', caption: 'Product details with stock, purchase and sales history' },
+      { url: '/images/neotech/reports.jpg', caption: 'Reports — sales, income vs expense, top sellers' },
+    ],
   }),
 
   project({
