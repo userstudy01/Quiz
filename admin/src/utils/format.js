@@ -22,6 +22,16 @@ const PUBLIC_IMAGE_PATH_RE = /^\/[\w\-./]+\.(?:avif|gif|jpe?g|png|svg|webp)$/i;
 
 export const isPublicImagePath = (value = '') => PUBLIC_IMAGE_PATH_RE.test(value.trim());
 
+// A public path is served by the frontend, not by this admin app, so a preview
+// here has to be resolved against the site's origin. Without VITE_SITE_URL the
+// path is returned untouched and simply will not load, which is no worse than
+// pointing it at an origin that does not hold the file.
+export const resolvePublicImage = (value = '') => {
+  if (!isPublicImagePath(value)) return value;
+  const origin = (import.meta.env.VITE_SITE_URL || '').replace(/\/+$/, '');
+  return origin ? `${origin}${value.trim()}` : value;
+};
+
 // Valid <img src>: a public file path, an http(s) URL, or an inline base64
 // data:image URI (produced by the image uploader).
 export const isImageSrc = (value = '') =>

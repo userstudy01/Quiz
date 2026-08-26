@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { isImageSrc, isPublicImagePath } from '../utils/format';
+import { isImageSrc, isPublicImagePath, resolvePublicImage } from '../utils/format';
 
 /* ==========================================================================
    Image input — browse or drag & drop, plus a public-path escape hatch.
@@ -90,6 +90,7 @@ export default function ImageInput({
   const hasImage = isImageSrc(value);
   const previewFailed = hasImage && failedSrc === value;
   const isPath = isPublicImagePath(value || '');
+  const previewSrc = resolvePublicImage(value || '');
 
   return (
     <div className={className}>
@@ -115,7 +116,7 @@ export default function ImageInput({
         >
           {hasImage && !previewFailed ? (
             <img
-              src={value}
+              src={previewSrc}
               alt="Preview"
               onError={() => setFailedSrc(value)}
               className="h-full w-full object-cover"
@@ -184,10 +185,10 @@ export default function ImageInput({
         />
       </label>
       {isPath ? (
-        <p className="mt-1 text-xs text-ink-subtle">
+        <p className={`mt-1 text-xs ${previewFailed ? 'font-medium text-danger' : 'text-ink-subtle'}`}>
           {previewFailed
-            ? 'Stored as a path. The preview cannot load here because the file is served by the frontend, not the admin — check it on the site.'
-            : 'Stored as a path — the file is served at full resolution.'}
+            ? `No file at ${previewSrc} — check the path, or that the image has been deployed to the site.`
+            : 'Stored as a path — the file is served at full resolution by the site.'}
         </p>
       ) : null}
     </div>
