@@ -195,6 +195,12 @@ const projects = [
     progress: '100',
     remaining: 'Future client-requested changes',
     technologies: ['PHP', 'Laravel'],
+    screenshots: [
+      { url: '/images/kninfinity/overview.jpg', caption: 'Overview — stack and key screens' },
+      { url: '/images/kninfinity/about.jpg', caption: 'About — vision, mission and values' },
+      { url: '/images/kninfinity/services.jpg', caption: 'Construction services' },
+      { url: '/images/kninfinity/projects.jpg', caption: 'Projects, filtered by property type' },
+    ],
   }),
 
   project({
@@ -209,6 +215,12 @@ const projects = [
     progress: '100',
     remaining: 'Future client-requested changes',
     technologies: ['PHP', 'Laravel'],
+    screenshots: [
+      { url: '/images/maseehaglobal/home.jpg', caption: 'Home — global seed and spice exporters' },
+      { url: '/images/maseehaglobal/about.jpg', caption: 'About — company profile and export reach' },
+      { url: '/images/maseehaglobal/products.jpg', caption: 'Agri-commodity product portfolio' },
+      { url: '/images/maseehaglobal/services.jpg', caption: 'Services — sourcing, processing, logistics' },
+    ],
   }),
 
   project({
@@ -224,6 +236,12 @@ const projects = [
     remaining: 'Future client-requested changes',
     technologies: ['PHP', 'Laravel'],
     features: ['Admin panel', 'Product management'],
+    screenshots: [
+      { url: '/images/mymaseeha/home.jpg', caption: 'Home — B2B catalogue search and trade quotes' },
+      { url: '/images/mymaseeha/about.jpg', caption: 'About — export reach and buyer numbers' },
+      { url: '/images/mymaseeha/products.jpg', caption: 'Product categories' },
+      { url: '/images/mymaseeha/services.jpg', caption: 'Services — sourcing through to export documentation' },
+    ],
   }),
 
   project({
@@ -238,6 +256,12 @@ const projects = [
     progress: '100',
     remaining: 'Future maintenance if required',
     technologies: ['WordPress'],
+    screenshots: [
+      { url: '/images/rr-industries/home.jpg', caption: 'Home — manufacturer of cable and process steel drums' },
+      { url: '/images/rr-industries/services.jpg', caption: 'Manufacturing solutions and process steel drums' },
+      { url: '/images/rr-industries/about.jpg', caption: 'About — manufacturing since 2002' },
+      { url: '/images/rr-industries/why-choose-us.jpg', caption: 'Why choose us, with the enquiry form' },
+    ],
   }),
 
   project({
