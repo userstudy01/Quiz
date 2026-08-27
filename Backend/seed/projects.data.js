@@ -181,6 +181,12 @@ const projects = [
     progress: '90',
     remaining: 'Image changes and client review feedback',
     technologies: ['PHP', 'Laravel'],
+    screenshots: [
+      { url: '/images/gjt/home.jpg', caption: 'Home — residential and commercial general contracting' },
+      { url: '/images/gjt/about.jpg', caption: 'About — residential and commercial service lines' },
+      { url: '/images/gjt/services.jpg', caption: 'Construction services' },
+      { url: '/images/gjt/projects.jpg', caption: 'Projects across home, office and retail builds' },
+    ],
   }),
 
   project({
